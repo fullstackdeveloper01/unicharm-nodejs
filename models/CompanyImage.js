@@ -1,0 +1,31 @@
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
+
+const CompanyImage = sequelize.define('CompanyImage', {
+  Id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  ImagePath: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  ImageName: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  CreatedOn: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  },
+  IsDeleted: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  }
+}, {
+  tableName: 'CompanyImages',
+  timestamps: false
+});
+
+module.exports = CompanyImage;

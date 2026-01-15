@@ -1,0 +1,1250 @@
+{
+	"info": {
+		"_postman_id": "ems-admin-api-collection",
+		"name": "EMS Admin API",
+		"description": "Complete API collection for Employee Management System Admin - Node.js with Sequelize and MySQL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"health"
+							]
+						},
+						"description": "Check if the API is running"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Employees",
+			"item": [
+				{
+					"name": "Get All Employees",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees"
+							]
+						},
+						"description": "Get all employees using stored procedure USP_GetEmployeesList"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get employee by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"FirstName\": \"John\",\n  \"LastName\": \"Doe\",\n  \"Email\": \"john.doe@example.com\",\n  \"DepartmentId\": 1,\n  \"DesignationId\": 1,\n  \"RoleId\": 1,\n  \"MobileNo1\": \"1234567890\",\n  \"Joiningdate\": \"2024-01-01\",\n  \"EmpId\": \"EMP001\",\n  \"Category\": \"Regular\",\n  \"UserType\": \"User\",\n  \"Password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/employees",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees"
+							]
+						},
+						"description": "Create a new employee"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Employee",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"FirstName\": \"John\",\n  \"LastName\": \"Doe Updated\",\n  \"Email\": \"john.doe.updated@example.com\",\n  \"DepartmentId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/employees/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Update an employee"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Employee",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Soft delete an employee"
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Soft Delete",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees/:id/toggle-delete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								":id",
+								"toggle-delete"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Toggle soft delete status of an employee"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Departments Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees/dropdowns/departments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"dropdowns",
+								"departments"
+							]
+						},
+						"description": "Get departments for dropdown"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Designations Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees/dropdowns/designations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"dropdowns",
+								"designations"
+							]
+						},
+						"description": "Get designations for dropdown"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Roles Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees/dropdowns/roles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"dropdowns",
+								"roles"
+							]
+						},
+						"description": "Get roles for dropdown"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Supervisors Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees/dropdowns/supervisors",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"dropdowns",
+								"supervisors"
+							]
+						},
+						"description": "Get supervisors for dropdown"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Units Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees/dropdowns/units",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"dropdowns",
+								"units"
+							]
+						},
+						"description": "Get units for dropdown"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Zones Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees/dropdowns/zones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"dropdowns",
+								"zones"
+							]
+						},
+						"description": "Get zones for dropdown"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Locations Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/employees/dropdowns/locations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"dropdowns",
+								"locations"
+							]
+						},
+						"description": "Get locations for dropdown"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Departments",
+			"item": [
+				{
+					"name": "Get All Departments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/departments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"departments"
+							]
+						},
+						"description": "Get all departments"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/departments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"departments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get department by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Department",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"DepartmentName\": \"IT Department\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/departments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"departments"
+							]
+						},
+						"description": "Create a new department"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Department",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"DepartmentName\": \"IT Department Updated\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/departments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"departments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Update a department"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Department",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/departments/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"departments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Soft delete a department"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Departments Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/departments/dropdowns/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"departments",
+								"dropdowns",
+								"list"
+							]
+						},
+						"description": "Get departments for dropdown"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Designations",
+			"item": [
+				{
+					"name": "Get All Designations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/designations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"designations"
+							]
+						},
+						"description": "Get all designations"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Designation by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/designations/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"designations",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get designation by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Designation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"DesignationName\": \"Senior Developer\",\n  \"DepartmentId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/designations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"designations"
+							]
+						},
+						"description": "Create a new designation"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Designation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"DesignationName\": \"Senior Developer Updated\",\n  \"DepartmentId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/designations/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"designations",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Update a designation"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Designation",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/designations/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"designations",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Soft delete a designation"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Designations Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/designations/dropdowns/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"designations",
+								"dropdowns",
+								"list"
+							]
+						},
+						"description": "Get designations for dropdown"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expense Designations Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/designations/dropdowns/expense-designations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"designations",
+								"dropdowns",
+								"expense-designations"
+							]
+						},
+						"description": "Get expense designations for dropdown"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Roles",
+			"item": [
+				{
+					"name": "Get All Roles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/roles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"roles"
+							]
+						},
+						"description": "Get all roles"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Role by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/roles/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"roles",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get role by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Role",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"RoleName\": \"Admin\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/roles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"roles"
+							]
+						},
+						"description": "Create a new role"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Role",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"RoleName\": \"Admin Updated\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/roles/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"roles",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Update a role"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Role",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/roles/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"roles",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Soft delete a role"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Roles Dropdown",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/roles/dropdowns/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"roles",
+								"dropdowns",
+								"list"
+							]
+						},
+						"description": "Get roles for dropdown"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accountants",
+			"item": [
+				{
+					"name": "Get All Accountants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/accountants",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"accountants"
+							]
+						},
+						"description": "Get all accountants using stored procedure USP_GetAccountant"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Accountant by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/accountants/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"accountants",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get accountant by ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Home/Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/home/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"home",
+								"dashboard"
+							]
+						},
+						"description": "Get complete dashboard data (all stored procedures executed in parallel)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Upcoming Birthdays",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/home/upcoming-birthdays",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"home",
+								"upcoming-birthdays"
+							]
+						},
+						"description": "Get upcoming birthdays using USP_GetUpComingBirthday"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recent News",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/home/recent-news",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"home",
+								"recent-news"
+							]
+						},
+						"description": "Get recent news using USP_GetRecentNews"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recent Events",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/home/recent-events",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"home",
+								"recent-events"
+							]
+						},
+						"description": "Get recent events using USP_GetRecentEvent"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Recent Policies",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/home/recent-policies",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"home",
+								"recent-policies"
+							]
+						},
+						"description": "Get recent policies using USP_GetRecentPolicies"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Work Anniversaries",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/home/work-anniversaries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"home",
+								"work-anniversaries"
+							]
+						},
+						"description": "Get work anniversaries using USP_GetWorkAnniversary"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Login Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/home/login-details",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"home",
+								"login-details"
+							],
+							"query": [
+								{
+									"key": "param1",
+									"value": "value1",
+									"description": "Optional query parameters"
+								}
+							]
+						},
+						"description": "Get login details using USP_GetLoginDetail"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Meetings for User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/home/meetings/:employeeId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"home",
+								"meetings",
+								":employeeId"
+							],
+							"variable": [
+								{
+									"key": "employeeId",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get meetings for user using USP_GetMeetingsForUser"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tickets",
+			"item": [
+				{
+					"name": "Get Tickets for Assignee",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/tickets/assignee",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tickets",
+								"assignee"
+							],
+							"query": [
+								{
+									"key": "employeeId",
+									"value": "1",
+									"description": "Optional employee ID filter"
+								}
+							]
+						},
+						"description": "Get tickets for assignee using stored procedure USP_GetTicketForAssignee"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Tickets",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/tickets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tickets"
+							]
+						},
+						"description": "Get all tickets"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Ticket by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/tickets/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tickets",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get ticket by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Ticket",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"EmployeeId\": 1,\n  \"Subject\": \"New Ticket\",\n  \"Description\": \"Ticket description here\",\n  \"Status\": \"Open\",\n  \"Priority\": \"High\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tickets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tickets"
+							]
+						},
+						"description": "Create a new ticket"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Ticket",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Subject\": \"Updated Ticket\",\n  \"Status\": \"In Progress\",\n  \"Priority\": \"Medium\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/tickets/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tickets",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Update a ticket"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Ticket",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/tickets/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tickets",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Soft delete a ticket"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}
