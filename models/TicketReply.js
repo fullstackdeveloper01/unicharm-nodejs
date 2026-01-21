@@ -3,19 +3,23 @@ const sequelize = require('../config/database');
 
 const TicketReply = sequelize.define('TicketReply', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
   TicketId: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'Tickets',
-      key: 'Id'
-    }
+    type: DataTypes.BIGINT,
+    allowNull: true
   },
-  ReplyText: {
+  RepliedbyBy: {
+    type: DataTypes.BIGINT,
+    allowNull: true
+  },
+  ReplyType: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  Reply: {
     type: DataTypes.TEXT,
     allowNull: true
   },
@@ -28,7 +32,7 @@ const TicketReply = sequelize.define('TicketReply', {
     defaultValue: false
   }
 }, {
-  tableName: 'TicketReplies',
+  tableName: 'TicketReply',
   timestamps: false
 });
 

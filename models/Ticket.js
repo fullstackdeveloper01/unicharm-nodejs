@@ -3,19 +3,15 @@ const sequelize = require('../config/database');
 
 const Ticket = sequelize.define('Ticket', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  EmployeeId: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'Employees',
-      key: 'Id'
-    }
+  Requester: {
+    type: DataTypes.BIGINT,
+    allowNull: true
   },
-  Subject: {
+  Title: {
     type: DataTypes.STRING,
     allowNull: true
   },
@@ -23,11 +19,27 @@ const Ticket = sequelize.define('Ticket', {
     type: DataTypes.TEXT,
     allowNull: true
   },
-  Status: {
+  Region: {
     type: DataTypes.STRING,
     allowNull: true
   },
-  Priority: {
+  City: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  TypeId: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  TagId: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  PreorityId: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
+  Status: {
     type: DataTypes.STRING,
     allowNull: true
   },
@@ -38,9 +50,21 @@ const Ticket = sequelize.define('Ticket', {
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  IsManagerNotified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  MobileNo: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  IsClosed: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true
   }
 }, {
-  tableName: 'Tickets',
+  tableName: 'Ticket',
   timestamps: false
 });
 

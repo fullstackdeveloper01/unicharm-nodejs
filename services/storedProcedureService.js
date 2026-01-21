@@ -10,22 +10,22 @@ const { sequelize } = db;
 exports.executeStoredProcedure = async (procedureName, parameters = {}) => {
   try {
     const paramKeys = Object.keys(parameters);
-    
+
     if (paramKeys.length === 0) {
       return await this.executeStoredProcedureSimple(procedureName);
     }
-    
+
     // Build parameter string for MySQL stored procedure
     // Format: CALL ProcedureName(:param1, :param2, ...)
     const paramPlaceholders = paramKeys.map(key => `:${key}`).join(', ');
     const query = `CALL ${procedureName}(${paramPlaceholders})`;
-    
+
     // Execute with Sequelize raw query
     const results = await sequelize.query(query, {
       replacements: parameters,
       type: sequelize.QueryTypes.SELECT
     });
-    
+
     // MySQL stored procedures return results in an array, get the first result set
     return Array.isArray(results) && results.length > 0 ? results[0] : results;
   } catch (error) {
@@ -46,7 +46,7 @@ exports.executeStoredProcedureSimple = async (procedureName) => {
     const results = await sequelize.query(query, {
       type: sequelize.QueryTypes.SELECT
     });
-    
+
     // MySQL stored procedures return results in an array, get the first result set
     return Array.isArray(results) && results.length > 0 ? results[0] : results;
   } catch (error) {
@@ -80,28 +80,28 @@ exports.getUpComingBirthday = async () => {
  * Get Recent News using stored procedure
  */
 exports.getRecentNews = async () => {
-  return await this.executeStoredProcedureSimple('USP_GetRecentNews');
+  return await this.executeStoredProcedure('USP_GetRecentNews', { Id: 0 });
 };
 
 /**
  * Get Recent Events using stored procedure
  */
 exports.getRecentEvent = async () => {
-  return await this.executeStoredProcedureSimple('USP_GetRecentEvent');
+  return await this.executeStoredProcedure('USP_GetRecentEvent', { Id: 0 });
 };
 
 /**
  * Get Recent Policies using stored procedure
  */
 exports.getRecentPolicies = async () => {
-  return await this.executeStoredProcedureSimple('USP_GetRecentPolicies');
+  return await this.executeStoredProcedure('USP_GetRecentPolicies', { Id: 0 });
 };
 
 /**
  * Get Work Anniversary using stored procedure
  */
 exports.getWorkAnniversary = async () => {
-  return await this.executeStoredProcedureSimple('USP_GetWorkAnniversary');
+  return await this.executeStoredProcedure('USP_GetWorkAnniversary', { Id: 0 });
 };
 
 /**

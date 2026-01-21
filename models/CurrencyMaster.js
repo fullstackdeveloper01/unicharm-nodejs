@@ -7,12 +7,20 @@ const CurrencyMaster = sequelize.define('CurrencyMaster', {
     primaryKey: true,
     autoIncrement: true
   },
-  CurrencyName: {
+  Title: {
     type: DataTypes.STRING,
     allowNull: true
   },
-  CurrencySymbol: {
-    type: DataTypes.STRING,
+  INRValue: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true
+  },
+  ConvertedValue: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true
+  },
+  CreatedBy: {
+    type: DataTypes.INTEGER,
     allowNull: true
   },
   CreatedOn: {
@@ -24,7 +32,7 @@ const CurrencyMaster = sequelize.define('CurrencyMaster', {
     defaultValue: false
   }
 }, {
-  tableName: 'CurrencyMasters',
+  tableName: 'cuurencymaster',
   timestamps: false
 });
 

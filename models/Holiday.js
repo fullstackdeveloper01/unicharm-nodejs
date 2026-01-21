@@ -3,16 +3,16 @@ const sequelize = require('../config/database');
 
 const Holiday = sequelize.define('Holiday', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  HolidayName: {
+  Name: {
     type: DataTypes.STRING,
     allowNull: true
   },
   HolidayDate: {
-    type: DataTypes.DATE,
+    type: DataTypes.DATEONLY,
     allowNull: true
   },
   CreatedOn: {
@@ -24,7 +24,7 @@ const Holiday = sequelize.define('Holiday', {
     defaultValue: false
   }
 }, {
-  tableName: 'Holidays',
+  tableName: 'Holiday',
   timestamps: false
 });
 

@@ -1,16 +1,22 @@
-const db = require('../models');
-const { Department } = db;
+const departmentService = require('../services/departmentService');
+
+// Helper for standard response (could be shared, but copying for now to keep it self-contained as per instructions)
+const sendResponse = (res, success, message, data = null, errors = null) => {
+  res.json({
+    success,
+    message,
+    data,
+    errors
+  });
+};
 
 // Get all departments
 exports.getAllDepartments = async (req, res) => {
   try {
-    const departments = await Department.findAll({
-      where: { IsDeleted: false },
-      order: [['CreatedOn', 'DESC']]
-    });
-    res.json({ success: true, data: departments });
+    const departments = await departmentService.getAllDepartments();
+    sendResponse(res, true, 'Departments retrieved successfully', departments);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    sendResponse(res, false, 'Failed to retrieve departments', null, { message: error.message });
   }
 };
 
@@ -18,36 +24,32 @@ exports.getAllDepartments = async (req, res) => {
 exports.getDepartmentById = async (req, res) => {
   try {
     const { id } = req.params;
-    const department = await Department.findByPk(id);
+    const department = await departmentService.getDepartmentById(id);
 
     if (!department) {
-      return res.status(404).json({ success: false, message: 'Department not found' });
+      return sendResponse(res, false, 'Department not found');
     }
 
-    res.json({ success: true, data: department });
+    sendResponse(res, true, 'Department retrieved successfully', department);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    sendResponse(res, false, 'Failed to retrieve department', null, { message: error.message });
   }
 };
 
 // Create department
 exports.createDepartment = async (req, res) => {
   try {
-    const { DepartmentName } = req.body;
+    const { DepartmentName, CostCenter } = req.body;
 
     if (!DepartmentName) {
-      return res.status(400).json({ success: false, message: 'Department name is required' });
+      return sendResponse(res, false, 'Department name is required');
     }
 
-    const department = await Department.create({
-      DepartmentName,
-      CreatedOn: new Date(),
-      IsDeleted: false
-    });
-
-    res.status(201).json({ success: true, data: department });
+    const department = await departmentService.createDepartment({ DepartmentName, CostCenter });
+    res.status(201);
+    sendResponse(res, true, 'Department created successfully', department);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    sendResponse(res, false, 'Failed to create department', null, { message: error.message });
   }
 };
 
@@ -55,17 +57,17 @@ exports.createDepartment = async (req, res) => {
 exports.updateDepartment = async (req, res) => {
   try {
     const { id } = req.params;
-    const { DepartmentName } = req.body;
+    const { DepartmentName, CostCenter } = req.body;
 
-    const department = await Department.findByPk(id);
+    const department = await departmentService.getDepartmentById(id);
     if (!department) {
-      return res.status(404).json({ success: false, message: 'Department not found' });
+      return sendResponse(res, false, 'Department not found');
     }
 
-    await department.update({ DepartmentName });
-    res.json({ success: true, data: department });
+    const updatedDepartment = await departmentService.updateDepartment(department, { DepartmentName, CostCenter });
+    sendResponse(res, true, 'Department updated successfully', updatedDepartment);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    sendResponse(res, false, 'Failed to update department', null, { message: error.message });
   }
 };
 
@@ -73,24 +75,25 @@ exports.updateDepartment = async (req, res) => {
 exports.deleteDepartment = async (req, res) => {
   try {
     const { id } = req.params;
-    const department = await Department.findByPk(id);
+    const department = await departmentService.getDepartmentById(id);
 
     if (!department) {
-      return res.status(404).json({ success: false, message: 'Department not found' });
+      return sendResponse(res, false, 'Department not found');
     }
 
-    await department.update({ IsDeleted: true });
-    res.json({ success: true, message: 'Department deleted successfully' });
+    await departmentService.deleteDepartment(department);
+    sendResponse(res, true, 'Department deleted successfully');
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    sendResponse(res, false, 'Failed to delete department', null, { message: error.message });
   }
 };
 
 // Helper method for dropdown
-exports.selectDepartments = async () => {
-  const departments = await Department.findAll({
-    where: { IsDeleted: false },
-    attributes: ['Id', 'DepartmentName']
-  });
-  return departments.map(dept => ({ value: dept.Id, text: dept.DepartmentName }));
+exports.selectDepartments = async (req, res) => {
+  try {
+    const dropdown = await departmentService.selectDepartments();
+    sendResponse(res, true, 'Departments dropdown retrieved successfully', dropdown);
+  } catch (error) {
+    sendResponse(res, false, 'Failed to retrieve departments dropdown', null, { message: error.message });
+  }
 };

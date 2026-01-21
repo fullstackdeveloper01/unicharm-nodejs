@@ -7,8 +7,16 @@ const Wall = sequelize.define('Wall', {
     primaryKey: true,
     autoIncrement: true
   },
-  WallName: {
+  Title: {
     type: DataTypes.STRING,
+    allowNull: true
+  },
+  Description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  Image: {
+    type: DataTypes.TEXT,
     allowNull: true
   },
   CreatedOn: {
@@ -18,9 +26,17 @@ const Wall = sequelize.define('Wall', {
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  AddedBy: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Employees',
+      key: 'Id'
+    }
   }
 }, {
-  tableName: 'Walls',
+  tableName: 'Wall',
   timestamps: false
 });
 

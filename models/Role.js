@@ -3,7 +3,7 @@ const sequelize = require('../config/database');
 
 const Role = sequelize.define('Role', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },

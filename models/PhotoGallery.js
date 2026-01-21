@@ -3,16 +3,20 @@ const sequelize = require('../config/database');
 
 const PhotoGallery = sequelize.define('PhotoGallery', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  ImagePath: {
-    type: DataTypes.STRING,
+  MainImage: {
+    type: DataTypes.TEXT,
     allowNull: true
   },
   Title: {
     type: DataTypes.STRING,
+    allowNull: true
+  },
+  AdditionalImages: {
+    type: DataTypes.TEXT,
     allowNull: true
   },
   CreatedOn: {
@@ -24,7 +28,7 @@ const PhotoGallery = sequelize.define('PhotoGallery', {
     defaultValue: false
   }
 }, {
-  tableName: 'PhotoGalleries',
+  tableName: 'PhotoGallery',
   timestamps: false
 });
 

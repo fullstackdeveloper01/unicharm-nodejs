@@ -3,13 +3,13 @@ const sequelize = require('../config/database');
 
 const Unit = sequelize.define('Unit', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  UnitName: {
+  Title: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   CreatedOn: {
     type: DataTypes.DATE,
@@ -18,6 +18,10 @@ const Unit = sequelize.define('Unit', {
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  ModifiedOn: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
   }
 }, {
   tableName: 'Units',

@@ -3,7 +3,7 @@ const sequelize = require('../config/database');
 
 const Room = sequelize.define('Room', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
@@ -11,13 +11,14 @@ const Room = sequelize.define('Room', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  Location: {
+    type: DataTypes.BIGINT,
+    allowNull: true
+  },
   FloorId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     allowNull: true,
-    references: {
-      model: 'Floors',
-      key: 'Id'
-    }
+    field: 'Floor' // Map to legacy column 'Floor'
   },
   CreatedOn: {
     type: DataTypes.DATE,
@@ -28,7 +29,7 @@ const Room = sequelize.define('Room', {
     defaultValue: false
   }
 }, {
-  tableName: 'Rooms',
+  tableName: 'Room',
   timestamps: false
 });
 

@@ -3,7 +3,7 @@ const sequelize = require('../config/database');
 
 const Location = sequelize.define('Location', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
@@ -20,7 +20,7 @@ const Location = sequelize.define('Location', {
     defaultValue: false
   }
 }, {
-  tableName: 'Locations',
+  tableName: 'Location',
   timestamps: false
 });
 

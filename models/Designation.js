@@ -3,16 +3,16 @@ const sequelize = require('../config/database');
 
 const Designation = sequelize.define('Designation', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
   DesignationName: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   DepartmentId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     allowNull: true,
     references: {
       model: 'Departments',
@@ -28,7 +28,7 @@ const Designation = sequelize.define('Designation', {
     defaultValue: false
   }
 }, {
-  tableName: 'Designations',
+  tableName: 'Designation',
   timestamps: false
 });
 

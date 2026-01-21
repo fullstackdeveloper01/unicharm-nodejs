@@ -3,11 +3,19 @@ const sequelize = require('../config/database');
 
 const PriorityMaster = sequelize.define('PriorityMaster', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  PriorityName: {
+  Title: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  Description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  LimitHour: {
     type: DataTypes.STRING,
     allowNull: true
   },
@@ -20,7 +28,7 @@ const PriorityMaster = sequelize.define('PriorityMaster', {
     defaultValue: false
   }
 }, {
-  tableName: 'PriorityMasters',
+  tableName: 'PreorityMaster',
   timestamps: false
 });
 
