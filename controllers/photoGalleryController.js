@@ -155,14 +155,28 @@ exports.updatePhotoGallery = async (req, res) => {
                 }
 
                 // Merge new additional images with existing
-                if (updateData.newAdditionalImages && updateData.newAdditionalImages.length > 0) {
-                    let currentAdditional = [];
+                let finalAdditionalImages = [];
+
+                // 1. Determine base existing images
+                if (req.body.ExistingAdditionalImages) {
                     try {
-                        currentAdditional = JSON.parse(galleryInstance.AdditionalImages || '[]');
+                        finalAdditionalImages = JSON.parse(req.body.ExistingAdditionalImages);
+                    } catch (e) { console.error("Error parsing ExistingAdditionalImages", e); }
+                } else {
+                    // Fallback to DB state if not provided in request
+                    try {
+                        finalAdditionalImages = JSON.parse(galleryInstance.AdditionalImages || '[]');
                     } catch (e) { }
-                    updateData.AdditionalImages = [...currentAdditional, ...updateData.newAdditionalImages];
+                }
+
+                // 2. Append new images if any
+                if (updateData.newAdditionalImages && updateData.newAdditionalImages.length > 0) {
+                    finalAdditionalImages = [...finalAdditionalImages, ...updateData.newAdditionalImages];
                     delete updateData.newAdditionalImages;
                 }
+
+                // 3. Set the update data
+                updateData.AdditionalImages = finalAdditionalImages;
 
                 // If Title is updated, it's in updateData spread
 

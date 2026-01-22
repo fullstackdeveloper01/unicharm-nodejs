@@ -7,7 +7,7 @@ const { LoginDetail } = db;
  */
 exports.getAllLoginDetails = async () => {
     return await LoginDetail.findAll({
-        order: [['LoginTime', 'DESC']]
+        order: [['LoginDatetime', 'DESC']]
     });
 };
 

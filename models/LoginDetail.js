@@ -2,37 +2,49 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const LoginDetail = sequelize.define('LoginDetail', {
-    Id: {
-        type: DataTypes.INTEGER,
+    LoginId: {
+        type: DataTypes.BIGINT,
         primaryKey: true,
         autoIncrement: true
     },
-    Username: {
-        type: DataTypes.STRING,
+    UserId: {
+        type: DataTypes.BIGINT,
         allowNull: true
     },
-    Email: {
-        type: DataTypes.STRING,
+    LoginUserType: {
+        type: DataTypes.INTEGER,
         allowNull: true
     },
-    Department: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    Designation: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    UserType: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    LoginTime: {
+    LoginDatetime: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+        allowNull: true
+    },
+    LogoutDatetime: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    IsActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true
+    },
+    CreatedDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    IsDeleted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    MACAddress: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    IPAddress: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
-    tableName: 'LoginDetails',
+    tableName: 'LoginDetail',
     timestamps: false
 });
 

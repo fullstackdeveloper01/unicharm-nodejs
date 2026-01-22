@@ -9,8 +9,19 @@ const fs = require('fs');
  */
 exports.getAllEmployees = async () => {
     try {
-        // Use stored procedure to get employees list
-        return await storedProcedureService.getEmployeesList();
+        const result = await storedProcedureService.getEmployeesList();
+
+        // Map stored procedure result to match the format expected by frontend
+        // Assuming SP returns raw columns like FirstName, LastName, etc.
+        return result.map(emp => ({
+            Id: emp.Id || emp.id,
+            Name: `${emp.FirstName || emp.firstname} ${emp.LastName || emp.lastname || ''}`.trim(),
+            Email: emp.Email || emp.email,
+            Department: emp.DepartmentName || emp.departmentname || (emp.department ? emp.department.DepartmentName : ''),
+            Designation: emp.DesignationName || emp.designationname || (emp.designation ? emp.designation.DesignationName : ''),
+            UserPhoto: emp.UserPhoto || '/Images/Profile/user-avatar.jpg',
+            IsDeleted: emp.IsDeleted
+        }));
     } catch (error) {
         // Fallback to Sequelize query
         const employees = await Employee.findAll({
@@ -153,14 +164,16 @@ exports.selectEmployees = async () => {
         attributes: ['Id', 'FirstName', 'LastName', 'EmpId']
     });
     return employees.map(emp => {
-        const fullName = `${emp.FirstName} ${emp.LastName || ''}`.trim();
+        const firstName = emp.FirstName || emp.firstname || (emp.getDataValue ? emp.getDataValue('FirstName') : '') || '';
+        const lastName = emp.LastName || emp.lastname || (emp.getDataValue ? emp.getDataValue('LastName') : '') || '';
+        const fullName = `${firstName} ${lastName}`.trim();
         return {
             value: emp.Id,
             text: fullName,
             label: fullName,
             Name: fullName,
-            FirstName: emp.FirstName,
-            LastName: emp.LastName,
+            FirstName: firstName,
+            LastName: lastName,
             EmpId: emp.EmpId
         };
     });

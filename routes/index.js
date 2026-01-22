@@ -32,6 +32,7 @@ router.use('/slider-images', require('./sliderImageRoutes'));
 router.use('/popup-images', require('./popupImageRoutes'));
 router.use('/login-details', require('./loginDetailRoutes'));
 router.use('/sales-price-policies', require('./salesPricePolicyRoutes'));
+router.use('/expense-locations', require('./expenseLocationRoutes'));
 router.use('/locations', require('./locationRoutes'));
 router.use('/floors', require('./floorRoutes'));
 router.use('/rooms', require('./roomRoutes'));
