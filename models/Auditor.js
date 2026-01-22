@@ -3,24 +3,48 @@ const sequelize = require('../config/database');
 
 const Auditor = sequelize.define('Auditor', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  EmployeeId: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'Employees',
-      key: 'Id'
-    }
+  FirstName: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  LastName: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  MobileNo: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  Email: {
+    type: DataTypes.STRING,
+    allowNull: true
   },
   Unit: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     allowNull: true
   },
   Zone: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
+    allowNull: true
+  },
+  Location: {
+    type: DataTypes.BIGINT,
+    allowNull: true
+  },
+  UserName: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  Password: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  IsAdmin: {
+    type: DataTypes.BOOLEAN,
     allowNull: true
   },
   CreatedOn: {
@@ -30,6 +54,18 @@ const Auditor = sequelize.define('Auditor', {
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  ModifiedOn: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  },
+  Category: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  UserPhoto: {
+    type: DataTypes.TEXT,
+    allowNull: true
   }
 }, {
   tableName: 'Auditors',

@@ -3,24 +3,28 @@ const sequelize = require('../config/database');
 
 const Accountant = sequelize.define('Accountant', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
   EmployeeId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     allowNull: true,
     references: {
       model: 'Employees',
       key: 'Id'
     }
   },
-  Unit: {
-    type: DataTypes.INTEGER,
+  EmpId: {
+    type: DataTypes.STRING,
     allowNull: true
   },
-  Zone: {
-    type: DataTypes.INTEGER,
+  UserName: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  Password: {
+    type: DataTypes.STRING,
     allowNull: true
   },
   CreatedOn: {
@@ -30,9 +34,21 @@ const Accountant = sequelize.define('Accountant', {
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  ModifiedOn: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  },
+  IsAdmin: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true
+  },
+  Category: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
-  tableName: 'Accountants',
+  tableName: 'Accountant',
   timestamps: false
 });
 

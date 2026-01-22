@@ -3,15 +3,19 @@ const sequelize = require('../config/database');
 
 const Product = sequelize.define('Product', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  ProductName: {
+  Name: {
     type: DataTypes.STRING,
     allowNull: true
   },
   Description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  UserPhoto: {
     type: DataTypes.TEXT,
     allowNull: true
   },
@@ -24,7 +28,7 @@ const Product = sequelize.define('Product', {
     defaultValue: false
   }
 }, {
-  tableName: 'Products',
+  tableName: 'Product',
   timestamps: false
 });
 

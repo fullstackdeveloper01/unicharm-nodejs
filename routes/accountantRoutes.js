@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const accountantController = require('../controllers/accountantController');
+const controller = require('../controllers/accountantController');
 
-// Accountant routes using stored procedures
-router.get('/', accountantController.getAllAccountants);
-router.get('/:id', accountantController.getAccountantById);
+router.get('/', controller.getAllAccountants);
+router.get('/:id', controller.getAccountantById);
+router.post('/', controller.createAccountant);
+router.put('/:id', controller.updateAccountant);
+router.delete('/:id', controller.deleteAccountant);
 
 module.exports = router;

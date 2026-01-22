@@ -3,12 +3,24 @@ const sequelize = require('../config/database');
 
 const ChoreiMessage = sequelize.define('ChoreiMessage', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  Message: {
+  Title: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  PdfPath: {
     type: DataTypes.TEXT,
+    allowNull: true
+  },
+  Role: {
+    type: DataTypes.BIGINT,
+    allowNull: true
+  },
+  AddedBy: {
+    type: DataTypes.BIGINT,
     allowNull: true
   },
   CreatedOn: {
@@ -18,9 +30,13 @@ const ChoreiMessage = sequelize.define('ChoreiMessage', {
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  ModifiedOn: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'ChoreiMessages',
+  tableName: 'ChoreiMessage',
   timestamps: false
 });
 

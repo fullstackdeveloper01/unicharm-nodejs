@@ -3,24 +3,24 @@ const sequelize = require('../config/database');
 
 const City = sequelize.define('City', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  CityName: {
+  Name: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
-  CreatedOn: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+  StateId: {
+    type: DataTypes.BIGINT,
+    allowNull: true
   },
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   }
 }, {
-  tableName: 'Cities',
+  tableName: 'City',
   timestamps: false
 });
 

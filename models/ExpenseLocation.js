@@ -3,21 +3,21 @@ const sequelize = require('../config/database');
 
 const ExpenseLocation = sequelize.define('ExpenseLocation', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  LocationName: {
+  Title: {
     type: DataTypes.STRING,
+    allowNull: true
+  },
+  ZoneId: {
+    type: DataTypes.INTEGER,
     allowNull: true
   },
   UnitId: {
     type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'Units',
-      key: 'Id'
-    }
+    allowNull: true
   },
   CreatedOn: {
     type: DataTypes.DATE,
@@ -26,9 +26,13 @@ const ExpenseLocation = sequelize.define('ExpenseLocation', {
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  ModifiedOn: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'ExpenseLocations',
+  tableName: 'ExpenseLocation',
   timestamps: false
 });
 

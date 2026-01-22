@@ -44,8 +44,8 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
-    error: process.env.NODE_ENV === 'production' 
-      ? 'Internal server error' 
+    error: process.env.NODE_ENV === 'production'
+      ? 'Internal server error'
       : err.message
   });
 });
@@ -62,8 +62,11 @@ app.use((req, res) => {
 db.sequelize.authenticate()
   .then(() => {
     console.log('Database connection established successfully.');
-    
-    // Start server
+
+    // Sync database (create tables if they don't exist)
+    return db.sequelize.sync({ alter: true });
+  })
+  .then(() => {
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -76,3 +79,5 @@ db.sequelize.authenticate()
   });
 
 module.exports = app;
+
+// Force restart - Employee dropdown fix v2

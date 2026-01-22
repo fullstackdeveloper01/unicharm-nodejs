@@ -3,7 +3,7 @@ const sequelize = require('../config/database');
 
 const Event = sequelize.define('Event', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
@@ -16,7 +16,12 @@ const Event = sequelize.define('Event', {
     allowNull: true
   },
   EventDate: {
-    type: DataTypes.DATE,
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    field: 'Date'
+  },
+  Image: {
+    type: DataTypes.TEXT,
     allowNull: true
   },
   CreatedOn: {

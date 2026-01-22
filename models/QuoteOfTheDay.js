@@ -3,16 +3,20 @@ const sequelize = require('../config/database');
 
 const QuoteOfTheDay = sequelize.define('QuoteOfTheDay', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  Quote: {
-    type: DataTypes.TEXT,
+  Title: {
+    type: DataTypes.STRING,
     allowNull: true
   },
-  Author: {
+  Quote: {
     type: DataTypes.STRING,
+    allowNull: true
+  },
+  AddedBy: {
+    type: DataTypes.BIGINT,
     allowNull: true
   },
   CreatedOn: {
@@ -24,7 +28,7 @@ const QuoteOfTheDay = sequelize.define('QuoteOfTheDay', {
     defaultValue: false
   }
 }, {
-  tableName: 'QuoteOfTheDays',
+  tableName: 'QuoteOfTheDay',
   timestamps: false
 });
 

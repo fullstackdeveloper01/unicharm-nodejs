@@ -11,7 +11,23 @@ const Notice = sequelize.define('Notice', {
     type: DataTypes.STRING,
     allowNull: true
   },
-  Description: {
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  Role: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'Roles',
+      key: 'Id'
+    }
+  },
+  Date: {
+    type: DataTypes.DATEONLY,
+    allowNull: true
+  },
+  Image: {
     type: DataTypes.TEXT,
     allowNull: true
   },
@@ -24,7 +40,7 @@ const Notice = sequelize.define('Notice', {
     defaultValue: false
   }
 }, {
-  tableName: 'Notices',
+  tableName: 'Notice',
   timestamps: false
 });
 

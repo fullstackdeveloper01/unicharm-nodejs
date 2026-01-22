@@ -3,7 +3,7 @@ const sequelize = require('../config/database');
 
 const Policy = sequelize.define('Policy', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
@@ -12,6 +12,25 @@ const Policy = sequelize.define('Policy', {
     allowNull: true
   },
   Description: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'description' // Map to SQL column 'description'
+  },
+  CategoryId: {
+    type: DataTypes.BIGINT,
+    allowNull: true,
+    field: 'Catagory' // Map to SQL column 'Catagory'
+  },
+  RoleId: {
+    type: DataTypes.BIGINT,
+    allowNull: true,
+    field: 'Role' // Map to SQL column 'Role'
+  },
+  Date: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  },
+  Image: {
     type: DataTypes.TEXT,
     allowNull: true
   },

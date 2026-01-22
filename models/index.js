@@ -26,6 +26,9 @@ const ExpenseLocation = require('./ExpenseLocation');
 const CustomImage = require('./CustomImage');
 const CompanyImage = require('./CompanyImage');
 const PhotoGallery = require('./PhotoGallery');
+const PopupImage = require('./PopupImage');
+const LoginDetail = require('./LoginDetail');
+const SalesPricePolicy = require('./SalesPricePolicy');
 const Product = require('./Product');
 const Tag = require('./Tag');
 const Wall = require('./Wall');
@@ -33,6 +36,11 @@ const TypeMaster = require('./TypeMaster');
 const PriorityMaster = require('./PriorityMaster');
 const CurrencyMaster = require('./CurrencyMaster');
 const ChoreiMessage = require('./ChoreiMessage');
+const Dashboard = require('./Dashboard');
+
+const MeetingRequest = require('./MeetingRequest');
+const Category = require('./Category');
+// Claim model removed as per user request
 
 // Define associations
 Department.hasMany(Employee, { foreignKey: 'DepartmentId', as: 'employees' });
@@ -47,32 +55,58 @@ Employee.belongsTo(Designation, { foreignKey: 'DesignationId', as: 'designation'
 Role.hasMany(Employee, { foreignKey: 'RoleId', as: 'employees' });
 Employee.belongsTo(Role, { foreignKey: 'RoleId', as: 'role' });
 
-Unit.hasMany(Zone, { foreignKey: 'UnitId', as: 'zones' });
-Zone.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
+Unit.hasMany(Zone, { foreignKey: 'Unit', as: 'zones', constraints: false });
+Zone.belongsTo(Unit, { foreignKey: 'Unit', as: 'unit', constraints: false });
 
-Unit.hasMany(ExpenseLocation, { foreignKey: 'UnitId', as: 'expenseLocations' });
-ExpenseLocation.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit' });
+Unit.hasMany(ExpenseLocation, { foreignKey: 'UnitId', as: 'expenseLocations', constraints: false });
+ExpenseLocation.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit', constraints: false });
 
-Unit.hasMany(Employee, { foreignKey: 'Unit', as: 'employees' });
-Employee.belongsTo(Unit, { foreignKey: 'Unit', as: 'unit' });
-
-Zone.hasMany(Employee, { foreignKey: 'Zone', as: 'employees' });
-Employee.belongsTo(Zone, { foreignKey: 'Zone', as: 'zone' });
-
-Location.hasMany(Employee, { foreignKey: 'Location', as: 'employees' });
-Employee.belongsTo(Location, { foreignKey: 'Location', as: 'location' });
+// Associations for Employee (Unit, Zone, Location) are removed because in the legacy schema
+// these fields in Employee are Strings, whereas the referenced tables have Integer/BigInt IDs.
+// We cannot form a Foreign Key relationship.
 
 Location.hasMany(Floor, { foreignKey: 'LocationId', as: 'floors' });
 Floor.belongsTo(Location, { foreignKey: 'LocationId', as: 'location' });
 
+
+
 Floor.hasMany(Room, { foreignKey: 'FloorId', as: 'rooms' });
 Room.belongsTo(Floor, { foreignKey: 'FloorId', as: 'floor' });
 
-Employee.hasMany(Ticket, { foreignKey: 'EmployeeId', as: 'tickets' });
-Ticket.belongsTo(Employee, { foreignKey: 'EmployeeId', as: 'employee' });
+Room.hasMany(MeetingRequest, { foreignKey: 'RoomId', as: 'meetingRequests', constraints: false });
+MeetingRequest.belongsTo(Room, { foreignKey: 'RoomId', as: 'room', constraints: false });
 
-Ticket.hasMany(TicketReply, { foreignKey: 'TicketId', as: 'replies' });
-TicketReply.belongsTo(Ticket, { foreignKey: 'TicketId', as: 'ticket' });
+Room.belongsTo(Location, { foreignKey: 'Location', as: 'location', constraints: false });
+
+Employee.hasMany(MeetingRequest, { foreignKey: 'BookedBy', as: 'meetingRequests', constraints: false });
+MeetingRequest.belongsTo(Employee, { foreignKey: 'BookedBy', as: 'bookedBy', constraints: false });
+
+Employee.hasMany(Ticket, { foreignKey: 'Requester', as: 'tickets', constraints: false });
+Ticket.belongsTo(Employee, { foreignKey: 'Requester', as: 'employee', constraints: false });
+
+Ticket.hasMany(TicketReply, { foreignKey: 'TicketId', as: 'replies', constraints: false });
+TicketReply.belongsTo(Ticket, { foreignKey: 'TicketId', as: 'ticket', constraints: false });
+
+Employee.hasMany(Wall, { foreignKey: 'AddedBy', as: 'walls', constraints: false });
+Wall.belongsTo(Employee, { foreignKey: 'AddedBy', as: 'addedBy', constraints: false });
+
+Notice.belongsTo(Role, { foreignKey: 'Role', as: 'role' });
+
+Employee.hasMany(QuoteOfTheDay, { foreignKey: 'AddedBy', as: 'quotes', constraints: false });
+QuoteOfTheDay.belongsTo(Employee, { foreignKey: 'AddedBy', as: 'addedBy', constraints: false });
+
+Employee.hasMany(ChoreiMessage, { foreignKey: 'AddedBy', as: 'choreiMessages', constraints: false });
+ChoreiMessage.belongsTo(Employee, { foreignKey: 'AddedBy', as: 'addedBy', constraints: false });
+ChoreiMessage.belongsTo(Role, { foreignKey: 'Role', as: 'role', constraints: false });
+
+Message.belongsTo(Role, { foreignKey: 'RoleId', as: 'role', constraints: false });
+Message.belongsTo(Employee, { foreignKey: 'AddedBy', as: 'addedBy', constraints: false });
+
+Auditor.belongsTo(Unit, { foreignKey: 'Unit', as: 'unit', constraints: false });
+Auditor.belongsTo(Zone, { foreignKey: 'Zone', as: 'zone', constraints: false });
+Auditor.belongsTo(Location, { foreignKey: 'Location', as: 'location', constraints: false });
+
+Accountant.belongsTo(Employee, { foreignKey: 'EmployeeId', as: 'employee', constraints: false });
 
 const db = {
   sequelize,
@@ -98,19 +132,25 @@ const db = {
   QuoteOfTheDay,
   Group,
   MeetingNotification,
+  MeetingRequest,
   Accountant,
   Auditor,
   ExpenseLocation,
   CustomImage,
   CompanyImage,
   PhotoGallery,
+  PopupImage,
+  LoginDetail,
+  SalesPricePolicy,
   Product,
   Tag,
   Wall,
   TypeMaster,
   PriorityMaster,
   CurrencyMaster,
-  ChoreiMessage
+  ChoreiMessage,
+  Dashboard,
+  Category
 };
 
 module.exports = db;

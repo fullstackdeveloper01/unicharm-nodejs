@@ -15,6 +15,10 @@ const News = sequelize.define('News', {
     type: DataTypes.TEXT,
     allowNull: true
   },
+  Image: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
   CreatedOn: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW

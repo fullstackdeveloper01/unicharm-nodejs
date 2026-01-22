@@ -1,19 +1,22 @@
-const db = require('../models');
-const { Designation, Department } = db;
+const designationService = require('../services/designationService');
+
+// Helper for standard response
+const sendResponse = (res, success, message, data = null, errors = null) => {
+  res.json({
+    success,
+    message,
+    data,
+    errors
+  });
+};
 
 // Get all designations
 exports.getAllDesignations = async (req, res) => {
   try {
-    const designations = await Designation.findAll({
-      where: { IsDeleted: false },
-      include: [
-        { model: Department, as: 'department', attributes: ['Id', 'DepartmentName'] }
-      ],
-      order: [['CreatedOn', 'DESC']]
-    });
-    res.json({ success: true, data: designations });
+    const designations = await designationService.getAllDesignations();
+    sendResponse(res, true, 'Designations retrieved successfully', designations);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    sendResponse(res, false, 'Failed to retrieve designations', null, { message: error.message });
   }
 };
 
@@ -21,17 +24,15 @@ exports.getAllDesignations = async (req, res) => {
 exports.getDesignationById = async (req, res) => {
   try {
     const { id } = req.params;
-    const designation = await Designation.findByPk(id, {
-      include: [{ model: Department, as: 'department' }]
-    });
+    const designation = await designationService.getDesignationById(id);
 
     if (!designation) {
-      return res.status(404).json({ success: false, message: 'Designation not found' });
+      return sendResponse(res, false, 'Designation not found');
     }
 
-    res.json({ success: true, data: designation });
+    sendResponse(res, true, 'Designation retrieved successfully', designation);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    sendResponse(res, false, 'Failed to retrieve designation', null, { message: error.message });
   }
 };
 
@@ -41,19 +42,22 @@ exports.createDesignation = async (req, res) => {
     const { DesignationName, DepartmentId } = req.body;
 
     if (!DesignationName) {
-      return res.status(400).json({ success: false, message: 'Designation name is required' });
+      return sendResponse(res, false, 'Designation name is required');
     }
 
-    const designation = await Designation.create({
-      DesignationName,
-      DepartmentId: DepartmentId || null,
-      CreatedOn: new Date(),
-      IsDeleted: false
-    });
+    if (DepartmentId) {
+      const departmentService = require('../services/departmentService');
+      const dept = await departmentService.getDepartmentById(DepartmentId);
+      if (!dept) {
+        return sendResponse(res, false, 'Department not found');
+      }
+    }
 
-    res.status(201).json({ success: true, data: designation });
+    const designation = await designationService.createDesignation({ DesignationName, DepartmentId });
+    res.status(201);
+    sendResponse(res, true, 'Designation created successfully', designation);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    sendResponse(res, false, 'Failed to create designation', null, { message: error.message });
   }
 };
 
@@ -63,15 +67,23 @@ exports.updateDesignation = async (req, res) => {
     const { id } = req.params;
     const { DesignationName, DepartmentId } = req.body;
 
-    const designation = await Designation.findByPk(id);
+    const designation = await designationService.getDesignationById(id);
     if (!designation) {
-      return res.status(404).json({ success: false, message: 'Designation not found' });
+      return sendResponse(res, false, 'Designation not found');
     }
 
-    await designation.update({ DesignationName, DepartmentId });
-    res.json({ success: true, data: designation });
+    if (DepartmentId) {
+      const departmentService = require('../services/departmentService');
+      const dept = await departmentService.getDepartmentById(DepartmentId);
+      if (!dept) {
+        return sendResponse(res, false, 'Department not found');
+      }
+    }
+
+    const updatedDesignation = await designationService.updateDesignation(designation, { DesignationName, DepartmentId });
+    sendResponse(res, true, 'Designation updated successfully', updatedDesignation);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    sendResponse(res, false, 'Failed to update designation', null, { message: error.message });
   }
 };
 
@@ -79,33 +91,34 @@ exports.updateDesignation = async (req, res) => {
 exports.deleteDesignation = async (req, res) => {
   try {
     const { id } = req.params;
-    const designation = await Designation.findByPk(id);
+    const designation = await designationService.getDesignationById(id);
 
     if (!designation) {
-      return res.status(404).json({ success: false, message: 'Designation not found' });
+      return sendResponse(res, false, 'Designation not found');
     }
 
-    await designation.update({ IsDeleted: true });
-    res.json({ success: true, message: 'Designation deleted successfully' });
+    await designationService.deleteDesignation(designation);
+    sendResponse(res, true, 'Designation deleted successfully');
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    sendResponse(res, false, 'Failed to delete designation', null, { message: error.message });
   }
 };
 
 // Helper methods for dropdowns
-exports.selectDesignations = async () => {
-  const designations = await Designation.findAll({
-    where: { IsDeleted: false },
-    attributes: ['Id', 'DesignationName']
-  });
-  return designations.map(des => ({ value: des.Id, text: des.DesignationName }));
+exports.selectDesignations = async (req, res) => {
+  try {
+    const dropdown = await designationService.selectDesignations();
+    sendResponse(res, true, 'Designations dropdown retrieved successfully', dropdown);
+  } catch (error) {
+    sendResponse(res, false, 'Failed to retrieve designations dropdown', null, { message: error.message });
+  }
 };
 
-exports.selectExpenseDesignations = async () => {
-  // Similar to selectDesignations, might have different filtering
-  const designations = await Designation.findAll({
-    where: { IsDeleted: false },
-    attributes: ['Id', 'DesignationName']
-  });
-  return designations.map(des => ({ value: des.Id, text: des.DesignationName }));
+exports.selectExpenseDesignations = async (req, res) => {
+  try {
+    const dropdown = await designationService.selectExpenseDesignations();
+    sendResponse(res, true, 'Expense designations dropdown retrieved successfully', dropdown);
+  } catch (error) {
+    sendResponse(res, false, 'Failed to retrieve expense designations dropdown', null, { message: error.message });
+  }
 };

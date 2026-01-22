@@ -3,12 +3,16 @@ const sequelize = require('../config/database');
 
 const Group = sequelize.define('Group', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  GroupName: {
+  Title: {
     type: DataTypes.STRING,
+    allowNull: true
+  },
+  Description: {
+    type: DataTypes.TEXT,
     allowNull: true
   },
   CreatedOn: {
@@ -20,7 +24,7 @@ const Group = sequelize.define('Group', {
     defaultValue: false
   }
 }, {
-  tableName: 'Groups',
+  tableName: 'Group',
   timestamps: false
 });
 

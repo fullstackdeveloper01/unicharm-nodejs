@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const db = require('../models');
 const { Role } = db;
 
@@ -5,7 +6,13 @@ const { Role } = db;
 exports.getAllRoles = async (req, res) => {
   try {
     const roles = await Role.findAll({
-      where: { IsDeleted: false },
+      where: {
+        [Op.or]: [
+          { IsDeleted: false },
+          { IsDeleted: null },
+          { IsDeleted: 0 }
+        ]
+      },
       order: [['CreatedOn', 'DESC']]
     });
     res.json({ success: true, data: roles });

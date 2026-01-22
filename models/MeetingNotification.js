@@ -3,20 +3,20 @@ const sequelize = require('../config/database');
 
 const MeetingNotification = sequelize.define('MeetingNotification', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  Title: {
+  UserId: {
+    type: DataTypes.BIGINT,
+    allowNull: true
+  },
+  MobileNo1: {
     type: DataTypes.STRING,
     allowNull: true
   },
-  Description: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  MeetingDate: {
-    type: DataTypes.DATE,
+  MobileNo2: {
+    type: DataTypes.STRING,
     allowNull: true
   },
   CreatedOn: {
@@ -28,7 +28,7 @@ const MeetingNotification = sequelize.define('MeetingNotification', {
     defaultValue: false
   }
 }, {
-  tableName: 'MeetingNotifications',
+  tableName: 'MeetingNotification',
   timestamps: false
 });
 

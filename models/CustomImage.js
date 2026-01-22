@@ -7,7 +7,15 @@ const CustomImage = sequelize.define('CustomImage', {
     primaryKey: true,
     autoIncrement: true
   },
-  ImagePath: {
+  Image: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  Type: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  ShowType: {
     type: DataTypes.STRING,
     allowNull: true
   },
@@ -24,7 +32,7 @@ const CustomImage = sequelize.define('CustomImage', {
     defaultValue: false
   }
 }, {
-  tableName: 'CustomImages',
+  tableName: 'CustomImage',
   timestamps: false
 });
 

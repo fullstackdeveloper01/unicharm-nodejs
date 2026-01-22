@@ -3,21 +3,17 @@ const sequelize = require('../config/database');
 
 const Zone = sequelize.define('Zone', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  ZoneName: {
+  Title: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
-  UnitId: {
+  Unit: {
     type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: 'Units',
-      key: 'Id'
-    }
+    allowNull: true
   },
   CreatedOn: {
     type: DataTypes.DATE,
@@ -26,9 +22,13 @@ const Zone = sequelize.define('Zone', {
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  ModifiedOn: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'Zones',
+  tableName: 'Zone',
   timestamps: false
 });
 

@@ -3,16 +3,24 @@ const sequelize = require('../config/database');
 
 const Message = sequelize.define('Message', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  Subject: {
-    type: DataTypes.STRING,
+  Title: {
+    type: DataTypes.STRING(100),
     allowNull: true
   },
-  MessageText: {
-    type: DataTypes.TEXT,
+  Quote: {
+    type: DataTypes.STRING(500),
+    allowNull: true
+  },
+  RoleId: {
+    type: DataTypes.BIGINT,
+    allowNull: true
+  },
+  AddedBy: {
+    type: DataTypes.BIGINT,
     allowNull: true
   },
   CreatedOn: {
