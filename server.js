@@ -67,7 +67,8 @@ db.sequelize.authenticate()
     return db.sequelize.sync({ alter: true });
   })
   .then(() => {
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
+    //app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`API Base URL: http://localhost:${PORT}/api`);
