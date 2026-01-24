@@ -5,6 +5,11 @@ const { Op } = require('sequelize');
 
 exports.getAllNotifications = async () => {
     return await MeetingNotification.findAll({
+        include: [{
+            model: db.Employee,
+            as: 'employee',
+            attributes: ['Id', 'FirstName', 'LastName', 'EmpId']
+        }],
         where: {
             [Op.or]: [
                 { IsDeleted: false },

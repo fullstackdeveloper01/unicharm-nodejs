@@ -16,6 +16,9 @@ exports.getAllEmployees = async () => {
         return result.map(emp => ({
             Id: emp.Id || emp.id,
             Name: `${emp.FirstName || emp.firstname} ${emp.LastName || emp.lastname || ''}`.trim(),
+            FirstName: emp.FirstName || emp.firstname,
+            LastName: emp.LastName || emp.lastname,
+            EmpId: emp.EmpId || emp.empid || emp.EmpID,
             Email: emp.Email || emp.email,
             Department: emp.DepartmentName || emp.departmentname || (emp.department ? emp.department.DepartmentName : ''),
             Designation: emp.DesignationName || emp.designationname || (emp.designation ? emp.designation.DesignationName : ''),
@@ -37,6 +40,9 @@ exports.getAllEmployees = async () => {
         return employees.map(emp => ({
             Id: emp.Id,
             Name: `${emp.FirstName} ${emp.LastName || ''}`.trim(),
+            FirstName: emp.FirstName,
+            LastName: emp.LastName,
+            EmpId: emp.EmpId,
             Email: emp.Email,
             Department: emp.department ? emp.department.DepartmentName : '',
             Designation: emp.designation ? emp.designation.DesignationName : '',

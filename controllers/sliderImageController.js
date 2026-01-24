@@ -59,6 +59,7 @@ exports.getSliderImageById = async (req, res) => {
 };
 
 // Create slider image
+// Create slider image
 exports.createSliderImage = async (req, res) => {
     try {
         const uploadMiddleware = upload.array('additionalImages', 10);
@@ -69,13 +70,15 @@ exports.createSliderImage = async (req, res) => {
             }
 
             try {
-                const { Title } = req.body;
+                const { Title, ShowType } = req.body;
                 const createdSliderImages = [];
 
                 if (req.files && req.files.length > 0) {
                     for (const file of req.files) {
                         const sliderImage = await sliderImageService.createSliderImage({
                             ImageName: Title || file.originalname,
+                            Type: Title,
+                            ShowType: ShowType,
                             Image: `/uploads/slider-images/${file.filename}`
                         });
                         createdSliderImages.push(sliderImage);
@@ -84,6 +87,8 @@ exports.createSliderImage = async (req, res) => {
                     // CustomImage `Image` is allowNull: true.
                     const sliderImage = await sliderImageService.createSliderImage({
                         ImageName: Title,
+                        Type: Title,
+                        ShowType: ShowType,
                         Image: null
                     });
                     createdSliderImages.push(sliderImage);
@@ -119,11 +124,15 @@ exports.updateSliderImage = async (req, res) => {
                     return sendResponse(res, false, 'Slider image not found');
                 }
 
-                const { Title } = req.body;
+                const { Title, ShowType } = req.body;
                 const updateData = {};
 
                 if (Title) {
                     updateData.ImageName = Title;
+                    updateData.Type = Title;
+                }
+                if (ShowType) {
+                    updateData.ShowType = ShowType;
                 }
 
                 if (req.files && req.files.length > 0) {

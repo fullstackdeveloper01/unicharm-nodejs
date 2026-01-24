@@ -31,6 +31,8 @@ exports.getSliderImageById = async (id) => {
 exports.createSliderImage = async (data) => {
     const imageData = {
         ImageName: data.ImageName,
+        Type: data.Type,
+        ShowType: data.ShowType,
         ImagePath: data.Image, // Map 'Image' input to 'ImagePath' column
         CreatedOn: new Date(),
         IsDeleted: false
@@ -47,6 +49,8 @@ exports.createSliderImage = async (data) => {
 exports.updateSliderImage = async (imageInstance, data) => {
     const updateData = {};
     if (data.ImageName) updateData.ImageName = data.ImageName;
+    if (data.Type) updateData.Type = data.Type;
+    if (data.ShowType) updateData.ShowType = data.ShowType;
     if (data.Image) updateData.ImagePath = data.Image; // Map 'Image' input to 'ImagePath'
 
     return await imageInstance.update(updateData);

@@ -67,6 +67,8 @@ exports.createPopupImage = async (req, res) => {
             }
 
             try {
+                console.log('Create Popup Payload:', req.body);
+                console.log('Create Popup File:', req.file);
                 const { PopupType, ShowType } = req.body;
                 let imagePath = null;
 
@@ -75,7 +77,7 @@ exports.createPopupImage = async (req, res) => {
                 }
 
                 const popupImage = await popupImageService.createPopupImage({
-                    PopupType,
+                    PopupType: PopupType || req.body.Type, // Handle potential key mismatch
                     ShowType,
                     Image: imagePath
                 });
@@ -103,12 +105,18 @@ exports.updatePopupImage = async (req, res) => {
             }
 
             try {
+                console.log(`Update Popup ${id} Payload:`, req.body);
+                console.log(`Update Popup ${id} File:`, req.file);
                 const popupImage = await popupImageService.getPopupImageById(id);
                 if (!popupImage) {
                     return sendResponse(res, false, 'Popup image not found');
                 }
 
-                const updateData = { ...req.body };
+                const { PopupType, ShowType } = req.body;
+                const updateData = {
+                    PopupType: PopupType || req.body.Type,
+                    ShowType
+                };
 
                 if (req.file) {
                     updateData.Image = `/uploads/popup-images/${req.file.filename}`;

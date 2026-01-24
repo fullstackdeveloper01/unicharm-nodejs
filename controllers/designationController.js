@@ -39,7 +39,7 @@ exports.getDesignationById = async (req, res) => {
 // Create designation
 exports.createDesignation = async (req, res) => {
   try {
-    const { DesignationName, DepartmentId } = req.body;
+    const { DesignationName, DepartmentId, Category } = req.body;
 
     if (!DesignationName) {
       return sendResponse(res, false, 'Designation name is required');
@@ -53,7 +53,7 @@ exports.createDesignation = async (req, res) => {
       }
     }
 
-    const designation = await designationService.createDesignation({ DesignationName, DepartmentId });
+    const designation = await designationService.createDesignation({ DesignationName, DepartmentId, Category });
     res.status(201);
     sendResponse(res, true, 'Designation created successfully', designation);
   } catch (error) {
@@ -65,7 +65,7 @@ exports.createDesignation = async (req, res) => {
 exports.updateDesignation = async (req, res) => {
   try {
     const { id } = req.params;
-    const { DesignationName, DepartmentId } = req.body;
+    const { DesignationName, DepartmentId, Category } = req.body;
 
     const designation = await designationService.getDesignationById(id);
     if (!designation) {
@@ -80,7 +80,7 @@ exports.updateDesignation = async (req, res) => {
       }
     }
 
-    const updatedDesignation = await designationService.updateDesignation(designation, { DesignationName, DepartmentId });
+    const updatedDesignation = await designationService.updateDesignation(designation, { DesignationName, DepartmentId, Category });
     sendResponse(res, true, 'Designation updated successfully', updatedDesignation);
   } catch (error) {
     sendResponse(res, false, 'Failed to update designation', null, { message: error.message });

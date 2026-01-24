@@ -37,15 +37,16 @@ exports.getDepartmentById = async (req, res) => {
 };
 
 // Create department
+// Create department
 exports.createDepartment = async (req, res) => {
   try {
-    const { DepartmentName, CostCenter } = req.body;
+    const { DepartmentName, CostCenter, Category } = req.body;
 
     if (!DepartmentName) {
       return sendResponse(res, false, 'Department name is required');
     }
 
-    const department = await departmentService.createDepartment({ DepartmentName, CostCenter });
+    const department = await departmentService.createDepartment({ DepartmentName, CostCenter, Category });
     res.status(201);
     sendResponse(res, true, 'Department created successfully', department);
   } catch (error) {
@@ -57,14 +58,16 @@ exports.createDepartment = async (req, res) => {
 exports.updateDepartment = async (req, res) => {
   try {
     const { id } = req.params;
-    const { DepartmentName, CostCenter } = req.body;
+    const { DepartmentName, CostCenter, Category } = req.body;
+
+    console.log(`Updating department ${id} with:`, { DepartmentName, CostCenter, Category });
 
     const department = await departmentService.getDepartmentById(id);
     if (!department) {
       return sendResponse(res, false, 'Department not found');
     }
 
-    const updatedDepartment = await departmentService.updateDepartment(department, { DepartmentName, CostCenter });
+    const updatedDepartment = await departmentService.updateDepartment(department, { DepartmentName, CostCenter, Category });
     sendResponse(res, true, 'Department updated successfully', updatedDepartment);
   } catch (error) {
     sendResponse(res, false, 'Failed to update department', null, { message: error.message });

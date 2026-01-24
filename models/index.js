@@ -108,6 +108,8 @@ Auditor.belongsTo(Location, { foreignKey: 'Location', as: 'location', constraint
 
 Accountant.belongsTo(Employee, { foreignKey: 'EmployeeId', as: 'employee', constraints: false });
 
+MeetingNotification.belongsTo(Employee, { foreignKey: 'UserId', as: 'employee', constraints: false });
+
 const db = {
   sequelize,
   Sequelize: require('sequelize'),
