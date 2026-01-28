@@ -10,6 +10,28 @@ const accountantRoutes = require('./accountantRoutes');
 const homeRoutes = require('./homeRoutes');
 const ticketRoutes = require('./ticketRoutes');
 
+const authMiddleware = require('../middleware/authMiddleware');
+
+// Public routes (No Token Required)
+router.use('/auth', require('./authRoutes'));
+
+// Health check route
+router.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'EMS Admin API is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Alias for /signin in api route (e.g., /api/signin)
+router.all('/signin', (req, res) => {
+  res.redirect(307, '/api/auth/login');
+});
+
+// Protected Routes (Token Required)
+router.use(authMiddleware);
+
 // API routes
 router.use('/employees', employeeRoutes);
 router.use('/departments', departmentRoutes);
@@ -43,21 +65,12 @@ router.use('/categories', require('./categoryRoutes'));
 router.use('/priorities', require('./priorityRoutes'));
 router.use('/cities', require('./cityRoutes'));
 router.use('/auditors', require('./auditorRoutes'));
-router.use('/accountants', require('./accountantRoutes'));
+// router.use('/accountants', require('./accountantRoutes')); // duplicate already imported
 router.use('/units', require('./unitRoutes'));
 router.use('/zones', require('./zoneRoutes'));
 router.use('/currencies', require('./currencyMasterRoutes'));
 router.use('/claims', require('./claimRoutes'));
 router.use('/messages', require('./messageRoutes'));
-router.use('/auth', require('./authRoutes'));
 
-// Health check route
-router.get('/health', (req, res) => {
-  res.json({
-    success: true,
-    message: 'EMS Admin API is running',
-    timestamp: new Date().toISOString()
-  });
-});
 
 module.exports = router;

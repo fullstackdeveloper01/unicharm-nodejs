@@ -21,6 +21,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // API routes
 app.use('/api', routes);
 
+// Add alias for /signin to redirect to /api/auth/login (for frontend compatibility)
+app.use('/signin', (req, res) => {
+  // 307 preserves the POST method and body
+  res.redirect(307, '/api/auth/login');
+});
+
 // Root route
 app.get('/', (req, res) => {
   res.json({
@@ -64,7 +70,8 @@ db.sequelize.authenticate()
     console.log('Database connection established successfully.');
 
     // Sync database (create tables if they don't exist)
-    return db.sequelize.sync({ alter: true });
+    // Removed { alter: true } to prevent startup hangs due to DB locks
+    return db.sequelize.sync();
   })
   .then(() => {
     app.listen(PORT, () => {

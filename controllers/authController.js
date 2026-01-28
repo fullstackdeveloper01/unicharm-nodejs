@@ -12,46 +12,73 @@ exports.login = async (req, res) => {
         let user = null;
         let isAdmin = false;
 
-        if (type === 'accountant') {
-            if (!email) { // accountant uses username usually, but mapping from frontend might be email field
-                return res.status(400).json({ success: false, message: 'Username/Email is required' });
-            }
-            // Assuming 'email' field contains username for accountant login
-            const result = await storedProcedureService.checkLoginAccountant(email, password);
-            // SP returns array, or object inside array? executeStoredProcedure returns first result set
-            // checkLoginAccountant returns { AccountantId, FirstName, ..., IsAdmin, etc }
+        console.log('Login Request Body:', req.body);
+        console.log(`Attempting login for: ${email} with password: ${password}`);
 
-            // If result is empty or null
-            if (!result || (Array.isArray(result) && result.length === 0)) {
-                return res.status(401).json({ success: false, message: 'Invalid credentials' });
-            }
-
-            user = Array.isArray(result) ? result[0] : result;
-            // Map IsAdmin. Assuming database returns IsAdmin as boolean or 1/0
-            isAdmin = user.IsAdmin === true || user.IsAdmin === 1;
-
-        } else {
-            // Default employee login
-            if (!email) {
-                return res.status(400).json({ success: false, message: 'Email is required' });
-            }
-            const result = await storedProcedureService.checkLogin(email, password);
-
-            if (!result || (Array.isArray(result) && result.length === 0)) {
-                return res.status(401).json({ success: false, message: 'Invalid credentials' });
-            }
-
-            user = Array.isArray(result) ? result[0] : result;
-            // Employees might not have IsAdmin flag directly or it works differently.
-            // Adjust logic if needed. For now assuming employees are regular users unless specified
-            isAdmin = false;
+        // Always authenticate against Employee table as per requirement
+        if (!email) {
+            return res.status(400).json({ success: false, message: 'Email is required' });
         }
+
+        console.log(`Authenticating ${email} against Employee table`);
+        const result = await storedProcedureService.checkLogin(email, password);
+        console.log('SP CheckLogin Result:', JSON.stringify(result, null, 2));
+
+        if (!result || (Array.isArray(result) && result.length === 0)) {
+            console.log('Login failed: No result from SP');
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+
+        user = Array.isArray(result) ? result[0] : result;
+        // Employees might not have IsAdmin flag directly or it works differently.
+        isAdmin = false;
+
+        // Ensure user is an object, not an array (handle potential nested results from SP)
+        while (Array.isArray(user)) {
+            if (user.length === 0) {
+                user = null;
+                break;
+            }
+            user = user[0];
+        }
+
+        if (!user || (typeof user === 'object' && Object.keys(user).length === 0)) {
+            // Should verify credentials logic earlier caught this, but just in case
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+
+        // Handle case where user object is wrapped in '0' key (Sequelize/Driver specific artifact)
+        if (user && user['0'] && (user['0'].Id || user['0'].AccountantId)) {
+            user = user['0'];
+        }
+
+        console.log('Login User Data:', user);
+
+        // Helper to safely get property (case-insensitive)
+        const getProp = (obj, prop) => {
+            if (!obj) return undefined;
+            if (obj[prop] !== undefined) return obj[prop];
+            // Try lowercase
+            const lowerProp = prop.toLowerCase();
+            for (const key in obj) {
+                if (key.toLowerCase() === lowerProp) return obj[key];
+            }
+            return undefined;
+        };
+
+        const userId = getProp(user, 'Id') || getProp(user, 'AccountantId');
+        const userEmail = getProp(user, 'Email') || getProp(user, 'UserName');
+        const firstName = getProp(user, 'FirstName') || '';
+        const lastName = getProp(user, 'LastName') || '';
+        const fullName = getProp(user, 'FullName');
+
+        const displayName = fullName || (firstName + ' ' + lastName).trim() || 'User';
 
         // Create token
         const token = jwt.sign(
             {
-                id: user.Id || user.AccountantId,
-                email: user.Email || user.UserName, // Accountant might not have email
+                id: userId,
+                email: userEmail,
                 isAdmin: isAdmin
             },
             process.env.JWT_SECRET || 'your_jwt_secret_key',
@@ -64,9 +91,9 @@ exports.login = async (req, res) => {
             data: {
                 token,
                 user: {
-                    id: user.Id || user.AccountantId,
-                    name: user.FullName || (user.FirstName + ' ' + (user.LastName || '')).trim(),
-                    email: user.Email || '',
+                    id: userId,
+                    name: displayName,
+                    email: userEmail || '',
                     isAdmin: isAdmin
                 }
             }
