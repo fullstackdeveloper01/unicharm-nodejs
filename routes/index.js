@@ -49,6 +49,7 @@ router.use('/zones', require('./zoneRoutes'));
 router.use('/currencies', require('./currencyMasterRoutes'));
 router.use('/claims', require('./claimRoutes'));
 router.use('/messages', require('./messageRoutes'));
+router.use('/auth', require('./authRoutes'));
 
 // Health check route
 router.get('/health', (req, res) => {

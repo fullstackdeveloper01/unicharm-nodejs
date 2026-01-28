@@ -7,6 +7,94 @@
     },
     "item": [
         {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Login (Employee)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"type\": \"employee\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Login for employees"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login (Accountant)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin_user\",\n  \"password\": \"adminpassword\",\n  \"type\": \"accountant\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/login",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Login for accountants (use username in email field)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Current User (Protected)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/me",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "auth",
+                                "me"
+                            ]
+                        },
+                        "description": "Get current authenticated user info"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
             "name": "Health Check",
             "item": [
                 {
@@ -4308,7 +4396,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"Title\": \"New Message Title\",\n  \"Quote\": \"Content of the message quote\",\n  \"RoleId\": 1,\n  \"AddedBy\": 1\n}"
+                            "raw": "{\n  \"Subject\": \"New Message\",\n  \"MessageText\": \"Content of the message\"\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/messages",
@@ -4336,7 +4424,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"Title\": \"Updated Message Title\",\n  \"Quote\": \"Updated content of the message quote\",\n  \"RoleId\": 2,\n  \"AddedBy\": 1\n}"
+                            "raw": "{\n  \"Subject\": \"Updated Message\",\n  \"MessageText\": \"Updated content\"\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/messages/:id",
@@ -4382,6 +4470,145 @@
                             ]
                         },
                         "description": "Soft delete a message"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Expense Locations",
+            "item": [
+                {
+                    "name": "Get All Expense Locations",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/expense-locations",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "expense-locations"
+                            ]
+                        },
+                        "description": "Get all expense locations"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Expense Location by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/expense-locations/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "expense-locations",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Get expense location by ID"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Expense Location",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"Title\": \"New Expense Location\",\n  \"ZoneId\": 1,\n  \"UnitId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/expense-locations",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "expense-locations"
+                            ]
+                        },
+                        "description": "Create a new expense location"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Expense Location",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"Title\": \"Updated Expense Location\",\n  \"ZoneId\": 1,\n  \"UnitId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/expense-locations/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "expense-locations",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Update an expense location"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Expense Location",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/expense-locations/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "expense-locations",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Soft delete an expense location"
                     },
                     "response": []
                 }
