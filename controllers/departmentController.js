@@ -1,20 +1,38 @@
 const departmentService = require('../services/departmentService');
 
 // Helper for standard response (could be shared, but copying for now to keep it self-contained as per instructions)
-const sendResponse = (res, success, message, data = null, errors = null) => {
-  res.json({
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+  const response = {
     success,
     message,
     data,
     errors
-  });
+  };
+
+  if (pagination) {
+    response.pagination = pagination;
+  }
+
+  res.json(response);
 };
 
 // Get all departments
 exports.getAllDepartments = async (req, res) => {
   try {
-    const departments = await departmentService.getAllDepartments();
-    sendResponse(res, true, 'Departments retrieved successfully', departments);
+    const page = parseInt(req.query.page) || 1;
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+    const result = await departmentService.getAllDepartments(page, limit);
+
+    const pagination = {
+      total: result.count,
+      page: page,
+      limit: limit || result.count,
+      totalPages: limit ? Math.ceil(result.count / limit) : 1,
+      hasNext: limit ? page * limit < result.count : false
+    };
+
+    sendResponse(res, true, 'Departments retrieved successfully', result.rows, null, pagination);
   } catch (error) {
     sendResponse(res, false, 'Failed to retrieve departments', null, { message: error.message });
   }

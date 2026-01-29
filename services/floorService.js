@@ -3,8 +3,12 @@ const { Floor, Location } = db;
 
 const { Op } = require('sequelize');
 
-exports.getAllFloors = async () => {
-    return await Floor.findAll({
+exports.getAllFloors = async (page = 1, limit = null) => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const queryOptions = {
         where: {
             [Op.or]: [
                 { IsDeleted: false },
@@ -13,7 +17,14 @@ exports.getAllFloors = async () => {
             ]
         },
         include: [{ model: Location, as: 'location' }]
-    });
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    return await Floor.findAndCountAll(queryOptions);
 };
 
 exports.getFloorById = async (id) => {

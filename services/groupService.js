@@ -3,8 +3,12 @@ const { Group } = db;
 
 const { Op } = require('sequelize');
 
-exports.getAllGroups = async () => {
-    const groups = await Group.findAll({
+exports.getAllGroups = async (page = 1, limit = null) => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const queryOptions = {
         where: {
             [Op.or]: [
                 { IsDeleted: false },
@@ -12,12 +16,22 @@ exports.getAllGroups = async () => {
                 { IsDeleted: 0 }
             ]
         }
-    });
-    return groups.map(g => {
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    const { count, rows } = await Group.findAndCountAll(queryOptions);
+
+    const mappedRows = rows.map(g => {
         const plain = g.get({ plain: true });
         try { plain.Members = JSON.parse(plain.Members || '[]'); } catch (e) { plain.Members = []; }
         return plain;
     });
+
+    return { count, rows: mappedRows };
 };
 
 exports.getGroupById = async (id) => {

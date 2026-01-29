@@ -21,29 +21,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // API routes
 app.use('/api', routes);
 
-// Add alias for /signin to redirect to /api/auth/login (for frontend compatibility)
-app.use('/signin', (req, res) => {
-  // 307 preserves the POST method and body
-  res.redirect(307, '/api/auth/login');
-});
-
-// Root route
-app.get('/', (req, res) => {
-  res.json({
-    message: 'EMS Admin API',
-    version: '1.0.0',
-    endpoints: {
-      employees: '/api/employees',
-      departments: '/api/departments',
-      designations: '/api/designations',
-      roles: '/api/roles',
-      accountants: '/api/accountants',
-      home: '/api/home',
-      tickets: '/api/tickets',
-      health: '/api/health'
-    }
-  });
-});
+// Routes are managed in ./routes/index.js mounted at /api
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -69,9 +47,9 @@ db.sequelize.authenticate()
   .then(() => {
     console.log('Database connection established successfully.');
 
-    // Sync database (create tables if they don't exist)
-    // Removed { alter: true } to prevent startup hangs due to DB locks
-    return db.sequelize.sync();
+    console.log(`Connected to Database: ${db.sequelize.config.database}`);
+    // Sync database (create tables if they don't exist, but don't alter)
+    return db.sequelize.sync({ alter: false });
   })
   .then(() => {
     app.listen(PORT, () => {

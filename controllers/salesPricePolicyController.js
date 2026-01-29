@@ -1,20 +1,30 @@
 const salesPricePolicyService = require('../services/salesPricePolicyService');
 
 // Helper for standard response
-const sendResponse = (res, success, message, data = null, errors = null) => {
-    res.json({
-        success,
-        message,
-        data,
-        errors
-    });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+    const response = { success, message, data, errors };
+    if (pagination) response.pagination = pagination;
+    res.json(response);
 };
 
 // Get all policies
 exports.getAllSalesPricePolicies = async (req, res) => {
     try {
-        const policies = await salesPricePolicyService.getAllSalesPricePolicies();
-        sendResponse(res, true, 'Policies retrieved successfully', policies);
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+        const search = req.query.search || '';
+
+        const result = await salesPricePolicyService.getAllSalesPricePolicies(page, limit, search);
+
+        const pagination = {
+            total: result.count,
+            page: page,
+            limit: limit || result.count,
+            totalPages: limit ? Math.ceil(result.count / limit) : 1,
+            hasNext: limit ? page * limit < result.count : false
+        };
+
+        sendResponse(res, true, 'Policies retrieved successfully', result.rows, null, pagination);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve policies', null, { message: error.message });
     }

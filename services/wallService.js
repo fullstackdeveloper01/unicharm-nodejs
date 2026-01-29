@@ -1,19 +1,34 @@
 const db = require('../models');
 const { Wall, Employee } = db;
+const { Op } = require('sequelize');
 const fs = require('fs');
 
 /**
  * Get all walls
  * @returns {Promise<Array>} List of walls
  */
-exports.getAllWalls = async () => {
-    return await Wall.findAll({
-        where: { IsDeleted: false },
+exports.getAllWalls = async (page = 1, limit = null, search = '') => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const whereClause = { IsDeleted: false };
+    if (search) whereClause.Title = { [Op.like]: `%${search}%` };
+
+    const queryOptions = {
+        where: whereClause,
         include: [
             { model: Employee, as: 'addedBy', attributes: ['Id', 'FirstName', 'LastName'] }
         ],
         order: [['CreatedOn', 'DESC']]
-    });
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    return await Wall.findAndCountAll(queryOptions);
 };
 
 /**

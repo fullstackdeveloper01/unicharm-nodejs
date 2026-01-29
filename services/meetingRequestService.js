@@ -1,8 +1,13 @@
 const db = require('../models');
 const { MeetingRequest, Room, Employee } = db;
+const { Op } = require('sequelize');
 
-exports.getAllRequests = async () => {
-    const requests = await MeetingRequest.findAll({
+exports.getAllRequests = async (page = 1, limit = null, search = '') => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const queryOptions = {
         where: { IsDeleted: false },
         include: [
             {
@@ -17,9 +22,20 @@ exports.getAllRequests = async () => {
             }
         ],
         order: [['StartTime', 'DESC']]
-    });
+    };
 
-    return requests.map(req => {
+    if (search) {
+        queryOptions.where.Title = { [Op.like]: `%${search}%` };
+    }
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    const { count, rows } = await MeetingRequest.findAndCountAll(queryOptions);
+
+    const mappedRows = rows.map(req => {
         const r = req.toJSON();
         const deptName = r.bookedBy && r.bookedBy.department ? r.bookedBy.department.DepartmentName : '';
         const locName = r.room && r.room.location ? r.room.location.LocationName : '';
@@ -44,6 +60,8 @@ exports.getAllRequests = async () => {
             UserName: r.bookedBy ? `${r.bookedBy.FirstName} ${r.bookedBy.LastName}` : ''
         };
     });
+
+    return { count, rows: mappedRows };
 };
 
 exports.getRequestById = async (id) => {

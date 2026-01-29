@@ -1,20 +1,29 @@
 const designationService = require('../services/designationService');
 
 // Helper for standard response
-const sendResponse = (res, success, message, data = null, errors = null) => {
-  res.json({
-    success,
-    message,
-    data,
-    errors
-  });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+  const response = { success, message, data, errors };
+  if (pagination) response.pagination = pagination;
+  res.json(response);
 };
 
 // Get all designations
 exports.getAllDesignations = async (req, res) => {
   try {
-    const designations = await designationService.getAllDesignations();
-    sendResponse(res, true, 'Designations retrieved successfully', designations);
+    const page = parseInt(req.query.page) || 1;
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+    const result = await designationService.getAllDesignations(page, limit);
+
+    const pagination = {
+      total: result.count,
+      page: page,
+      limit: limit || result.count,
+      totalPages: limit ? Math.ceil(result.count / limit) : 1,
+      hasNext: limit ? page * limit < result.count : false
+    };
+
+    sendResponse(res, true, 'Designations retrieved successfully', result.rows, null, pagination);
   } catch (error) {
     sendResponse(res, false, 'Failed to retrieve designations', null, { message: error.message });
   }

@@ -23,20 +23,30 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Helper for standard response
-const sendResponse = (res, success, message, data = null, errors = null) => {
-    res.json({
-        success,
-        message,
-        data,
-        errors
-    });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+    const response = { success, message, data, errors };
+    if (pagination) response.pagination = pagination;
+    res.json(response);
 };
 
 // Get all slider images
 exports.getAllSliderImages = async (req, res) => {
     try {
-        const sliderImages = await sliderImageService.getAllSliderImages();
-        sendResponse(res, true, 'Slider images retrieved successfully', sliderImages);
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+        const search = req.query.search || '';
+
+        const result = await sliderImageService.getAllSliderImages(page, limit, search);
+
+        const pagination = {
+            total: result.count,
+            page: page,
+            limit: limit || result.count,
+            totalPages: limit ? Math.ceil(result.count / limit) : 1,
+            hasNext: limit ? page * limit < result.count : false
+        };
+
+        sendResponse(res, true, 'Slider images retrieved successfully', result.rows, null, pagination);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve slider images', null, { message: error.message });
     }

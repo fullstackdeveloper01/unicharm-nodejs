@@ -7,20 +7,38 @@ const { Op } = require('sequelize');
  * Get all notices
  * @returns {Promise<Array>} List of notices
  */
-exports.getAllNotices = async () => {
-    return await Notice.findAll({
-        where: {
-            [Op.or]: [
-                { IsDeleted: false },
-                { IsDeleted: null },
-                { IsDeleted: 0 }
-            ]
-        },
+exports.getAllNotices = async (page = 1, limit = null, search = '') => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const whereClause = {
+        [Op.or]: [
+            { IsDeleted: false },
+            { IsDeleted: null },
+            { IsDeleted: 0 }
+        ]
+    };
+
+    if (search) {
+        whereClause[Op.and] = whereClause[Op.and] || [];
+        whereClause[Op.and].push({ Title: { [Op.like]: `%${search}%` } });
+    }
+
+    const queryOptions = {
+        where: whereClause,
         include: [
             { model: Role, as: 'role', attributes: ['Id', 'RoleName'] }
         ],
         order: [['CreatedOn', 'DESC']]
-    });
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    return await Notice.findAndCountAll(queryOptions);
 };
 
 /**

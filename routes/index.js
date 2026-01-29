@@ -10,10 +10,23 @@ const accountantRoutes = require('./accountantRoutes');
 const homeRoutes = require('./homeRoutes');
 const ticketRoutes = require('./ticketRoutes');
 
-const authMiddleware = require('../middleware/authMiddleware');
+const { verifyToken } = require('../middleware/authMiddleware');
 
 // Public routes (No Token Required)
 router.use('/auth', require('./authRoutes'));
+
+// Root API route
+router.get('/', (req, res) => {
+  res.json({
+    message: 'EMS Admin API',
+    version: '1.0.0',
+    endpoints: {
+      employees: '/api/employees',
+      departments: '/api/departments',
+      health: '/api/health'
+    }
+  });
+});
 
 // Health check route
 router.get('/health', (req, res) => {
@@ -30,7 +43,7 @@ router.all('/signin', (req, res) => {
 });
 
 // Protected Routes (Token Required)
-router.use(authMiddleware);
+router.use(verifyToken);
 
 // API routes
 router.use('/employees', employeeRoutes);

@@ -1,20 +1,30 @@
 const holidayService = require('../services/holidayService');
 
 // Helper for standard response
-const sendResponse = (res, success, message, data = null, errors = null) => {
-    res.json({
-        success,
-        message,
-        data,
-        errors
-    });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+    const response = { success, message, data, errors };
+    if (pagination) response.pagination = pagination;
+    res.json(response);
 };
 
 // Get all holidays
 exports.getAllHolidays = async (req, res) => {
     try {
-        const holidays = await holidayService.getAllHolidays();
-        sendResponse(res, true, 'Holidays retrieved successfully', holidays);
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+        const search = req.query.search || '';
+
+        const result = await holidayService.getAllHolidays(page, limit, search);
+
+        const pagination = {
+            total: result.count,
+            page: page,
+            limit: limit || result.count,
+            totalPages: limit ? Math.ceil(result.count / limit) : 1,
+            hasNext: limit ? page * limit < result.count : false
+        };
+
+        sendResponse(res, true, 'Holidays retrieved successfully', result.rows, null, pagination);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve holidays', null, { message: error.message });
     }

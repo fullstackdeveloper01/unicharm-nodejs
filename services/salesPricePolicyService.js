@@ -6,17 +6,32 @@ const { Op } = require('sequelize');
  * Get all sales price policies
  * @returns {Promise<Array>} List of sales price policies
  */
-exports.getAllSalesPricePolicies = async () => {
-    return await SalesPricePolicy.findAll({
-        where: {
-            [Op.or]: [
-                { IsDeleted: false },
-                { IsDeleted: null },
-                { IsDeleted: 0 }
-            ]
-        },
+exports.getAllSalesPricePolicies = async (page = 1, limit = null, search = '') => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const whereClause = {
+        [Op.or]: [
+            { IsDeleted: false },
+            { IsDeleted: null },
+            { IsDeleted: 0 }
+        ]
+    };
+
+    if (search) whereClause.Title = { [Op.like]: `%${search}%` };
+
+    const queryOptions = {
+        where: whereClause,
         order: [['CreatedOn', 'DESC']]
-    });
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    return await SalesPricePolicy.findAndCountAll(queryOptions);
 };
 
 /**

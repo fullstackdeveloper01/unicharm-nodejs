@@ -1,10 +1,28 @@
 const service = require('../services/zoneService');
-const sendResponse = (res, success, message, data = null, errors = null) => res.json({ success, message, data, errors });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+    const response = { success, message, data, errors };
+    if (pagination) response.pagination = pagination;
+    res.json(response);
+};
 
 exports.getAllZones = async (req, res) => {
     try {
-        const data = await service.getAllZones();
-        sendResponse(res, true, 'Zones retrieved', data);
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+        const unitId = req.query.unitId ? parseInt(req.query.unitId) : null;
+        const search = req.query.search || '';
+
+        const result = await service.getAllZones(page, limit, unitId, search);
+
+        const pagination = {
+            total: result.count,
+            page: page,
+            limit: limit || result.count,
+            totalPages: limit ? Math.ceil(result.count / limit) : 1,
+            hasNext: limit ? page * limit < result.count : false
+        };
+
+        sendResponse(res, true, 'Zones retrieved', result.rows, null, pagination);
     } catch (e) { sendResponse(res, false, 'Failed', null, { message: e.message }); }
 };
 
