@@ -39,9 +39,16 @@ const PriorityMaster = require('./PriorityMaster');
 const CurrencyMaster = require('./CurrencyMaster');
 const ChoreiMessage = require('./ChoreiMessage');
 const Dashboard = require('./Dashboard');
+const Region = require('./Region');
+const TicketAssignee = require('./TicketAssignee');
+const TicketFeedback = require('./TicketFeedback');
+const TicketFollower = require('./TicketFollower');
 
 const MeetingRequest = require('./MeetingRequest');
 const Category = require('./Category');
+const WallLike = require('./WallLike');
+const WallComment = require('./WallComment');
+const TodaysBirthdateAndAnniversary = require('./TodaysBirthdateAndAnniversary');
 // Claim model removed as per user request
 
 // Define associations
@@ -80,8 +87,8 @@ MeetingRequest.belongsTo(Room, { foreignKey: 'RoomId', as: 'room', constraints: 
 
 Room.belongsTo(Location, { foreignKey: 'Location', as: 'location', constraints: false });
 
-Employee.hasMany(MeetingRequest, { foreignKey: 'BookedBy', as: 'meetingRequests', constraints: false });
-MeetingRequest.belongsTo(Employee, { foreignKey: 'BookedBy', as: 'bookedBy', constraints: false });
+Employee.hasMany(MeetingRequest, { foreignKey: 'UserId', as: 'meetingRequests', constraints: false });
+MeetingRequest.belongsTo(Employee, { foreignKey: 'UserId', as: 'bookedBy', constraints: false });
 
 Employee.hasMany(Ticket, { foreignKey: 'Requester', as: 'tickets', constraints: false });
 Ticket.belongsTo(Employee, { foreignKey: 'Requester', as: 'employee', constraints: false });
@@ -156,7 +163,52 @@ const db = {
   CurrencyMaster,
   ChoreiMessage,
   Dashboard,
-  Category
+  Category,
+  WallLike,
+  WallComment,
+  TodaysBirthdateAndAnniversary,
+  Region,
+  TicketAssignee,
+  TicketFeedback,
+  TicketFollower,
 };
+
+// Wall Associations
+Wall.hasMany(WallLike, { foreignKey: 'WallId', as: 'likes' });
+WallLike.belongsTo(Wall, { foreignKey: 'WallId' });
+Employee.hasMany(WallLike, { foreignKey: 'EmployeeId', as: 'wallLikes' });
+WallLike.belongsTo(Employee, { foreignKey: 'EmployeeId', as: 'employee' });
+
+Wall.hasMany(WallComment, { foreignKey: 'WallId', as: 'comments' });
+WallComment.belongsTo(Wall, { foreignKey: 'WallId' });
+Employee.hasMany(WallComment, { foreignKey: 'EmployeeId', as: 'wallComments' });
+WallComment.belongsTo(Employee, { foreignKey: 'EmployeeId', as: 'employee' });
+
+// Wish Associations
+TodaysBirthdateAndAnniversary.belongsTo(Employee, { foreignKey: 'BirthdateUsertId', as: 'recipient', constraints: false });
+TodaysBirthdateAndAnniversary.belongsTo(Employee, { foreignKey: 'CommentUserId', as: 'sender', constraints: false });
+
+
+
+// Ticket Module Associations
+Ticket.hasMany(TicketAssignee, { foreignKey: 'TicketId', as: 'assignees', constraints: false });
+TicketAssignee.belongsTo(Ticket, { foreignKey: 'TicketId', as: 'ticket', constraints: false });
+
+Ticket.hasMany(TicketFeedback, { foreignKey: 'TicketId', as: 'feedbacks', constraints: false });
+TicketFeedback.belongsTo(Ticket, { foreignKey: 'TicketId', as: 'ticket', constraints: false });
+
+Ticket.hasMany(TicketFollower, { foreignKey: 'TicketId', as: 'followers', constraints: false });
+TicketFollower.belongsTo(Ticket, { foreignKey: 'TicketId', as: 'ticket', constraints: false });
+
+Ticket.belongsTo(Region, { foreignKey: 'Region', targetKey: 'Id', as: 'regionRelation', constraints: false });
+Ticket.belongsTo(City, { foreignKey: 'City', targetKey: 'Id', as: 'cityRelation', constraints: false });
+Ticket.belongsTo(TypeMaster, { foreignKey: 'TypeId', as: 'categoryType', constraints: false });
+Ticket.belongsTo(PriorityMaster, { foreignKey: 'PreorityId', as: 'priority', constraints: false });
+Ticket.belongsTo(Tag, { foreignKey: 'TagId', as: 'tag', constraints: false });
+
+TicketAssignee.belongsTo(Employee, { foreignKey: 'AssigneeId', as: 'assigneeEmployee', constraints: false });
+TicketFeedback.belongsTo(Employee, { foreignKey: 'FeedBackBy', as: 'feedbackByEmployee', constraints: false });
+TicketFollower.belongsTo(Employee, { foreignKey: 'FollowerId', as: 'followerEmployee', constraints: false });
+TicketReply.belongsTo(Employee, { foreignKey: 'RepliedbyBy', as: 'repliedByEmployee', constraints: false });
 
 module.exports = db;

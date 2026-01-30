@@ -1,4 +1,4 @@
-const wallService = require('../services/wallService');
+const wallService = require('../../services/employee/wall.service');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -77,11 +77,18 @@ exports.createWall = async (req, res) => {
             }
 
             try {
-                const { Title, Description, AddedBy } = req.body;
+                const { Title, Description } = req.body;
+                // AddedBy should be taken from the authenticated user token
+                const AddedBy = req.user ? req.user.id : req.body.AddedBy;
+
                 let imagePath = null;
 
                 if (req.file) {
                     imagePath = `/uploads/walls/${req.file.filename}`;
+                }
+
+                if (!Title && !Description && !imagePath) {
+                    return sendResponse(res, false, 'Wall post must contain some content');
                 }
 
                 const wall = await wallService.createWall({
@@ -150,5 +157,61 @@ exports.deleteWall = async (req, res) => {
         sendResponse(res, true, 'Wall deleted successfully');
     } catch (error) {
         sendResponse(res, false, 'Failed to delete wall', null, { message: error.message });
+    }
+};
+
+// Toggle like
+exports.toggleLike = async (req, res) => {
+    try {
+        const { id } = req.params; // Wall ID
+        const employeeId = req.user.id; // Note: Ensure inconsistent casing of Id/id is handled. Middleware sets req.user.
+
+        console.log(`Toggling like for WallId: ${id}, EmployeeId: ${employeeId}`);
+        const result = await wallService.toggleLike(id, employeeId);
+        console.log(`Toggle like result:`, result);
+        sendResponse(res, true, result.liked ? 'Liked' : 'Unliked', result);
+    } catch (error) {
+        sendResponse(res, false, 'Failed to toggle like', null, { message: error.message });
+    }
+};
+
+// Add comment
+exports.addComment = async (req, res) => {
+    try {
+        const { id } = req.params; // Wall ID
+        const { comment } = req.body;
+        const employeeId = req.user.id;
+
+        if (!comment) {
+            return sendResponse(res, false, 'Comment cannot be empty');
+        }
+
+        const newComment = await wallService.addComment({
+            WallId: id,
+            EmployeeId: employeeId,
+            Comment: comment
+        });
+
+        sendResponse(res, true, 'Comment added successfully', newComment);
+    } catch (error) {
+        sendResponse(res, false, 'Failed to add comment', null, { message: error.message });
+    }
+};
+
+// Delete comment
+exports.deleteComment = async (req, res) => {
+    try {
+        const { commentId } = req.params;
+        const employeeId = req.user.id;
+
+        const success = await wallService.deleteComment(commentId, employeeId);
+
+        if (success) {
+            sendResponse(res, true, 'Comment deleted successfully');
+        } else {
+            sendResponse(res, false, 'Comment not found or you do not have permission to delete it');
+        }
+    } catch (error) {
+        sendResponse(res, false, 'Failed to delete comment', null, { message: error.message });
     }
 };

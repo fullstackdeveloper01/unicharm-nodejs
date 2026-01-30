@@ -9,6 +9,7 @@ const roleRoutes = require('./roleRoutes');
 const accountantRoutes = require('./accountantRoutes');
 const homeRoutes = require('./homeRoutes');
 const ticketRoutes = require('./ticketRoutes');
+const employeeAppRoutes = require('./employee/index');
 
 const { verifyToken } = require('../middleware/authMiddleware');
 
@@ -46,7 +47,8 @@ router.all('/signin', (req, res) => {
 router.use(verifyToken);
 
 // API routes
-router.use(['/employees', '/employee'], employeeRoutes);
+router.use('/employees', employeeRoutes);
+router.use('/employee', employeeAppRoutes);
 router.use(['/departments', '/department'], departmentRoutes);
 router.use(['/designations', '/designation'], designationRoutes);
 router.use(['/roles', '/role'], roleRoutes);
@@ -74,7 +76,9 @@ router.use(['/locations', '/location'], require('./locationRoutes'));
 router.use(['/floors', '/floor'], require('./floorRoutes'));
 router.use(['/rooms', '/room'], require('./roomRoutes'));
 router.use(['/meeting-notifications', '/meeting-notification'], require('./meetingNotificationRoutes'));
-router.use(['/meeting-requests', '/meeting-request'], require('./meetingRequestRoutes'));
+router.use(['/meeting-requests', '/meeting-request'], require('./meetingRequest.routes'));
+router.use('/meeting-booking', require('./meetingBooking.routes'));
+router.use('/meeting-schedule', require('./meetingSchedule.routes'));
 router.use(['/groups', '/group'], require('./groupRoutes'));
 router.use(['/categories', '/category'], require('./categoryRoutes'));
 router.use(['/priorities', '/priority'], require('./priorityRoutes'));
