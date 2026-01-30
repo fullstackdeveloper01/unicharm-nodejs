@@ -46,7 +46,17 @@ exports.getAllSliderImages = async (req, res) => {
             hasNext: limit ? page * limit < result.count : false
         };
 
-        sendResponse(res, true, 'Slider images retrieved successfully', result.rows, null, pagination);
+        // Construct full image URL
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const rows = result.rows.map(row => {
+            const data = row.getDataValue ? row.get({ plain: true }) : row;
+            if (data.ImagePath && !data.ImagePath.startsWith('http')) {
+                data.ImagePath = `${baseUrl}${data.ImagePath}`;
+            }
+            return data;
+        });
+
+        sendResponse(res, true, 'Slider images retrieved successfully', rows, null, pagination);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve slider images', null, { message: error.message });
     }
@@ -62,7 +72,13 @@ exports.getSliderImageById = async (req, res) => {
             return sendResponse(res, false, 'Slider image not found');
         }
 
-        sendResponse(res, true, 'Slider image retrieved successfully', sliderImage);
+        const data = sliderImage.getDataValue ? sliderImage.get({ plain: true }) : sliderImage;
+        if (data.ImagePath && !data.ImagePath.startsWith('http')) {
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            data.ImagePath = `${baseUrl}${data.ImagePath}`;
+        }
+
+        sendResponse(res, true, 'Slider image retrieved successfully', data);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve slider image', null, { message: error.message });
     }

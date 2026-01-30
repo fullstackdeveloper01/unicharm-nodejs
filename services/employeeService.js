@@ -43,15 +43,7 @@ exports.getAllEmployees = async (page = 1, limit = null, filters = {}) => {
         include: [
             { model: Department, as: 'department', attributes: ['Id', 'DepartmentName'] },
             { model: Designation, as: 'designation', attributes: ['Id', 'DesignationName'] },
-            { model: Role, as: 'role', attributes: ['Id', 'RoleName'] },
-            { model: Unit, as: 'unit' },
-            { model: Zone, as: 'zone' },
-            { model: Location, as: 'location' },
-            {
-                model: Employee,
-                as: 'supervisor',
-                attributes: ['Id', 'FirstName', 'LastName']
-            },
+            { model: Role, as: 'role', attributes: ['Id', 'RoleName'] }
         ],
         order: [['CreatedOn', 'DESC']]
     };
@@ -90,9 +82,7 @@ exports.getEmployeeById = async (id) => {
             { model: Department, as: 'department' },
             { model: Designation, as: 'designation' },
             { model: Role, as: 'role' },
-            { model: Unit, as: 'unit' },
-            { model: Zone, as: 'zone' },
-            { model: Location, as: 'location' }
+
         ]
     });
 };
