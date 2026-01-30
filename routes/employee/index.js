@@ -10,7 +10,12 @@ const wishRoutes = require('./wish.routes');
 const policyRoutes = require('./policy.routes');
 const ticketRoutes = require('./ticket.routes');
 
+const verifyToken = require('../../middlewares/auth.middleware');
+
 router.use('/auth', authRoutes);
+
+// Protect all routes below this line
+router.use(verifyToken);
 router.use('/home', homeRoutes);
 router.use('/profile', profileRoutes);
 router.use('/holidays', holidayRoutes);

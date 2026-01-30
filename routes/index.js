@@ -43,12 +43,15 @@ router.all('/signin', (req, res) => {
   res.redirect(307, '/api/auth/login');
 });
 
+// Employee App Routes (Partial public access handled inside)
+router.use('/employee', employeeAppRoutes);
+
 // Protected Routes (Token Required)
 router.use(verifyToken);
 
 // API routes
 router.use('/employees', employeeRoutes);
-router.use('/employee', employeeAppRoutes);
+
 router.use(['/departments', '/department'], departmentRoutes);
 router.use(['/designations', '/designation'], designationRoutes);
 router.use(['/roles', '/role'], roleRoutes);
