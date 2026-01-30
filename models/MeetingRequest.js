@@ -7,48 +7,83 @@ const MeetingRequest = sequelize.define('MeetingRequest', {
         primaryKey: true,
         autoIncrement: true
     },
-    Title: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    Description: {
-        type: DataTypes.TEXT,
+    LocationId: {
+        type: DataTypes.INTEGER,
         allowNull: true,
-        field: 'Purpose' // Map to legacy column
+        field: 'Location'
+    },
+    FloorId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'Floor'
     },
     RoomId: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.INTEGER,
         allowNull: true,
-        field: 'Room' // Map to legacy column
+        field: 'Room'
     },
-    BookedBy: {
-        type: DataTypes.BIGINT,
+    Purpose: {
+        type: DataTypes.TEXT,
         allowNull: true,
-        field: 'UserId' // Map to legacy column
+        field: 'Purpose'
     },
-    StartTime: {
-        type: DataTypes.DATE,
-        allowNull: true
+    Date: {
+        type: DataTypes.STRING, // Schema says 'text', usually YYYY-MM-DD
+        allowNull: true,
+        field: 'Date'
     },
-    EndTime: {
-        type: DataTypes.DATE,
-        allowNull: true
+    TimeFrom: {
+        type: DataTypes.DOUBLE,
+        allowNull: true,
+        field: 'TimeFrom'
+    },
+    TimeTo: {
+        type: DataTypes.DOUBLE,
+        allowNull: true,
+        field: 'TimeTo'
     },
     Status: {
         type: DataTypes.STRING,
         defaultValue: 'Pending',
-        field: 'AproveStatus' // Map to legacy column
+        field: 'AproveStatus'
+    },
+    ApprovedBy: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        field: 'AprovedBy'
+    },
+    ApproveComment: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'AproveComment'
+    },
+    ApproveTime: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        field: 'AproveTime'
+    },
+    UserId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'UserId'
     },
     CreatedOn: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+        type: DataTypes.STRING, // Schema says 'text' like '2020-12-25 08:46:45'
+        defaultValue: DataTypes.NOW, // Sequelize will try to put date object, might need hook or just let it stringify
+        field: 'CreatedOn'
     },
     IsDeleted: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
+        type: DataTypes.STRING, // Schema says text? 'IsDeleted text'. Wait, usually boolean.
+        // Sample data shows empty strings.
+        // Let's assume 'true'/'false' or '1'/'0' string. Or just boolean if sequelize handles it.
+        // Input schema says "IsDeleted text".
+        // I will match it as STRING but handle it as boolean logic.
+        defaultValue: 'false',
+        field: 'IsDeleted'
     }
 }, {
-    tableName: 'MeetingDetails', // Correct table name
+    tableName: 'meetingdetails', // Lowercase as per schema? Or MeetingDetails? Sample says 'meetingdetails'.
+    // User schema header: "Table: meetingdetails"
     timestamps: false
 });
 

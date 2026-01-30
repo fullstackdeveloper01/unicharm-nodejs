@@ -1,0 +1,10 @@
+const express = require('express');
+const router = express.Router();
+const meetingBookingController = require('../controllers/meetingBooking.controller');
+
+const verifyToken = require('../middlewares/auth.middleware');
+
+// POST Create New Booking
+router.post('/', verifyToken, meetingBookingController.createBooking);
+
+module.exports = router;

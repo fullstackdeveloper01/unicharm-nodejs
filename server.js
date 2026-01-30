@@ -16,7 +16,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files (uploads)
+// Serve static files (uploads)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/Images', express.static(path.join(__dirname, 'Images'))); // Legacy images
 
 // API routes
 app.use('/api', routes);
@@ -68,7 +70,7 @@ db.sequelize.authenticate()
   })
   .then(() => {
     app.listen(PORT, '0.0.0.0', () => {
-    //app.listen(PORT, () => {
+      //app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`API Base URL: http://localhost:${PORT}/api`);

@@ -9,6 +9,7 @@ const roleRoutes = require('./roleRoutes');
 const accountantRoutes = require('./accountantRoutes');
 const homeRoutes = require('./homeRoutes');
 const ticketRoutes = require('./ticketRoutes');
+const employeeAppRoutes = require('./employee/index');
 
 // API routes
 router.use('/employees', employeeRoutes);
@@ -18,6 +19,7 @@ router.use('/roles', roleRoutes);
 router.use('/accountants', accountantRoutes);
 router.use('/home', homeRoutes);
 router.use('/tickets', ticketRoutes);
+router.use('/employee', employeeAppRoutes);
 router.use('/walls', require('./wallRoutes'));
 router.use('/notices', require('./noticeRoutes'));
 router.use('/policies', require('./policyRoutes'));
@@ -37,7 +39,10 @@ router.use('/locations', require('./locationRoutes'));
 router.use('/floors', require('./floorRoutes'));
 router.use('/rooms', require('./roomRoutes'));
 router.use('/meeting-notifications', require('./meetingNotificationRoutes'));
-router.use('/meeting-requests', require('./meetingRequestRoutes'));
+router.use('/meeting-requests', require('./meetingRequest.routes'));
+router.use('/meeting-schedule', require('./meetingSchedule.routes'));
+router.use('/meeting-booking', require('./meetingBooking.routes'));
+
 router.use('/groups', require('./groupRoutes'));
 router.use('/categories', require('./categoryRoutes'));
 router.use('/priorities', require('./priorityRoutes'));
