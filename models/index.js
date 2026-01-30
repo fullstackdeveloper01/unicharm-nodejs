@@ -29,6 +29,8 @@ const PhotoGallery = require('./PhotoGallery');
 const PopupImage = require('./PopupImage');
 const LoginDetail = require('./LoginDetail');
 const SalesPricePolicy = require('./SalesPricePolicy');
+const CorporatePricePolicy = require('./CorporatePricePolicy');
+const EmergencyResponseNetwork = require('./EmergencyResponseNetwork');
 const Product = require('./Product');
 const Tag = require('./Tag');
 const Wall = require('./Wall');
@@ -144,6 +146,8 @@ const db = {
   PopupImage,
   LoginDetail,
   SalesPricePolicy,
+  CorporatePricePolicy,
+  EmergencyResponseNetwork,
   Product,
   Tag,
   Wall,

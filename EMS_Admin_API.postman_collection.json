@@ -3361,147 +3361,6 @@
             ]
         },
         {
-            "name": "Sales Price Policies",
-            "item": [
-                {
-                    "name": "Get All Policies",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/sales-price-policies",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "sales-price-policies"
-                            ]
-                        },
-                        "description": "Get all sales price policies"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Policy By ID",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/sales-price-policies/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "sales-price-policies",
-                                ":id"
-                            ],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        },
-                        "description": "Get policy by ID"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Create Policy",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"DesignationRank\": \"Manager\",\n    \"CompetencyRank\": \"Senior\",\n    \"HqDaMetro\": 500.00,\n    \"HqDaNonMetro\": 400.00,\n    \"ExHqDaMetro\": 1000.00,\n    \"ExHqDaNonMetro\": 800.00,\n    \"UpcountryMetro\": 1500.00,\n    \"UpcountryNonMetro\": 1200.00,\n    \"LodgingAndBoarding\": \"Actuals\",\n    \"Status\": \"Active\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/sales-price-policies",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "sales-price-policies"
-                            ]
-                        },
-                        "description": "Create a new policy"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Update Policy",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json",
-                                "type": "text"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"DesignationRank\": \"Senior Manager\",\n    \"CompetencyRank\": \"Lead\",\n    \"HqDaMetro\": 600.00,\n    \"HqDaNonMetro\": 450.00,\n    \"ExHqDaMetro\": 1200.00,\n    \"ExHqDaNonMetro\": 900.00,\n    \"UpcountryMetro\": 1800.00,\n    \"UpcountryNonMetro\": 1400.00,\n    \"LodgingAndBoarding\": \"Actuals + 100\",\n    \"Status\": \"Inactive\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{base_url}}/api/sales-price-policies/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "sales-price-policies",
-                                ":id"
-                            ],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        },
-                        "description": "Update a policy"
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Delete Policy",
-                    "request": {
-                        "method": "DELETE",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/sales-price-policies/:id",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "sales-price-policies",
-                                ":id"
-                            ],
-                            "variable": [
-                                {
-                                    "key": "id",
-                                    "value": "1"
-                                }
-                            ]
-                        },
-                        "description": "Soft delete a policy"
-                    },
-                    "response": []
-                }
-            ]
-        },
-        {
             "name": "Locations",
             "item": [
                 {
@@ -4648,12 +4507,510 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "Sales Price Policies",
+            "item": [
+                {
+                    "name": "Get All Sales Price Policies",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/sales-price-policies?page=1&limit=10&search=",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "sales-price-policies"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number (optional, default: 1)"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Items per page (optional, null for all)"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Search term (optional)"
+                                }
+                            ]
+                        },
+                        "description": "Get all sales price policies with pagination and search"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Sales Price Policy by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/sales-price-policies/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "sales-price-policies",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Get sales price policy by ID"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Sales Price Policy",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"DesignationRank\": \"Trainee\",\n  \"CompetencyRank\": \"P6/Trainee\",\n  \"HqDaMetro\": 400,\n  \"HqDaNonMetro\": 350,\n  \"ExHqDaMetro\": 1000,\n  \"ExHqDaNonMetro\": 1000,\n  \"UpcountryMetro\": 200,\n  \"UpcountryNonMetro\": 175,\n  \"LodgingAndBoarding\": \"Metro: ₹ 3,000\\nNon Metro: ₹ 2,700\",\n  \"Status\": \"Active\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/sales-price-policies",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "sales-price-policies"
+                            ]
+                        },
+                        "description": "Create a new sales price policy"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Sales Price Policy",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"DesignationRank\": \"Trainee Updated\",\n  \"CompetencyRank\": \"P6/Trainee\",\n  \"HqDaMetro\": 450,\n  \"Status\": \"Active\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/sales-price-policies/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "sales-price-policies",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Update a sales price policy"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Sales Price Policy",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/sales-price-policies/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "sales-price-policies",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Soft delete a sales price policy"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Corporate Price Policies",
+            "item": [
+                {
+                    "name": "Get All Corporate Price Policies",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/corporate-price-policies?page=1&limit=10&search=",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "corporate-price-policies"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number (optional, default: 1)"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Items per page (optional, null for all)"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Search term (optional)"
+                                }
+                            ]
+                        },
+                        "description": "Get all corporate price policies with pagination and search"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Corporate Price Policy by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/corporate-price-policies/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "corporate-price-policies",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Get corporate price policy by ID"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Corporate Price Policy",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"designation\": \"MD/BOD\",\n  \"mobile\": 3000,\n  \"entertainment\": \"On Actuals\",\n  \"vehicle\": \"On Actuals\",\n  \"lodging_metro\": 14000,\n  \"lodging_non_metro\": 12000,\n  \"travel_mode\": \"-\",\n  \"travel_own\": \"-\",\n  \"other\": \"On Actuals\",\n  \"business_promo\": \"On Actuals\",\n  \"rnd\": \"On Actuals\",\n  \"csr\": \"On Actuals\",\n  \"status\": \"Active\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/corporate-price-policies",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "corporate-price-policies"
+                            ]
+                        },
+                        "description": "Create a new corporate price policy"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Corporate Price Policy",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"designation\": \"MD/BOD Updated\",\n  \"mobile\": 3500,\n  \"lodging_metro\": 15000,\n  \"status\": \"Active\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/corporate-price-policies/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "corporate-price-policies",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Update a corporate price policy"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Corporate Price Policy",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/corporate-price-policies/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "corporate-price-policies",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Soft delete a corporate price policy"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Emergency Response Network (ERN)",
+            "item": [
+                {
+                    "name": "Get All ERN Records",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/emergency-response?page=1&limit=10&search=",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "emergency-response"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Page number (optional, default: 1)"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10",
+                                    "description": "Items per page (optional, null for all)"
+                                },
+                                {
+                                    "key": "search",
+                                    "value": "",
+                                    "description": "Search term (optional)"
+                                }
+                            ]
+                        },
+                        "description": "Get all emergency response network records with pagination and search"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get ERN Record by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/emergency-response/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "emergency-response",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Get emergency response network record by ID"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create ERN Record",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "Title",
+                                    "value": "Emergency Response Procedure",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": []
+                                },
+                                {
+                                    "key": "FileName",
+                                    "value": "emergency_procedure.pdf",
+                                    "type": "text",
+                                    "disabled": true,
+                                    "description": "Optional: override filename"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/emergency-response",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "emergency-response"
+                            ]
+                        },
+                        "description": "Create a new emergency response network record"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update ERN Record",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "Title",
+                                    "value": "Updated Emergency Response Procedure",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": []
+                                },
+                                {
+                                    "key": "FileName",
+                                    "value": "emergency_procedure_v2.pdf",
+                                    "type": "text",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/emergency-response/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "emergency-response",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Update an emergency response network record"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete ERN Record",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/emergency-response/:id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "emergency-response",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Soft delete an emergency response network record"
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "variable": [
         {
             "key": "base_url",
-            "value": "http://localhost:3000",
+            "value": "http://localhost:3005",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
             "type": "string"
         }
     ]

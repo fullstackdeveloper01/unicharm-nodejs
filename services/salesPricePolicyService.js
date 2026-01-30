@@ -1,37 +1,15 @@
 const db = require('../models');
 const { SalesPricePolicy } = db;
-const { Op } = require('sequelize');
 
 /**
  * Get all sales price policies
- * @returns {Promise<Array>} List of sales price policies
+ * @param {number} page - Page number
+ * @param {number} limit - Items per page
+ * @param {string} search - Search term
+ * @returns {Promise<Object>} List of sales price policies
  */
 exports.getAllSalesPricePolicies = async (page = 1, limit = null, search = '') => {
-    const pageNumber = parseInt(page) || 1;
-    let limitNumber = parseInt(limit);
-    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
-
-    const whereClause = {
-        [Op.or]: [
-            { IsDeleted: false },
-            { IsDeleted: null },
-            { IsDeleted: 0 }
-        ]
-    };
-
-    if (search) whereClause.Title = { [Op.like]: `%${search}%` };
-
-    const queryOptions = {
-        where: whereClause,
-        order: [['CreatedOn', 'DESC']]
-    };
-
-    if (limitNumber) {
-        queryOptions.limit = limitNumber;
-        queryOptions.offset = (pageNumber - 1) * limitNumber;
-    }
-
-    return await SalesPricePolicy.findAndCountAll(queryOptions);
+    return await SalesPricePolicy.getAllPolicies(page, limit, search);
 };
 
 /**
@@ -40,7 +18,7 @@ exports.getAllSalesPricePolicies = async (page = 1, limit = null, search = '') =
  * @returns {Promise<Object>} Policy
  */
 exports.getSalesPricePolicyById = async (id) => {
-    return await SalesPricePolicy.findByPk(id);
+    return await SalesPricePolicy.getPolicyById(id);
 };
 
 /**
@@ -49,28 +27,24 @@ exports.getSalesPricePolicyById = async (id) => {
  * @returns {Promise<Object>} Created policy
  */
 exports.createSalesPricePolicy = async (data) => {
-    return await SalesPricePolicy.create({
-        ...data,
-        CreatedOn: new Date(),
-        IsDeleted: false
-    });
+    return await SalesPricePolicy.createPolicy(data);
 };
 
 /**
  * Update sales price policy
- * @param {Object} policy - Policy instance
+ * @param {number} id - Policy ID
  * @param {Object} data - Update data
  * @returns {Promise<Object>} Updated policy
  */
-exports.updateSalesPricePolicy = async (policy, data) => {
-    return await policy.update(data);
+exports.updateSalesPricePolicy = async (id, data) => {
+    return await SalesPricePolicy.updatePolicy(id, data);
 };
 
 /**
  * Delete sales price policy (soft delete)
- * @param {Object} policy - Policy instance
+ * @param {number} id - Policy ID
  * @returns {Promise<Object>} Deleted policy
  */
-exports.deleteSalesPricePolicy = async (policy) => {
-    return await policy.update({ IsDeleted: true });
+exports.deleteSalesPricePolicy = async (id) => {
+    return await SalesPricePolicy.deletePolicy(id);
 };
