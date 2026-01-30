@@ -7,8 +7,12 @@ const { Op } = require('sequelize');
  * Get all events
  * @returns {Promise<Array>} List of events
  */
-exports.getAllEvents = async () => {
-    return await Event.findAll({
+exports.getAllEvents = async (page = 1, limit = null) => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const queryOptions = {
         where: {
             [Op.or]: [
                 { IsDeleted: false },
@@ -16,8 +20,15 @@ exports.getAllEvents = async () => {
                 { IsDeleted: 0 }
             ]
         },
-        order: [['EventDate', 'DESC']]
-    });
+        order: [['CreatedOn', 'DESC']]
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    return await Event.findAndCountAll(queryOptions);
 };
 
 /**

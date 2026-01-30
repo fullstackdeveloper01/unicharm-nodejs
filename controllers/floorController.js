@@ -1,10 +1,26 @@
 const floorService = require('../services/floorService');
-const sendResponse = (res, success, message, data = null, errors = null) => res.json({ success, message, data, errors });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+    const response = { success, message, data, errors };
+    if (pagination) response.pagination = pagination;
+    res.json(response);
+};
 
 exports.getAllFloors = async (req, res) => {
     try {
-        const data = await floorService.getAllFloors();
-        sendResponse(res, true, 'Floors retrieved', data);
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+        const result = await floorService.getAllFloors(page, limit);
+
+        const pagination = {
+            total: result.count,
+            page: page,
+            limit: limit || result.count,
+            totalPages: limit ? Math.ceil(result.count / limit) : 1,
+            hasNext: limit ? page * limit < result.count : false
+        };
+
+        sendResponse(res, true, 'Floors retrieved', result.rows, null, pagination);
     } catch (e) { sendResponse(res, false, 'Failed', null, { message: e.message }); }
 };
 

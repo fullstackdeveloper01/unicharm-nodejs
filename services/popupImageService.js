@@ -7,13 +7,30 @@ const fs = require('fs');
  * Get all popup images (from CustomImages)
  * @returns {Promise<Array>} List of popup images
  */
-exports.getAllPopupImages = async () => {
-    return await CustomImage.findAll({
-        where: {
-            IsDeleted: { [Op.or]: [false, null] }
-        },
+exports.getAllPopupImages = async (page = 1, limit = null, search = '') => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const whereClause = {
+        IsDeleted: { [Op.or]: [false, null] }
+    };
+
+    if (search) {
+        whereClause.Title = { [Op.like]: `%${search}%` };
+    }
+
+    const queryOptions = {
+        where: whereClause,
         order: [['CreatedOn', 'DESC']]
-    });
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    return await CustomImage.findAndCountAll(queryOptions);
 };
 
 /**

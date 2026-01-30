@@ -6,14 +6,14 @@ const storedProcedureService = require('../services/storedProcedureService');
 exports.getTicketsForAssignee = async (req, res) => {
   try {
     const { employeeId } = req.query;
-    
+
     let tickets;
     if (employeeId) {
       tickets = await storedProcedureService.getTicketForAssignee(parseInt(employeeId));
     } else {
       tickets = await storedProcedureService.getTicketForAssignee();
     }
-    
+
     res.json({ success: true, data: tickets });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -23,14 +23,37 @@ exports.getTicketsForAssignee = async (req, res) => {
 // Get all tickets
 exports.getAllTickets = async (req, res) => {
   try {
-    const tickets = await Ticket.findAll({
+    const page = parseInt(req.query.page) || 1;
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+    const queryOptions = {
       where: { IsDeleted: false },
       include: [
         { model: Employee, as: 'employee', attributes: ['Id', 'FirstName', 'LastName', 'Email'] }
       ],
       order: [['CreatedOn', 'DESC']]
+    };
+
+    if (limit) {
+      queryOptions.limit = limit;
+      queryOptions.offset = (page - 1) * limit;
+    }
+
+    const { count, rows } = await Ticket.findAndCountAll(queryOptions);
+
+    const pagination = {
+      total: count,
+      page: page,
+      limit: limit || count,
+      totalPages: limit ? Math.ceil(count / limit) : 1,
+      hasNext: limit ? page * limit < count : false
+    };
+
+    res.json({
+      success: true,
+      data: rows,
+      pagination
     });
-    res.json({ success: true, data: tickets });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -77,7 +100,7 @@ exports.updateTicket = async (req, res) => {
   try {
     const { id } = req.params;
     const ticket = await Ticket.findByPk(id);
-    
+
     if (!ticket) {
       return res.status(404).json({ success: false, message: 'Ticket not found' });
     }

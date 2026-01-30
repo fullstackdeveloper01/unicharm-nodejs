@@ -23,23 +23,7 @@ app.use('/Images', express.static(path.join(__dirname, 'Images'))); // Legacy im
 // API routes
 app.use('/api', routes);
 
-// Root route
-app.get('/', (req, res) => {
-  res.json({
-    message: 'EMS Admin API',
-    version: '1.0.0',
-    endpoints: {
-      employees: '/api/employees',
-      departments: '/api/departments',
-      designations: '/api/designations',
-      roles: '/api/roles',
-      accountants: '/api/accountants',
-      home: '/api/home',
-      tickets: '/api/tickets',
-      health: '/api/health'
-    }
-  });
-});
+// Routes are managed in ./routes/index.js mounted at /api
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -65,8 +49,9 @@ db.sequelize.authenticate()
   .then(() => {
     console.log('Database connection established successfully.');
 
-    // Sync database (create tables if they don't exist)
-    return db.sequelize.sync({ alter: true });
+    console.log(`Connected to Database: ${db.sequelize.config.database}`);
+    // Sync database (create tables if they don't exist, but don't alter)
+    return db.sequelize.sync({ alter: false });
   })
   .then(() => {
     app.listen(PORT, '0.0.0.0', () => {
@@ -83,4 +68,4 @@ db.sequelize.authenticate()
 
 module.exports = app;
 
-// Force restart - Employee dropdown fix v2
+// Force restart - Auth routes added

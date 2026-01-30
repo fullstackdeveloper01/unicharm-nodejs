@@ -23,6 +23,10 @@ const Designation = sequelize.define('Designation', {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
   },
+  Category: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false

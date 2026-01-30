@@ -2,48 +2,81 @@ const db = require('../models');
 const { Employee, Department, Designation, Role, Unit, Zone, Location } = db;
 const storedProcedureService = require('./storedProcedureService');
 const fs = require('fs');
+const { Op } = require('sequelize'); // Add this line to import Op
 
 /**
  * Get all employees
  * @returns {Promise<Array>} List of employees
  */
-exports.getAllEmployees = async () => {
-    try {
-        const result = await storedProcedureService.getEmployeesList();
+exports.getAllEmployees = async (page = 1, limit = null, filters = {}) => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
 
-        // Map stored procedure result to match the format expected by frontend
-        // Assuming SP returns raw columns like FirstName, LastName, etc.
-        return result.map(emp => ({
-            Id: emp.Id || emp.id,
-            Name: `${emp.FirstName || emp.firstname} ${emp.LastName || emp.lastname || ''}`.trim(),
-            Email: emp.Email || emp.email,
-            Department: emp.DepartmentName || emp.departmentname || (emp.department ? emp.department.DepartmentName : ''),
-            Designation: emp.DesignationName || emp.designationname || (emp.designation ? emp.designation.DesignationName : ''),
-            UserPhoto: emp.UserPhoto || '/Images/Profile/user-avatar.jpg',
-            IsDeleted: emp.IsDeleted
-        }));
-    } catch (error) {
-        // Fallback to Sequelize query
-        const employees = await Employee.findAll({
-            where: { IsDeleted: false },
-            include: [
-                { model: Department, as: 'department', attributes: ['Id', 'DepartmentName'] },
-                { model: Designation, as: 'designation', attributes: ['Id', 'DesignationName'] },
-                { model: Role, as: 'role', attributes: ['Id', 'RoleName'] }
-            ],
-            order: [['CreatedOn', 'DESC']]
-        });
+    const whereClause = {
+        [Op.or]: [
+            { IsDeleted: false },
+            { IsDeleted: null },
+            { IsDeleted: 0 }
+        ]
+    };
 
-        return employees.map(emp => ({
-            Id: emp.Id,
-            Name: `${emp.FirstName} ${emp.LastName || ''}`.trim(),
-            Email: emp.Email,
-            Department: emp.department ? emp.department.DepartmentName : '',
-            Designation: emp.designation ? emp.designation.DesignationName : '',
-            UserPhoto: emp.UserPhoto || '/Images/Profile/user-avatar.jpg',
-            IsDeleted: emp.IsDeleted
-        }));
+    // Apply filters if provided
+    if (filters.departmentId) whereClause.DepartmentId = filters.departmentId;
+    if (filters.designationId) whereClause.DesignationId = filters.designationId;
+    if (filters.roleId) whereClause.RoleId = filters.roleId;
+    if (filters.unitId) whereClause.UnitId = filters.unitId;
+    if (filters.zoneId) whereClause.ZoneId = filters.zoneId;
+    if (filters.locationId) whereClause.LocationId = filters.locationId;
+
+    // Add search functionality
+    if (filters.search) {
+        whereClause[Op.or] = [
+            { FirstName: { [Op.like]: `%${filters.search}%` } },
+            { LastName: { [Op.like]: `%${filters.search}%` } },
+            { Email: { [Op.like]: `%${filters.search}%` } }
+        ];
     }
+
+    const queryOptions = {
+        where: whereClause,
+        include: [
+            { model: Department, as: 'department', attributes: ['Id', 'DepartmentName'] },
+            { model: Designation, as: 'designation', attributes: ['Id', 'DesignationName'] },
+            { model: Role, as: 'role', attributes: ['Id', 'RoleName'] },
+            { model: Unit, as: 'unit' },
+            { model: Zone, as: 'zone' },
+            { model: Location, as: 'location' },
+            {
+                model: Employee,
+                as: 'supervisor',
+                attributes: ['Id', 'FirstName', 'LastName']
+            },
+        ],
+        order: [['CreatedOn', 'DESC']]
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    const { count, rows } = await Employee.findAndCountAll(queryOptions);
+
+    const mappedRows = rows.map(emp => ({
+        Id: emp.Id,
+        Name: `${emp.FirstName} ${emp.LastName || ''}`.trim(),
+        FirstName: emp.FirstName,
+        LastName: emp.LastName,
+        EmpId: emp.EmpId,
+        Email: emp.Email,
+        Department: emp.department ? emp.department.DepartmentName : '',
+        Designation: emp.designation ? emp.designation.DesignationName : '',
+        UserPhoto: emp.UserPhoto || '/Images/Profile/user-avatar.jpg',
+        IsDeleted: emp.IsDeleted
+    }));
+
+    return { count, rows: mappedRows };
 };
 
 /**

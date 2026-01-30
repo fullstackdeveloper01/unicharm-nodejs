@@ -23,20 +23,30 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Helper for standard response
-const sendResponse = (res, success, message, data = null, errors = null) => {
-    res.json({
-        success,
-        message,
-        data,
-        errors
-    });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+    const response = { success, message, data, errors };
+    if (pagination) response.pagination = pagination;
+    res.json(response);
 };
 
 // Get all slider images
 exports.getAllSliderImages = async (req, res) => {
     try {
-        const sliderImages = await sliderImageService.getAllSliderImages();
-        sendResponse(res, true, 'Slider images retrieved successfully', sliderImages);
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+        const search = req.query.search || '';
+
+        const result = await sliderImageService.getAllSliderImages(page, limit, search);
+
+        const pagination = {
+            total: result.count,
+            page: page,
+            limit: limit || result.count,
+            totalPages: limit ? Math.ceil(result.count / limit) : 1,
+            hasNext: limit ? page * limit < result.count : false
+        };
+
+        sendResponse(res, true, 'Slider images retrieved successfully', result.rows, null, pagination);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve slider images', null, { message: error.message });
     }
@@ -59,6 +69,7 @@ exports.getSliderImageById = async (req, res) => {
 };
 
 // Create slider image
+// Create slider image
 exports.createSliderImage = async (req, res) => {
     try {
         const uploadMiddleware = upload.array('additionalImages', 10);
@@ -69,13 +80,15 @@ exports.createSliderImage = async (req, res) => {
             }
 
             try {
-                const { Title } = req.body;
+                const { Title, ShowType } = req.body;
                 const createdSliderImages = [];
 
                 if (req.files && req.files.length > 0) {
                     for (const file of req.files) {
                         const sliderImage = await sliderImageService.createSliderImage({
                             ImageName: Title || file.originalname,
+                            Type: Title,
+                            ShowType: ShowType,
                             Image: `/uploads/slider-images/${file.filename}`
                         });
                         createdSliderImages.push(sliderImage);
@@ -84,6 +97,8 @@ exports.createSliderImage = async (req, res) => {
                     // CustomImage `Image` is allowNull: true.
                     const sliderImage = await sliderImageService.createSliderImage({
                         ImageName: Title,
+                        Type: Title,
+                        ShowType: ShowType,
                         Image: null
                     });
                     createdSliderImages.push(sliderImage);
@@ -119,11 +134,15 @@ exports.updateSliderImage = async (req, res) => {
                     return sendResponse(res, false, 'Slider image not found');
                 }
 
-                const { Title } = req.body;
+                const { Title, ShowType } = req.body;
                 const updateData = {};
 
                 if (Title) {
                     updateData.ImageName = Title;
+                    updateData.Type = Title;
+                }
+                if (ShowType) {
+                    updateData.ShowType = ShowType;
                 }
 
                 if (req.files && req.files.length > 0) {
