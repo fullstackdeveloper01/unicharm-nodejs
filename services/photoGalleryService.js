@@ -7,30 +7,6 @@ const { Op } = require('sequelize');
  * Get all photo galleries
  * @returns {Promise<Array>} List of photo galleries
  */
-<<<<<<< HEAD
-exports.getAllPhotoGalleries = async () => {
-    return await PhotoGallery.findAll({
-        where: {
-            [Op.or]: [
-                { IsDeleted: false },
-                { IsDeleted: null },
-                { IsDeleted: 0 }
-            ]
-        },
-        order: [['CreatedOn', 'DESC']]
-    });
-};
-
-exports.getPhotoGalleryById = async (id) => {
-    return await PhotoGallery.findByPk(id);
-};
-
-exports.createPhotoGallery = async (data) => {
-    return await PhotoGallery.create({
-        ...data,
-        CreatedOn: new Date(),
-        IsDeleted: false
-=======
 exports.getAllPhotoGalleries = async (page = 1, limit = null, search = '') => {
     const pageNumber = parseInt(page) || 1;
     let limitNumber = parseInt(limit);
@@ -70,10 +46,21 @@ exports.getAllPhotoGalleries = async (page = 1, limit = null, search = '') => {
             plainGallery.AdditionalImages = [];
         }
         return plainGallery;
->>>>>>> 882e1afd23f775982645d9f31d58ee79cedf875d
     });
 
     return { count, rows: mappedRows };
+};
+
+exports.getPhotoGalleryById = async (id) => {
+    return await PhotoGallery.findByPk(id);
+};
+
+exports.createPhotoGallery = async (data) => {
+    return await PhotoGallery.create({
+        ...data,
+        CreatedOn: new Date(),
+        IsDeleted: false
+    });
 };
 
 exports.updatePhotoGallery = async (gallery, data) => {

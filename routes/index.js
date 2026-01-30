@@ -11,51 +11,6 @@ const homeRoutes = require('./homeRoutes');
 const ticketRoutes = require('./ticketRoutes');
 const employeeAppRoutes = require('./employee/index');
 
-<<<<<<< HEAD
-// API routes
-router.use('/employees', employeeRoutes);
-router.use('/departments', departmentRoutes);
-router.use('/designations', designationRoutes);
-router.use('/roles', roleRoutes);
-router.use('/accountants', accountantRoutes);
-router.use('/home', homeRoutes);
-router.use('/tickets', ticketRoutes);
-router.use('/employee', employeeAppRoutes);
-router.use('/walls', require('./wallRoutes'));
-router.use('/notices', require('./noticeRoutes'));
-router.use('/policies', require('./policyRoutes'));
-router.use('/holidays', require('./holidayRoutes'));
-router.use('/products', require('./productRoutes'));
-router.use('/quotes', require('./quoteRoutes'));
-router.use('/chorei-messages', require('./choreiMessageRoutes'));
-router.use('/news', require('./newsRoutes'));
-router.use('/events', require('./eventRoutes'));
-router.use('/photo-galleries', require('./photoGalleryRoutes'));
-router.use('/slider-images', require('./sliderImageRoutes'));
-router.use('/popup-images', require('./popupImageRoutes'));
-router.use('/login-details', require('./loginDetailRoutes'));
-router.use('/sales-price-policies', require('./salesPricePolicyRoutes'));
-router.use('/expense-locations', require('./expenseLocationRoutes'));
-router.use('/locations', require('./locationRoutes'));
-router.use('/floors', require('./floorRoutes'));
-router.use('/rooms', require('./roomRoutes'));
-router.use('/meeting-notifications', require('./meetingNotificationRoutes'));
-router.use('/meeting-requests', require('./meetingRequest.routes'));
-router.use('/meeting-schedule', require('./meetingSchedule.routes'));
-router.use('/meeting-booking', require('./meetingBooking.routes'));
-
-router.use('/groups', require('./groupRoutes'));
-router.use('/categories', require('./categoryRoutes'));
-router.use('/priorities', require('./priorityRoutes'));
-router.use('/cities', require('./cityRoutes'));
-router.use('/auditors', require('./auditorRoutes'));
-router.use('/accountants', require('./accountantRoutes'));
-router.use('/units', require('./unitRoutes'));
-router.use('/zones', require('./zoneRoutes'));
-router.use('/currencies', require('./currencyMasterRoutes'));
-router.use('/claims', require('./claimRoutes'));
-router.use('/messages', require('./messageRoutes'));
-=======
 const { verifyToken } = require('../middleware/authMiddleware');
 
 // Public routes (No Token Required)
@@ -73,7 +28,6 @@ router.get('/', (req, res) => {
     }
   });
 });
->>>>>>> 882e1afd23f775982645d9f31d58ee79cedf875d
 
 // Health check route
 router.get('/health', (req, res) => {
@@ -93,7 +47,8 @@ router.all('/signin', (req, res) => {
 router.use(verifyToken);
 
 // API routes
-router.use(['/employees', '/employee'], employeeRoutes);
+router.use('/employees', employeeRoutes);
+router.use('/employee', employeeAppRoutes);
 router.use(['/departments', '/department'], departmentRoutes);
 router.use(['/designations', '/designation'], designationRoutes);
 router.use(['/roles', '/role'], roleRoutes);
@@ -121,7 +76,9 @@ router.use(['/locations', '/location'], require('./locationRoutes'));
 router.use(['/floors', '/floor'], require('./floorRoutes'));
 router.use(['/rooms', '/room'], require('./roomRoutes'));
 router.use(['/meeting-notifications', '/meeting-notification'], require('./meetingNotificationRoutes'));
-router.use(['/meeting-requests', '/meeting-request'], require('./meetingRequestRoutes'));
+router.use(['/meeting-requests', '/meeting-request'], require('./meetingRequest.routes'));
+router.use('/meeting-booking', require('./meetingBooking.routes'));
+router.use('/meeting-schedule', require('./meetingSchedule.routes'));
 router.use(['/groups', '/group'], require('./groupRoutes'));
 router.use(['/categories', '/category'], require('./categoryRoutes'));
 router.use(['/priorities', '/priority'], require('./priorityRoutes'));
