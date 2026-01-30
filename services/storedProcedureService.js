@@ -131,4 +131,22 @@ exports.getMeetingsForUser = async (employeeId) => {
   return await this.executeStoredProcedure('USP_GetMeetingsForUser', { EmployeeId: employeeId });
 };
 
+/**
+ * Check Login
+ * @param {string} email
+ * @param {string} password
+ */
+exports.checkLogin = async (email, password) => {
+  return await this.executeStoredProcedure('USP_CheckLogin', { Email: email, Password: password });
+};
+
+/**
+ * Check Login Accountant
+ * @param {string} userName
+ * @param {string} password
+ */
+exports.checkLoginAccountant = async (userName, password) => {
+  return await this.executeStoredProcedure('USP_CheckLoginAccountant', { UserName: userName, Password: password });
+};
+
 module.exports = exports;

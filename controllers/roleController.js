@@ -5,7 +5,10 @@ const { Role } = db;
 // Get all roles
 exports.getAllRoles = async (req, res) => {
   try {
-    const roles = await Role.findAll({
+    const page = parseInt(req.query.page) || 1;
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+    const queryOptions = {
       where: {
         [Op.or]: [
           { IsDeleted: false },
@@ -14,8 +17,24 @@ exports.getAllRoles = async (req, res) => {
         ]
       },
       order: [['CreatedOn', 'DESC']]
-    });
-    res.json({ success: true, data: roles });
+    };
+
+    if (limit) {
+      queryOptions.limit = limit;
+      queryOptions.offset = (page - 1) * limit;
+    }
+
+    const { count, rows } = await Role.findAndCountAll(queryOptions);
+
+    const pagination = {
+      total: count,
+      page: page,
+      limit: limit || count,
+      totalPages: limit ? Math.ceil(count / limit) : 1,
+      hasNext: limit ? page * limit < count : false
+    };
+
+    res.json({ success: true, data: rows, pagination });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

@@ -13,8 +13,26 @@ const sendResponse = (res, success, message, data = null, errors = null) => {
 // Get all messages
 exports.getAllMessages = async (req, res) => {
     try {
-        const messages = await messageService.getAllMessages();
-        sendResponse(res, true, 'Messages retrieved successfully', messages);
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+        const search = req.query.search || '';
+
+        const { count, rows } = await messageService.getAllMessages(page, limit, search);
+
+        const pagination = {
+            total: count,
+            page: page,
+            limit: limit || count,
+            totalPages: limit ? Math.ceil(count / limit) : 1,
+            hasNext: limit ? page * limit < count : false
+        };
+
+        res.json({
+            success: true,
+            message: 'Messages retrieved successfully',
+            data: rows,
+            pagination
+        });
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve messages', null, { message: error.message });
     }

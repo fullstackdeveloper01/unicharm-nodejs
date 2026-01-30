@@ -6,17 +6,35 @@ const { Op } = require('sequelize');
  * Get all holidays
  * @returns {Promise<Array>} List of holidays
  */
-exports.getAllHolidays = async () => {
-    return await Holiday.findAll({
-        where: {
-            [Op.or]: [
-                { IsDeleted: false },
-                { IsDeleted: null },
-                { IsDeleted: 0 }
-            ]
-        },
+exports.getAllHolidays = async (page = 1, limit = null, search = '') => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const whereClause = {
+        [Op.or]: [
+            { IsDeleted: false },
+            { IsDeleted: null },
+            { IsDeleted: 0 }
+        ]
+    };
+
+    if (search) {
+        whereClause[Op.and] = whereClause[Op.and] || [];
+        whereClause[Op.and].push({ Title: { [Op.like]: `%${search}%` } });
+    }
+
+    const queryOptions = {
+        where: whereClause,
         order: [['HolidayDate', 'ASC']]
-    });
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    return await Holiday.findAndCountAll(queryOptions);
 };
 
 /**

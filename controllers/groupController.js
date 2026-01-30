@@ -1,17 +1,37 @@
 const service = require('../services/groupService');
-const sendResponse = (res, success, message, data = null, errors = null) => res.json({ success, message, data, errors });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+    const response = { success, message, data, errors };
+    if (pagination) response.pagination = pagination;
+    res.json(response);
+};
 
 exports.getAllGroups = async (req, res) => {
     try {
-        const data = await service.getAllGroups();
-        sendResponse(res, true, 'Groups retrieved', data);
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+        const result = await service.getAllGroups(page, limit);
+
+        const pagination = {
+            total: result.count,
+            page: page,
+            limit: limit || result.count,
+            totalPages: limit ? Math.ceil(result.count / limit) : 1,
+            hasNext: limit ? page * limit < result.count : false
+        };
+
+        sendResponse(res, true, 'Groups retrieved', result.rows, null, pagination);
     } catch (e) { sendResponse(res, false, 'Failed', null, { message: e.message }); }
 };
 
 exports.getGroupById = async (req, res) => {
     try {
-        const data = await service.getGroupById(req.params.id);
-        if (!data) return sendResponse(res, false, 'Not found');
+        const item = await service.getGroupById(req.params.id);
+        if (!item) return sendResponse(res, false, 'Not found');
+
+        const data = item.get({ plain: true });
+        try { data.Members = JSON.parse(data.Members || '[]'); } catch (e) { data.Members = []; }
+
         sendResponse(res, true, 'Group retrieved', data);
     } catch (e) { sendResponse(res, false, 'Failed', null, { message: e.message }); }
 };

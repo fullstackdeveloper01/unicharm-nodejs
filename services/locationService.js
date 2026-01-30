@@ -3,16 +3,30 @@ const { Location } = db;
 
 const { Op } = require('sequelize');
 
-exports.getAllLocations = async () => {
-    return await Location.findAll({
-        where: {
-            [Op.or]: [
-                { IsDeleted: false },
-                { IsDeleted: null },
-                { IsDeleted: 0 }
-            ]
-        }
-    });
+exports.getAllLocations = async (page = 1, limit = null, zoneId = null) => {
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const whereClause = {
+        [Op.or]: [
+            { IsDeleted: false },
+            { IsDeleted: null },
+            { IsDeleted: 0 }
+        ]
+    };
+    if (zoneId) whereClause.ZoneId = zoneId;
+
+    const queryOptions = {
+        where: whereClause
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    return await Location.findAndCountAll(queryOptions);
 };
 
 exports.getLocationById = async (id) => {

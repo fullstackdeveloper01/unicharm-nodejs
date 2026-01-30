@@ -22,6 +22,10 @@ const Department = sequelize.define('Department', {
   CostCenter: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  Category: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   tableName: 'Departments',
@@ -29,3 +33,4 @@ const Department = sequelize.define('Department', {
 });
 
 module.exports = Department;
+// Model updated with Category field

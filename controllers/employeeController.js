@@ -21,20 +21,49 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Helper for standard response
-const sendResponse = (res, success, message, data = null, errors = null) => {
-  res.json({
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+  const response = {
     success,
     message,
     data,
     errors
-  });
+  };
+
+  if (pagination) {
+    response.pagination = pagination;
+  }
+
+  res.json(response);
 };
 
 // Get all employees
 exports.getAllEmployees = async (req, res) => {
   try {
-    const employees = await employeeService.getAllEmployees();
-    sendResponse(res, true, 'Employees retrieved successfully', employees);
+    const page = parseInt(req.query.page) || 1;
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+    // Filters
+    const filters = {
+      departmentId: req.query.departmentId ? parseInt(req.query.departmentId) : null,
+      designationId: req.query.designationId ? parseInt(req.query.designationId) : null,
+      roleId: req.query.roleId ? parseInt(req.query.roleId) : null,
+      unitId: req.query.unitId ? parseInt(req.query.unitId) : null,
+      zoneId: req.query.zoneId ? parseInt(req.query.zoneId) : null,
+      locationId: req.query.locationId ? parseInt(req.query.locationId) : null,
+      search: req.query.search || ''
+    };
+
+    const result = await employeeService.getAllEmployees(page, limit, filters);
+
+    const pagination = {
+      total: result.count,
+      page: page,
+      limit: limit || result.count,
+      totalPages: limit ? Math.ceil(result.count / limit) : 1,
+      hasNext: limit ? page * limit < result.count : false
+    };
+
+    sendResponse(res, true, 'Employees retrieved successfully', result.rows, null, pagination);
   } catch (error) {
     sendResponse(res, false, 'Failed to retrieve employees', null, { message: error.message });
   }

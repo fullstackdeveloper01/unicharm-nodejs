@@ -1,20 +1,29 @@
 const designationService = require('../services/designationService');
 
 // Helper for standard response
-const sendResponse = (res, success, message, data = null, errors = null) => {
-  res.json({
-    success,
-    message,
-    data,
-    errors
-  });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+  const response = { success, message, data, errors };
+  if (pagination) response.pagination = pagination;
+  res.json(response);
 };
 
 // Get all designations
 exports.getAllDesignations = async (req, res) => {
   try {
-    const designations = await designationService.getAllDesignations();
-    sendResponse(res, true, 'Designations retrieved successfully', designations);
+    const page = parseInt(req.query.page) || 1;
+    const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+    const result = await designationService.getAllDesignations(page, limit);
+
+    const pagination = {
+      total: result.count,
+      page: page,
+      limit: limit || result.count,
+      totalPages: limit ? Math.ceil(result.count / limit) : 1,
+      hasNext: limit ? page * limit < result.count : false
+    };
+
+    sendResponse(res, true, 'Designations retrieved successfully', result.rows, null, pagination);
   } catch (error) {
     sendResponse(res, false, 'Failed to retrieve designations', null, { message: error.message });
   }
@@ -39,7 +48,7 @@ exports.getDesignationById = async (req, res) => {
 // Create designation
 exports.createDesignation = async (req, res) => {
   try {
-    const { DesignationName, DepartmentId } = req.body;
+    const { DesignationName, DepartmentId, Category } = req.body;
 
     if (!DesignationName) {
       return sendResponse(res, false, 'Designation name is required');
@@ -53,7 +62,7 @@ exports.createDesignation = async (req, res) => {
       }
     }
 
-    const designation = await designationService.createDesignation({ DesignationName, DepartmentId });
+    const designation = await designationService.createDesignation({ DesignationName, DepartmentId, Category });
     res.status(201);
     sendResponse(res, true, 'Designation created successfully', designation);
   } catch (error) {
@@ -65,7 +74,7 @@ exports.createDesignation = async (req, res) => {
 exports.updateDesignation = async (req, res) => {
   try {
     const { id } = req.params;
-    const { DesignationName, DepartmentId } = req.body;
+    const { DesignationName, DepartmentId, Category } = req.body;
 
     const designation = await designationService.getDesignationById(id);
     if (!designation) {
@@ -80,7 +89,7 @@ exports.updateDesignation = async (req, res) => {
       }
     }
 
-    const updatedDesignation = await designationService.updateDesignation(designation, { DesignationName, DepartmentId });
+    const updatedDesignation = await designationService.updateDesignation(designation, { DesignationName, DepartmentId, Category });
     sendResponse(res, true, 'Designation updated successfully', updatedDesignation);
   } catch (error) {
     sendResponse(res, false, 'Failed to update designation', null, { message: error.message });

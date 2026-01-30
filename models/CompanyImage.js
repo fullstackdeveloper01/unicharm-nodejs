@@ -15,6 +15,14 @@ const CompanyImage = sequelize.define('CompanyImage', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  Type: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  ShowType: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   CreatedOn: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW

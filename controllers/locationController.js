@@ -1,10 +1,27 @@
 const locationService = require('../services/locationService');
-const sendResponse = (res, success, message, data = null, errors = null) => res.json({ success, message, data, errors });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+    const response = { success, message, data, errors };
+    if (pagination) response.pagination = pagination;
+    res.json(response);
+};
 
 exports.getAllLocations = async (req, res) => {
     try {
-        const data = await locationService.getAllLocations();
-        sendResponse(res, true, 'Locations retrieved', data);
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+        const zoneId = req.query.zoneId ? parseInt(req.query.zoneId) : null;
+
+        const result = await locationService.getAllLocations(page, limit, zoneId);
+
+        const pagination = {
+            total: result.count,
+            page: page,
+            limit: limit || result.count,
+            totalPages: limit ? Math.ceil(result.count / limit) : 1,
+            hasNext: limit ? page * limit < result.count : false
+        };
+
+        sendResponse(res, true, 'Locations retrieved', result.rows, null, pagination);
     } catch (e) { sendResponse(res, false, 'Failed', null, { message: e.message }); }
 };
 

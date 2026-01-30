@@ -21,20 +21,30 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Helper for standard response
-const sendResponse = (res, success, message, data = null, errors = null) => {
-    res.json({
-        success,
-        message,
-        data,
-        errors
-    });
+const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
+    const response = { success, message, data, errors };
+    if (pagination) response.pagination = pagination;
+    res.json(response);
 };
 
 // Get all popup images
 exports.getAllPopupImages = async (req, res) => {
     try {
-        const popupImages = await popupImageService.getAllPopupImages();
-        sendResponse(res, true, 'Popup images retrieved successfully', popupImages);
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+        const search = req.query.search || '';
+
+        const result = await popupImageService.getAllPopupImages(page, limit, search);
+
+        const pagination = {
+            total: result.count,
+            page: page,
+            limit: limit || result.count,
+            totalPages: limit ? Math.ceil(result.count / limit) : 1,
+            hasNext: limit ? page * limit < result.count : false
+        };
+
+        sendResponse(res, true, 'Popup images retrieved successfully', result.rows, null, pagination);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve popup images', null, { message: error.message });
     }
@@ -67,6 +77,8 @@ exports.createPopupImage = async (req, res) => {
             }
 
             try {
+                console.log('Create Popup Payload:', req.body);
+                console.log('Create Popup File:', req.file);
                 const { PopupType, ShowType } = req.body;
                 let imagePath = null;
 
@@ -75,7 +87,7 @@ exports.createPopupImage = async (req, res) => {
                 }
 
                 const popupImage = await popupImageService.createPopupImage({
-                    PopupType,
+                    PopupType: PopupType || req.body.Type, // Handle potential key mismatch
                     ShowType,
                     Image: imagePath
                 });
@@ -103,12 +115,18 @@ exports.updatePopupImage = async (req, res) => {
             }
 
             try {
+                console.log(`Update Popup ${id} Payload:`, req.body);
+                console.log(`Update Popup ${id} File:`, req.file);
                 const popupImage = await popupImageService.getPopupImageById(id);
                 if (!popupImage) {
                     return sendResponse(res, false, 'Popup image not found');
                 }
 
-                const updateData = { ...req.body };
+                const { PopupType, ShowType } = req.body;
+                const updateData = {
+                    PopupType: PopupType || req.body.Type,
+                    ShowType
+                };
 
                 if (req.file) {
                     updateData.Image = `/uploads/popup-images/${req.file.filename}`;
