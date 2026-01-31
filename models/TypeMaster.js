@@ -3,12 +3,16 @@ const sequelize = require('../config/database');
 
 const TypeMaster = sequelize.define('TypeMaster', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  TypeName: {
+  Title: {
     type: DataTypes.STRING,
+    allowNull: true
+  },
+  Description: {
+    type: DataTypes.TEXT,
     allowNull: true
   },
   CreatedOn: {
@@ -20,7 +24,7 @@ const TypeMaster = sequelize.define('TypeMaster', {
     defaultValue: false
   }
 }, {
-  tableName: 'TypeMasters',
+  tableName: 'TypeMaster',
   timestamps: false
 });
 

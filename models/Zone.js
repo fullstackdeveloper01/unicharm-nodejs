@@ -28,7 +28,7 @@ const Zone = sequelize.define('Zone', {
     defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'Zones',
+  tableName: 'zones',
   timestamps: false
 });
 

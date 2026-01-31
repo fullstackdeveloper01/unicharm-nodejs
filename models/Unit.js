@@ -24,7 +24,7 @@ const Unit = sequelize.define('Unit', {
     defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'Units',
+  tableName: 'units',
   timestamps: false
 });
 

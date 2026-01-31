@@ -7,7 +7,7 @@ const PhotoGallery = sequelize.define('PhotoGallery', {
     primaryKey: true,
     autoIncrement: true
   },
-  MainImage: {
+  Image: {
     type: DataTypes.TEXT,
     allowNull: true
   },
@@ -15,13 +15,11 @@ const PhotoGallery = sequelize.define('PhotoGallery', {
     type: DataTypes.STRING,
     allowNull: true
   },
-  AdditionalImages: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
+  // AdditionalImages column removed as per user feedback/DB schema
+  // MainImage mapped to Image by correcting the field name
   CreatedOn: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+    type: DataTypes.STRING,
+    allowNull: true
   },
   IsDeleted: {
     type: DataTypes.BOOLEAN,
