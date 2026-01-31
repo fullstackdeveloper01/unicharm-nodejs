@@ -1,7 +1,0 @@
-Found 6 new meetings:
-ID: 101 | Date: '2021-01-07' | Time: 14-15 | User: 184 | Loc: undefined Fl: undefined Rm: undefined
-ID: 102 | Date: '2023-12-25' | Time: 10-11.5 | User: 1 | Loc: undefined Fl: undefined Rm: undefined
-ID: 103 | Date: '2026-01-29' | Time: 12-13.5 | User: 1 | Loc: undefined Fl: undefined Rm: undefined
-ID: 104 | Date: '2026-01-29' | Time: 11.5-12 | User: 1 | Loc: undefined Fl: undefined Rm: undefined
-ID: 105 | Date: '2026-01-30' | Time: 12-12.5 | User: 10427 | Loc: undefined Fl: undefined Rm: undefined
-ID: 106 | Date: '2026-01-31' | Time: 12.5-13 | User: 95 | Loc: undefined Fl: undefined Rm: undefined

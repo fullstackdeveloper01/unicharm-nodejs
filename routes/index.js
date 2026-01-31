@@ -1,98 +1,42 @@
 const express = require('express');
 const router = express.Router();
 
-// Import route modules
-const employeeRoutes = require('./employeeRoutes');
-const departmentRoutes = require('./departmentRoutes');
-const designationRoutes = require('./designationRoutes');
-const roleRoutes = require('./roleRoutes');
-const accountantRoutes = require('./accountantRoutes');
-const homeRoutes = require('./homeRoutes');
-const ticketRoutes = require('./ticketRoutes');
-const employeeAppRoutes = require('./employee/index');
-
-const { verifyToken } = require('../middleware/authMiddleware');
-
-// Public routes (No Token Required)
-router.use('/auth', require('./authRoutes'));
-
-// Root API route
+// Root API Message
 router.get('/', (req, res) => {
   res.json({
-    message: 'EMS Admin API',
-    version: '1.0.0',
-    endpoints: {
-      employees: '/api/employees',
-      departments: '/api/departments',
-      health: '/api/health'
-    }
+    message: 'Unicharm Nodejs API',
+    version: '1.0.0'
   });
 });
 
-// Health check route
+// Health check
 router.get('/health', (req, res) => {
   res.json({
     success: true,
-    message: 'EMS Admin API is running',
-    timestamp: new Date().toISOString()
+    message: 'Unicharm Nodejs API is running'
   });
 });
 
-// Alias for /signin in api route (e.g., /api/signin)
-router.all('/signin', (req, res) => {
-  res.redirect(307, '/api/auth/login');
-});
+// Portal Routes
+// We mount them at root because the portal indexes define specific sub-routes like /employees
+// However, to avoid collision, validation is needed.
+// superAdmin index defines /employees. 
+// If we mount it at '/', it becomes /api/employees. Correct.
 
-// Employee App Routes (Partial public access handled inside)
-router.use('/employee', employeeAppRoutes);
+router.use('/', require('./superAdmin'));
+router.use('/employee/intra', require('./employee/intra')); // Wait, old index had /employee -> employeeAppRoutes
+// BUT old employeeAppRoutes had /home, /profile. So /api/employee/home.
+// My generated index for intra uses /home, /employees.
+// So mounting at /employee/intra is likely correct for Namespacing, OR /employee.
+// User's old index: router.use('/employee', employeeAppRoutes);
+// So I will mount at /employee.
 
-// Protected Routes (Token Required)
-router.use(verifyToken);
+router.use('/employee/expense', require('./employee/expense'));
+router.use('/accountant', require('./accountant'));
+router.use('/auditor', require('./auditor'));
 
-// API routes
-router.use('/employees', employeeRoutes);
-
-router.use(['/departments', '/department'], departmentRoutes);
-router.use(['/designations', '/designation'], designationRoutes);
-router.use(['/roles', '/role'], roleRoutes);
-router.use(['/accountants', '/accountant'], accountantRoutes);
-router.use('/home', homeRoutes);
-router.use(['/tickets', '/ticket'], ticketRoutes);
-router.use(['/walls', '/wall'], require('./wallRoutes'));
-router.use(['/notices', '/notice'], require('./noticeRoutes'));
-router.use(['/policies', '/policy'], require('./policyRoutes'));
-router.use(['/holidays', '/holiday'], require('./holidayRoutes'));
-router.use(['/products', '/product'], require('./productRoutes'));
-router.use(['/quotes', '/quote'], require('./quoteRoutes'));
-router.use(['/chorei-messages', '/chorei-message'], require('./choreiMessageRoutes'));
-router.use(['/news', '/news-item'], require('./newsRoutes'));
-router.use(['/events', '/event'], require('./eventRoutes'));
-router.use(['/photo-galleries', '/photo-gallery'], require('./photoGalleryRoutes'));
-router.use(['/slider-images', '/slider-image'], require('./sliderImageRoutes'));
-router.use(['/popup-images', '/popup-image'], require('./popupImageRoutes'));
-router.use(['/login-details', '/login-detail'], require('./loginDetailRoutes'));
-router.use(['/sales-price-policies', '/sales-price-policy', '/salespricepolicies'], require('./salesPricePolicyRoutes'));
-router.use(['/corporate-price-policies', '/corporate-price-policy', '/corporatepricepolicies'], require('./corporatePricePolicyRoutes'));
-router.use(['/emergency-response', '/emergency-response-network'], require('./emergencyResponseRoutes'));
-router.use(['/expense-locations', '/expense-location'], require('./expenseLocationRoutes'));
-router.use(['/locations', '/location'], require('./locationRoutes'));
-router.use(['/floors', '/floor'], require('./floorRoutes'));
-router.use(['/rooms', '/room'], require('./roomRoutes'));
-router.use(['/meeting-notifications', '/meeting-notification'], require('./meetingNotificationRoutes'));
-router.use(['/meeting-requests', '/meeting-request'], require('./meetingRequest.routes'));
-router.use('/meeting-booking', require('./meetingBooking.routes'));
-router.use('/meeting-schedule', require('./meetingSchedule.routes'));
-router.use(['/groups', '/group'], require('./groupRoutes'));
-router.use(['/categories', '/category'], require('./categoryRoutes'));
-router.use(['/priorities', '/priority'], require('./priorityRoutes'));
-router.use(['/cities', '/city'], require('./cityRoutes'));
-router.use(['/auditors', '/auditor'], require('./auditorRoutes'));
-// router.use('/accountants', require('./accountantRoutes')); // duplicate already imported
-router.use(['/units', '/unit'], require('./unitRoutes'));
-router.use(['/zones', '/zone'], require('./zoneRoutes'));
-router.use(['/currencies', '/currency'], require('./currencyMasterRoutes'));
-router.use(['/claims', '/claim'], require('./claimRoutes'));
-router.use(['/messages', '/message'], require('./messageRoutes'));
-
+// Note: superAdmin routes were previously at root (/api/employees).
+// So we mount superAdmin at '/'.
+router.use('/', require('./superAdmin'));
 
 module.exports = router;

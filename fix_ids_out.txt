@@ -1,5 +1,0 @@
---- Fixing Missing IDs ---
-Current Max ID: 104. Next ID: 105
-Found 0 records with invalid ID.
-IDs fixed. Now attempting to enable AUTO_INCREMENT...
-Failed to enable AUTO_INCREMENT: Incorrect table definition; there can be only one auto column and it must be defined as a key
