@@ -4,22 +4,26 @@ const fs = require('fs');
 
 const { Op } = require('sequelize');
 
+
 /**
  * Get all walls
- * @returns {Promise<Object>} List of walls
+ * @param {number} page
+ * @param {number} limit
+ * @param {string} search
+ * @returns {Promise<Object>} { count, rows }
  */
-exports.getAllWalls = async (page = 1, limit = null, search = '') => {
-    const whereClause = { IsDeleted: false };
+exports.getAllWalls = async (page = 1, limit = 10, search = '') => {
+    const where = { IsDeleted: false };
 
     if (search) {
-        whereClause[Op.or] = [
+        where[Op.or] = [
             { Title: { [Op.like]: `%${search}%` } },
             { Description: { [Op.like]: `%${search}%` } }
         ];
     }
 
     const queryOptions = {
-        where: whereClause,
+        where,
         include: [
             { model: Employee, as: 'addedBy', attributes: ['Id', 'FirstName', 'LastName', 'UserPhoto'] },
             {
@@ -29,7 +33,7 @@ exports.getAllWalls = async (page = 1, limit = null, search = '') => {
             },
             {
                 model: WallComment,
-                as: 'comments',
+                as: 'comments', // Note: Comments are fetched. If this creates too much data, consider separate API or limit.
                 where: { IsDeleted: false },
                 required: false,
                 include: [{ model: Employee, as: 'employee', attributes: ['Id', 'FirstName', 'LastName', 'UserPhoto'] }]
