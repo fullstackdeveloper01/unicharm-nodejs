@@ -1,5 +1,4 @@
 
-const profileService = require('../../../services/employee/intra/profile.service.js'); // For employee details
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -16,9 +15,34 @@ const {
     TicketAssignee,
     TicketFeedback,
     TicketFollower,
-    Department
+    Department,
+    Designation,
+    Role
 } = require('../../../models');
 const { Op } = require('sequelize');
+
+// --- Inline profile service logic ---
+
+/**
+ * Get employee profile by ID
+ * @param {number} employeeId 
+ * @returns {Promise<Object>}
+ */
+const getProfile = async (employeeId) => {
+    try {
+        const employee = await Employee.findByPk(employeeId, {
+            include: [
+                { model: Department, as: 'department', attributes: ['Id', 'DepartmentName'] },
+                { model: Designation, as: 'designation', attributes: ['Id', 'DesignationName'] },
+                { model: Role, as: 'role', attributes: ['Id', 'RoleName'] }
+            ]
+        });
+        return employee;
+    } catch (error) {
+        console.error('Error in getProfile:', error);
+        throw error;
+    }
+};
 
 // --- Business Logic (Merged) ---
 
@@ -655,7 +679,7 @@ exports.getTicketDetails = async (req, res) => {
 // 2) NEW TICKET
 exports.getEmployeeDetails = async (req, res) => {
     try {
-        const data = await profileService.getProfile(req.user.id);
+        const data = await getProfile(req.user.id);
         sendResponse(res, true, data, 'Employee details fetched successfully');
     } catch (error) {
         sendResponse(res, false, null, error.message);

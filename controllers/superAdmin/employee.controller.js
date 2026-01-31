@@ -3,7 +3,6 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const storedProcedureService = require('../../services/superAdmin/storedProcedure.service.js');
 const { Op } = require('sequelize');
 
 // --- Business Logic (Merged) ---

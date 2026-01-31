@@ -1,5 +1,23 @@
-const storedProcedureService = require('../../services/superAdmin/storedProcedure.service.js');
+const sequelize = require('../../config/database');
+const { QueryTypes } = require('sequelize');
 const jwt = require('jsonwebtoken');
+
+// Inline stored procedure call
+const checkLogin = async (email, password) => {
+    try {
+        const results = await sequelize.query(
+            'CALL CheckLogin(:email, :password)',
+            {
+                replacements: { email, password },
+                type: QueryTypes.RAW
+            }
+        );
+        return results;
+    } catch (error) {
+        console.error('Error in checkLogin SP:', error);
+        throw error;
+    }
+};
 
 exports.login = async (req, res) => {
     try {
@@ -21,7 +39,7 @@ exports.login = async (req, res) => {
         }
 
         console.log(`Authenticating ${email} against Employee table`);
-        const result = await storedProcedureService.checkLogin(email, password);
+        const result = await checkLogin(email, password);
         console.log('SP CheckLogin Result:', JSON.stringify(result, null, 2));
 
         if (!result || (Array.isArray(result) && result.length === 0)) {

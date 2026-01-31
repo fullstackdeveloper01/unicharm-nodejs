@@ -1,6 +1,55 @@
 
-const storedProcedureService = require('../../services/superAdmin/storedProcedure.service.js'); // Kept only for non-dashboard items if any remaining
 const db = require('../../models/superAdmin');
+const sequelize = require('../../config/database');
+const { QueryTypes } = require('sequelize');
+
+// --- Inline Stored Procedure Calls ---
+
+/**
+ * Get login details
+ * @param {Object} params 
+ * @returns {Promise<Array>}
+ */
+const getLoginDetail = async (params) => {
+  try {
+    const results = await sequelize.query(
+      'CALL GetLoginDetail(:employeeId, :startDate, :endDate)',
+      {
+        replacements: {
+          employeeId: params.employeeId || null,
+          startDate: params.startDate || null,
+          endDate: params.endDate || null
+        },
+        type: QueryTypes.RAW
+      }
+    );
+    return results;
+  } catch (error) {
+    console.error('Error in getLoginDetail SP:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get meetings for user
+ * @param {number} employeeId 
+ * @returns {Promise<Array>}
+ */
+const getMeetingsForUser = async (employeeId) => {
+  try {
+    const results = await sequelize.query(
+      'CALL GetMeetingsForUser(:employeeId)',
+      {
+        replacements: { employeeId },
+        type: QueryTypes.RAW
+      }
+    );
+    return results;
+  } catch (error) {
+    console.error('Error in getMeetingsForUser SP:', error);
+    throw error;
+  }
+};
 
 // --- Business Logic (Merged) ---
 
@@ -10,7 +59,7 @@ const db = require('../../models/superAdmin');
  * @returns {Promise<Array>} List of upcoming birthdays
  */
 const getUpcomingBirthdays = async () => {
-    return await db.Employee.getUpcomingBirthdays();
+  return await db.Employee.getUpcomingBirthdays();
 };
 
 /**
@@ -18,7 +67,7 @@ const getUpcomingBirthdays = async () => {
  * @returns {Promise<Array>} List of work anniversaries
  */
 const getWorkAnniversaries = async () => {
-    return await db.Dashboard.getWorkAnniversary();
+  return await db.Dashboard.getWorkAnniversary();
 };
 
 /**
@@ -26,7 +75,7 @@ const getWorkAnniversaries = async () => {
  * @returns {Promise<Array>} List of company policies
  */
 const getCompanyPolicies = async () => {
-    return await db.Dashboard.getRecentPolicies();
+  return await db.Dashboard.getRecentPolicies();
 };
 
 /**
@@ -34,7 +83,7 @@ const getCompanyPolicies = async () => {
  * @returns {Promise<Array>} List of recent news
  */
 const getRecentNews = async () => {
-    return await db.Dashboard.getRecentNews();
+  return await db.Dashboard.getRecentNews();
 };
 
 /**
@@ -42,7 +91,7 @@ const getRecentNews = async () => {
  * @returns {Promise<Array>} List of upcoming events
  */
 const getUpcomingEvents = async () => {
-    return await db.Dashboard.getRecentEvent();
+  return await db.Dashboard.getRecentEvent();
 };
 
 // -----------------------------
@@ -148,10 +197,7 @@ exports.getWorkAnniversary = async (req, res) => {
 exports.getLoginDetail = async (req, res) => {
   try {
     const params = req.query;
-    // This calls storedProcedureService directly as it wasn't requested in the dashboard API list specifically to be refactored, 
-    // but better to move it if I can. However, strict instructions say "Do NOT refactor... unless required". 
-    // I'll keep it as is for now, but standardize response.
-    const loginDetails = await storedProcedureService.getLoginDetail(params);
+    const loginDetails = await getLoginDetail(params);
     sendResponse(res, true, 'Login details retrieved successfully', loginDetails);
   } catch (error) {
     console.error('Error in getLoginDetail:', error);
@@ -167,7 +213,7 @@ exports.getMeetingsForUser = async (req, res) => {
       return sendResponse(res, false, 'Employee ID is required', null, { message: 'Employee ID is missing' });
     }
 
-    const meetings = await storedProcedureService.getMeetingsForUser(parseInt(employeeId));
+    const meetings = await getMeetingsForUser(parseInt(employeeId));
     sendResponse(res, true, 'Meetings retrieved successfully', meetings);
   } catch (error) {
     console.error('Error in getMeetingsForUser:', error);

@@ -1,7 +1,34 @@
 
 const { Ticket, TicketReply, Employee } = require('../../models/superAdmin');
+const sequelize = require('../../config/database');
+const { QueryTypes } = require('sequelize');
 
-const storedProcedureService = require('../../services/superAdmin/storedProcedure.service.js');
+// Inline stored procedure call
+const getTicketForAssignee = async (employeeId = null) => {
+  try {
+    if (employeeId) {
+      const results = await sequelize.query(
+        'CALL GetTicketForAssignee(:employeeId)',
+        {
+          replacements: { employeeId },
+          type: QueryTypes.RAW
+        }
+      );
+      return results;
+    } else {
+      const results = await sequelize.query(
+        'CALL GetTicketForAssignee()',
+        {
+          type: QueryTypes.RAW
+        }
+      );
+      return results;
+    }
+  } catch (error) {
+    console.error('Error in getTicketForAssignee SP:', error);
+    throw error;
+  }
+};
 
 // Get tickets for assignee using stored procedure
 exports.getTicketsForAssignee = async (req, res) => {
@@ -10,9 +37,9 @@ exports.getTicketsForAssignee = async (req, res) => {
 
     let tickets;
     if (employeeId) {
-      tickets = await storedProcedureService.getTicketForAssignee(parseInt(employeeId));
+      tickets = await getTicketForAssignee(parseInt(employeeId));
     } else {
-      tickets = await storedProcedureService.getTicketForAssignee();
+      tickets = await getTicketForAssignee();
     }
 
     res.json({ success: true, data: tickets });
