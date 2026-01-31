@@ -3,7 +3,7 @@ const sequelize = require('../../config/database');
 
 const Employee = sequelize.define('Employee', {
   Id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
@@ -16,26 +16,26 @@ const Employee = sequelize.define('Employee', {
     allowNull: true
   },
   DepartmentId: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Departments',
+      model: 'departments',
       key: 'Id'
     }
   },
   DesignationId: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Designation',
+      model: 'designation',
       key: 'Id'
     }
   },
   RoleId: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Roles',
+      model: 'roles',
       key: 'Id'
     }
   },
@@ -152,7 +152,7 @@ const Employee = sequelize.define('Employee', {
     allowNull: true
   },
   SecretaryId: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     allowNull: true
   }
 }, {

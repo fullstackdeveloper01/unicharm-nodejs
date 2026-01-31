@@ -1,5 +1,5 @@
 
-const Dashboard = require('../../../models');
+const { Dashboard } = require('../../../models/superAdmin');
 const { Op } = require('sequelize');
 
 // --- Business Logic (Merged) ---

@@ -31,7 +31,7 @@ const Wall = sequelize.define('Wall', {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Employees',
+      model: 'employees',
       key: 'Id'
     }
   }

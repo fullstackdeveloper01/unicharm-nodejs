@@ -3,7 +3,7 @@ const sequelize = require('../../config/database');
 
 const Designation = sequelize.define('Designation', {
   Id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
@@ -12,10 +12,10 @@ const Designation = sequelize.define('Designation', {
     allowNull: false
   },
   DepartmentId: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Departments',
+      model: 'departments',
       key: 'Id'
     }
   },

@@ -8,18 +8,18 @@ const WallComment = sequelize.define('WallComment', {
         autoIncrement: true
     },
     WallId: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Wall',
+            model: 'wall',
             key: 'Id'
         }
     },
     EmployeeId: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Employees',
+            model: 'employees',
             key: 'Id'
         }
     },

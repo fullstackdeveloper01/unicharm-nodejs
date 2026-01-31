@@ -3,7 +3,7 @@ const sequelize = require('../../config/database');
 
 const Auditor = sequelize.define('Auditors', {
   Id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },

@@ -3,15 +3,15 @@ const sequelize = require('../../config/database');
 
 const Accountant = sequelize.define('Accountant', {
   Id: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
   EmployeeId: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     allowNull: true,
     references: {
-      model: 'Employees',
+      model: 'employees',
       key: 'Id'
     }
   },
