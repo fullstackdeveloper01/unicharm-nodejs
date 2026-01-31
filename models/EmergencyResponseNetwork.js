@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const EmergencyResponseNetwork = sequelize.define('EmergencyResponseNetwork', {
+const EmergencyResponseNetwork = sequelize.define('emergencyResponseNetwork', {
     Id: {
         type: DataTypes.BIGINT,
         primaryKey: true,

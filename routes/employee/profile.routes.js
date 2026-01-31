@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const profileController = require('../../controllers/employee/profile.controller');
-const verifyToken = require('../../middlewares/auth.middleware');
-
-// All routes require authentication
-router.use(verifyToken);
+// verifyToken is already applied in index.js, no need to re-apply
 
 router.get('/', profileController.getProfile);
 router.post('/update', profileController.uploadMiddleware, profileController.updateProfile);

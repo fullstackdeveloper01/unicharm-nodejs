@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Policy = sequelize.define('Policy', {
+const Policy = sequelize.define('Policies', {
   Id: {
     type: DataTypes.BIGINT,
     primaryKey: true,

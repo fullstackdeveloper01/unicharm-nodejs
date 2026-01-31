@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Zone = sequelize.define('Zone', {
+const Zone = sequelize.define('zone', {
   Id: {
     type: DataTypes.BIGINT,
     primaryKey: true,

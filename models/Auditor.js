@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Auditor = sequelize.define('Auditor', {
+const Auditor = sequelize.define('Auditors', {
   Id: {
     type: DataTypes.BIGINT,
     primaryKey: true,

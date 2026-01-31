@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Message = sequelize.define('Message', {
+const Message = sequelize.define('Messages', {
   Id: {
     type: DataTypes.BIGINT,
     primaryKey: true,

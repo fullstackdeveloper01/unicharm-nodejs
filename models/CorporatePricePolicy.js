@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const CorporatePricePolicy = sequelize.define('CorporatePricePolicy', {
+const CorporatePricePolicy = sequelize.define('corporate_price_policy', {
     Id: {
         type: DataTypes.BIGINT,
         primaryKey: true,

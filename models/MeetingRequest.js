@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const MeetingRequest = sequelize.define('MeetingRequest', {
+const MeetingRequest = sequelize.define('MeetingDetails', {
     Id: {
         type: DataTypes.BIGINT,
         primaryKey: true,
