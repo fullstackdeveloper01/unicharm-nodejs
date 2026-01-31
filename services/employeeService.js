@@ -25,9 +25,9 @@ exports.getAllEmployees = async (page = 1, limit = null, filters = {}) => {
     if (filters.departmentId) whereClause.DepartmentId = filters.departmentId;
     if (filters.designationId) whereClause.DesignationId = filters.designationId;
     if (filters.roleId) whereClause.RoleId = filters.roleId;
-    if (filters.unitId) whereClause.UnitId = filters.unitId;
-    if (filters.zoneId) whereClause.ZoneId = filters.zoneId;
-    if (filters.locationId) whereClause.LocationId = filters.locationId;
+    if (filters.unitId) whereClause.Unit = filters.unitId;
+    if (filters.zoneId) whereClause.Zone = filters.zoneId;
+    if (filters.locationId) whereClause.Location = filters.locationId;
 
     // Add search functionality
     if (filters.search) {
@@ -44,14 +44,9 @@ exports.getAllEmployees = async (page = 1, limit = null, filters = {}) => {
             { model: Department, as: 'department', attributes: ['Id', 'DepartmentName'] },
             { model: Designation, as: 'designation', attributes: ['Id', 'DesignationName'] },
             { model: Role, as: 'role', attributes: ['Id', 'RoleName'] },
-            { model: Unit, as: 'unit' },
-            { model: Zone, as: 'zone' },
-            { model: Location, as: 'location' },
-            {
-                model: Employee,
-                as: 'supervisor',
-                attributes: ['Id', 'FirstName', 'LastName']
-            },
+            { model: Unit, as: 'unitDetails', attributes: ['Id', 'Title'], required: false },
+            { model: Zone, as: 'zoneDetails', attributes: ['Id', 'Title'], required: false },
+            { model: Location, as: 'locationDetails', attributes: ['Id', 'LocationName'], required: false }
         ],
         order: [['CreatedOn', 'DESC']]
     };
@@ -72,6 +67,9 @@ exports.getAllEmployees = async (page = 1, limit = null, filters = {}) => {
         Email: emp.Email,
         Department: emp.department ? emp.department.DepartmentName : '',
         Designation: emp.designation ? emp.designation.DesignationName : '',
+        Unit: emp.unitDetails ? emp.unitDetails.Title : (emp.Unit || ''),
+        Zone: emp.zoneDetails ? emp.zoneDetails.Title : (emp.Zone || ''),
+        Location: emp.locationDetails ? emp.locationDetails.LocationName : (emp.Location || ''),
         UserPhoto: emp.UserPhoto || '/Images/Profile/user-avatar.jpg',
         IsDeleted: emp.IsDeleted
     }));
@@ -90,9 +88,7 @@ exports.getEmployeeById = async (id) => {
             { model: Department, as: 'department' },
             { model: Designation, as: 'designation' },
             { model: Role, as: 'role' },
-            { model: Unit, as: 'unit' },
-            { model: Zone, as: 'zone' },
-            { model: Location, as: 'location' }
+
         ]
     });
 };
@@ -215,17 +211,17 @@ exports.selectEmployees = async () => {
 exports.selectUnits = async () => {
     const units = await Unit.findAll({
         where: { IsDeleted: false },
-        attributes: ['Id', 'UnitName']
+        attributes: ['Id', 'Title']
     });
-    return units.map(unit => ({ value: unit.Id, text: unit.UnitName, label: unit.UnitName }));
+    return units.map(unit => ({ value: unit.Id, text: unit.Title, label: unit.Title }));
 };
 
 exports.selectZones = async () => {
     const zones = await Zone.findAll({
         where: { IsDeleted: false },
-        attributes: ['Id', 'ZoneName']
+        attributes: ['Id', 'Title']
     });
-    return zones.map(zone => ({ value: zone.Id, text: zone.ZoneName, label: zone.ZoneName }));
+    return zones.map(zone => ({ value: zone.Id, text: zone.Title, label: zone.Title }));
 };
 
 exports.selectLocations = async () => {

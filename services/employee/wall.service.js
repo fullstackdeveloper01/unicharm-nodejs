@@ -2,13 +2,24 @@ const db = require('../../models');
 const { Wall, Employee, WallLike, WallComment } = db;
 const fs = require('fs');
 
+const { Op } = require('sequelize');
+
 /**
  * Get all walls
- * @returns {Promise<Array>} List of walls
+ * @returns {Promise<Object>} List of walls
  */
-exports.getAllWalls = async () => {
-    return await Wall.findAll({
-        where: { IsDeleted: false },
+exports.getAllWalls = async (page = 1, limit = null, search = '') => {
+    const whereClause = { IsDeleted: false };
+
+    if (search) {
+        whereClause[Op.or] = [
+            { Title: { [Op.like]: `%${search}%` } },
+            { Description: { [Op.like]: `%${search}%` } }
+        ];
+    }
+
+    const queryOptions = {
+        where: whereClause,
         include: [
             { model: Employee, as: 'addedBy', attributes: ['Id', 'FirstName', 'LastName', 'UserPhoto'] },
             {
@@ -24,8 +35,16 @@ exports.getAllWalls = async () => {
                 include: [{ model: Employee, as: 'employee', attributes: ['Id', 'FirstName', 'LastName', 'UserPhoto'] }]
             }
         ],
+        distinct: true,
         order: [['CreatedOn', 'DESC']]
-    });
+    };
+
+    if (limit) {
+        queryOptions.limit = parseInt(limit);
+        queryOptions.offset = (parseInt(page) - 1) * parseInt(limit);
+    }
+
+    return await Wall.findAndCountAll(queryOptions);
 };
 
 /**

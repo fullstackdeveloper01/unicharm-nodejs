@@ -44,7 +44,16 @@ exports.getAllPopupImages = async (req, res) => {
             hasNext: limit ? page * limit < result.count : false
         };
 
-        sendResponse(res, true, 'Popup images retrieved successfully', result.rows, null, pagination);
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const rows = result.rows.map(row => {
+            const data = row.getDataValue ? row.get({ plain: true }) : row;
+            if (data.Image && !data.Image.startsWith('http')) {
+                data.Image = `${baseUrl}${data.Image}`;
+            }
+            return data;
+        });
+
+        sendResponse(res, true, 'Popup images retrieved successfully', rows, null, pagination);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve popup images', null, { message: error.message });
     }
@@ -60,7 +69,13 @@ exports.getPopupImageById = async (req, res) => {
             return sendResponse(res, false, 'Popup image not found');
         }
 
-        sendResponse(res, true, 'Popup image retrieved successfully', popupImage);
+        const data = popupImage.getDataValue ? popupImage.get({ plain: true }) : popupImage;
+        if (data.Image && !data.Image.startsWith('http')) {
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            data.Image = `${baseUrl}${data.Image}`;
+        }
+
+        sendResponse(res, true, 'Popup image retrieved successfully', data);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve popup image', null, { message: error.message });
     }

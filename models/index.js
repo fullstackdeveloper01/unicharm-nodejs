@@ -70,9 +70,11 @@ Zone.belongsTo(Unit, { foreignKey: 'Unit', as: 'unit', constraints: false });
 Unit.hasMany(ExpenseLocation, { foreignKey: 'UnitId', as: 'expenseLocations', constraints: false });
 ExpenseLocation.belongsTo(Unit, { foreignKey: 'UnitId', as: 'unit', constraints: false });
 
-// Associations for Employee (Unit, Zone, Location) are removed because in the legacy schema
-// these fields in Employee are Strings, whereas the referenced tables have Integer/BigInt IDs.
-// We cannot form a Foreign Key relationship.
+// Associations for Employee (Unit, Zone, Location) re-enabled.
+// Note: Employee fields are Strings, referenced IDs are numbers. Implicit casting relies on DB engine.
+Employee.belongsTo(Unit, { foreignKey: 'Unit', as: 'unitDetails', constraints: false });
+Employee.belongsTo(Zone, { foreignKey: 'Zone', as: 'zoneDetails', constraints: false });
+Employee.belongsTo(Location, { foreignKey: 'Location', as: 'locationDetails', constraints: false });
 
 Location.hasMany(Floor, { foreignKey: 'LocationId', as: 'floors' });
 Floor.belongsTo(Location, { foreignKey: 'LocationId', as: 'location' });
