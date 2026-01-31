@@ -6,9 +6,27 @@ const fs = require('fs');
  * Get all walls
  * @returns {Promise<Array>} List of walls
  */
-exports.getAllWalls = async () => {
-    return await Wall.findAll({
-        where: { IsDeleted: false },
+const { Op } = require('sequelize');
+
+/**
+ * Get all walls
+ * @param {number} page
+ * @param {number} limit
+ * @param {string} search
+ * @returns {Promise<Object>} { count, rows }
+ */
+exports.getAllWalls = async (page = 1, limit = 10, search = '') => {
+    const where = { IsDeleted: false };
+
+    if (search) {
+        where[Op.or] = [
+            { Title: { [Op.like]: `%${search}%` } },
+            { Description: { [Op.like]: `%${search}%` } }
+        ];
+    }
+
+    const queryOptions = {
+        where,
         include: [
             { model: Employee, as: 'addedBy', attributes: ['Id', 'FirstName', 'LastName', 'UserPhoto'] },
             {
@@ -18,14 +36,22 @@ exports.getAllWalls = async () => {
             },
             {
                 model: WallComment,
-                as: 'comments',
+                as: 'comments', // Note: Comments are fetched. If this creates too much data, consider separate API or limit.
                 where: { IsDeleted: false },
                 required: false,
                 include: [{ model: Employee, as: 'employee', attributes: ['Id', 'FirstName', 'LastName', 'UserPhoto'] }]
             }
         ],
+        distinct: true,
         order: [['CreatedOn', 'DESC']]
-    });
+    };
+
+    if (limit) {
+        queryOptions.limit = parseInt(limit);
+        queryOptions.offset = (page - 1) * limit;
+    }
+
+    return await Wall.findAndCountAll(queryOptions);
 };
 
 /**

@@ -148,6 +148,14 @@ exports.getDropdowns = async (type, query) => {
         return await Employee.findAll({
             attributes: ['Id', 'FirstName', 'LastName', 'DesignationId'],
             where: { IsDeleted: false },
+            include: [
+                {
+                    model: Department,
+                    as: 'department',
+                    where: { DepartmentName: 'IT' },
+                    attributes: []
+                }
+            ],
             limit: 100 // Prevent too many
         });
     }
@@ -380,7 +388,7 @@ exports.getTicketReplies = async (ticketId) => {
             } else {
                 userPhoto = `/${userPhoto}`; // Ensure leading slash if missing
             }
-            userPhoto = `${process.env.BASE_URL || 'http://localhost:4000'}${userPhoto}`;
+            userPhoto = `${process.env.BASE_URL || 'http://localhost:3000'}${userPhoto}`;
         }
 
         // Handle attachment URL in Reply text if stored there, or if we have a separate logic.
@@ -390,12 +398,12 @@ exports.getTicketReplies = async (ticketId) => {
         let attachment = null;
         let message = reply.Reply;
 
-        if (reply.ReplyType === 'Attachment' || reply.ReplyType === 'Image') {
+        if (reply.ReplyType === 'Attachment' || reply.ReplyType === 'Image' || reply.ReplyType === 'File') {
             // If message contains a path
             attachment = message;
             // Ensure full URL
             if (attachment && !attachment.startsWith('http')) {
-                attachment = `${process.env.BASE_URL || 'http://localhost:4000'}${attachment.startsWith('/') ? '' : '/'}${attachment}`;
+                attachment = `${process.env.BASE_URL || 'http://localhost:3000'}${attachment.startsWith('/') ? '' : '/'}${attachment}`;
             }
             message = 'Sent an attachment'; // Display text
         }
