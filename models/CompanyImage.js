@@ -22,10 +22,6 @@ const CompanyImage = sequelize.define('CompanyImage', {
   ImageName: {
     type: DataTypes.STRING,
     allowNull: true
-  },
-  ShowType: {
-    type: DataTypes.STRING,
-    allowNull: true
   }
 }, {
   tableName: 'CompanyImages',
