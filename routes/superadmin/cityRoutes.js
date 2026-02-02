@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/cityController');
+const controller = require('../../controllers/superadmin/cityController');
 
 router.get('/', controller.getAllCities);
 router.get('/:id', controller.getCityById);

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const policyController = require('../controllers/policyController');
+const policyController = require('../../controllers/superadmin/policyController');
 
 // Policy CRUD routes
 router.get('/', policyController.getAllPolicies);

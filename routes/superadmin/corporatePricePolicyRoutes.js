@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const corporatePricePolicyController = require('../controllers/corporatePricePolicyController');
+const corporatePricePolicyController = require('../../controllers/superadmin/corporatePricePolicyController');
 
 // CRUD routes
 router.get('/', corporatePricePolicyController.getAllCorporatePricePolicies);

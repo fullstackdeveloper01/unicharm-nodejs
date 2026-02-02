@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const eventController = require('../controllers/eventController');
+const eventController = require('../../controllers/superadmin/eventController');
 
 // Event CRUD routes
 router.get('/', eventController.getAllEvents);

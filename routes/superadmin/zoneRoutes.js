@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/zoneController');
+const controller = require('../../controllers/superadmin/zoneController');
 
 router.get('/', controller.getAllZones);
 router.get('/:id', controller.getZoneById);

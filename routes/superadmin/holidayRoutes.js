@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const holidayController = require('../controllers/holidayController');
+const holidayController = require('../../controllers/superadmin/holidayController');
 
 // Holiday CRUD routes
 router.get('/', holidayController.getAllHolidays);

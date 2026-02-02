@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const emergencyResponseController = require('../controllers/emergencyResponseController');
+const emergencyResponseController = require('../../controllers/superadmin/emergencyResponseController');
 
 // CRUD routes
 router.get('/', emergencyResponseController.getAllRecords);

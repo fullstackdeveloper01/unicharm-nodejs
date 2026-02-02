@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/currencyMasterController');
+const controller = require('../../controllers/superadmin/currencyMasterController');
 
 router.get('/', controller.getAllCurrencies);
 router.get('/:id', controller.getCurrencyById);

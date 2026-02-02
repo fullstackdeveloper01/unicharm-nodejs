@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const meetingScheduleController = require('../controllers/meetingSchedule.controller');
+const meetingScheduleController = require('../../controllers/superadmin/meetingSchedule.controller');
 
 // GET Location List
 router.get('/locations', meetingScheduleController.getLocations);

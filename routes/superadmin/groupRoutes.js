@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/groupController');
+const controller = require('../../controllers/superadmin/groupController');
 
 router.get('/', controller.getAllGroups);
 router.get('/:id', controller.getGroupById);

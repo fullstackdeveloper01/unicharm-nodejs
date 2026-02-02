@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const sliderImageController = require('../controllers/sliderImageController');
+const sliderImageController = require('../../controllers/superadmin/sliderImageController');
 
 // Slider Image CRUD routes
 router.get('/', sliderImageController.getAllSliderImages);

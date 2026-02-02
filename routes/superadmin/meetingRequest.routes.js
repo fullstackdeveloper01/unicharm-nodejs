@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const meetingRequestController = require('../controllers/meetingRequest.controller');
+const meetingRequestController = require('../../controllers/superadmin/meetingRequest.controller');
 
 const verifyToken = require('../middlewares/auth.middleware');
 

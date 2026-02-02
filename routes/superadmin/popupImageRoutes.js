@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const popupImageController = require('../controllers/popupImageController');
+const popupImageController = require('../../controllers/superadmin/popupImageController');
 
 // Popup Image CRUD routes
 router.get('/', popupImageController.getAllPopupImages);

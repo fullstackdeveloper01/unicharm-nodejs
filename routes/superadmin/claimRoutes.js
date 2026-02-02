@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/claimController');
+const controller = require('../../controllers/superadmin/claimController');
 
 router.get('/', controller.getAllClaims);
 router.get('/:id', controller.getClaimById);

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/unitController');
+const controller = require('../../controllers/superadmin/unitController');
 
 router.get('/', controller.getAllUnits);
 router.get('/:id', controller.getUnitById);

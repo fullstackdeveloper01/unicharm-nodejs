@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const quoteController = require('../controllers/quoteController');
+const quoteController = require('../../controllers/superadmin/quoteController');
 
 // Quote CRUD routes
 router.get('/', quoteController.getAllQuotes);

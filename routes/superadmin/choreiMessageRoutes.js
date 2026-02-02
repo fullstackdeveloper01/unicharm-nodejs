@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const choreiMessageController = require('../controllers/choreiMessageController');
+const choreiMessageController = require('../../controllers/superadmin/choreiMessageController');
 
 // Chorei Message CRUD routes
 router.get('/', choreiMessageController.getAllChoreiMessages);

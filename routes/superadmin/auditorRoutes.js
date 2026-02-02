@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/auditorController');
+const controller = require('../../controllers/superadmin/auditorController');
 
 router.get('/', controller.getAllAuditors);
 router.get('/:id', controller.getAuditorById);

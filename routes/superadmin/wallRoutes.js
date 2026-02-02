@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const wallController = require('../controllers/employee/wall.controller');
+const wallController = require('../../controllers/employee/wall.controller');
 
 // Wall CRUD routes
 router.get('/', wallController.getAllWalls);

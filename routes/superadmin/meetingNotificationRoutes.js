@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const meetingNotificationController = require('../controllers/meetingNotificationController');
+const meetingNotificationController = require('../../controllers/superadmin/meetingNotificationController');
 
 router.get('/', meetingNotificationController.getAllNotifications);
 router.get('/:id', meetingNotificationController.getNotificationById);

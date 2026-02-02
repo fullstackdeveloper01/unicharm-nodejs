@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const expenseLocationController = require('../controllers/expenseLocationController');
+const expenseLocationController = require('../../controllers/superadmin/expenseLocationController');
 
 router.get('/', expenseLocationController.getAllExpenseLocations);
 router.get('/:id', expenseLocationController.getExpenseLocationById);

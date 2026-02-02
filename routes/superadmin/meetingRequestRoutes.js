@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const meetingRequestController = require('../controllers/meetingRequestController');
+const meetingRequestController = require('../../controllers/superadmin/meetingRequestController');
 
 router.get('/', meetingRequestController.getAllRequests);
 router.get('/:id', meetingRequestController.getRequestById);

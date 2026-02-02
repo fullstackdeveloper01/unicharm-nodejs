@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const floorController = require('../controllers/floorController');
+const floorController = require('../../controllers/superadmin/floorController');
 
 router.get('/', floorController.getAllFloors);
 router.get('/dropdown', floorController.getFloorsDropdown);

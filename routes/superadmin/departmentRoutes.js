@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const departmentController = require('../controllers/departmentController');
+const departmentController = require('../../controllers/superadmin/departmentController');
 
 // Department CRUD routes
 router.get('/', departmentController.getAllDepartments);

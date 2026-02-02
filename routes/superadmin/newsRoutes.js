@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const newsController = require('../controllers/newsController');
+const newsController = require('../../controllers/superadmin/newsController');
 
 // News CRUD routes
 router.get('/', newsController.getAllNews);

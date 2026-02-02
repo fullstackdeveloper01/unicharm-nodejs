@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const photoGalleryController = require('../controllers/photoGalleryController');
+const photoGalleryController = require('../../controllers/superadmin/photoGalleryController');
 
 // Photo Gallery CRUD routes
 router.get('/', photoGalleryController.getAllPhotoGalleries);

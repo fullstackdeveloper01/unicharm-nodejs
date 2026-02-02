@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const designationController = require('../controllers/designationController');
+const designationController = require('../../controllers/superadmin/designationController');
 
 // Designation CRUD routes
 router.get('/', designationController.getAllDesignations);

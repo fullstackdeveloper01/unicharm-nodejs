@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/priorityController');
+const controller = require('../../controllers/superadmin/priorityController');
 
 router.get('/', controller.getAllPriorities);
 router.get('/:id', controller.getPriorityById);
