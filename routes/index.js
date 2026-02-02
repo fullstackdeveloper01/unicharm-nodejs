@@ -92,6 +92,7 @@ router.use(['/zones', '/zone'], require('./superadmin/zoneRoutes'));
 router.use(['/currencies', '/currency'], require('./superadmin/currencyMasterRoutes'));
 router.use(['/claims', '/claim'], require('./superadmin/claimRoutes'));
 router.use(['/messages', '/message'], require('./superadmin/messageRoutes'));
+router.use(['/categories', '/category'], require('./superadmin/category.routes'));
 
 
 module.exports = router;
