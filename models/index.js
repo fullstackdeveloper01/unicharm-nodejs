@@ -19,6 +19,7 @@ const Holiday = require('./Holiday');
 const News = require('./News');
 const QuoteOfTheDay = require('./QuoteOfTheDay');
 const Group = require('./Group');
+const Category = require('./Category');
 const MeetingNotification = require('./MeetingNotification');
 const Accountant = require('./Accountant');
 const Auditor = require('./Auditor');
@@ -143,6 +144,7 @@ const db = {
   News,
   QuoteOfTheDay,
   Group,
+  Category,
   MeetingNotification,
   MeetingRequest,
   Accountant,
