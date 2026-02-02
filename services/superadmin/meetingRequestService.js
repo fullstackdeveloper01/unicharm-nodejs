@@ -8,7 +8,17 @@ exports.getAllRequests = async (page = 1, limit = null, search = '') => {
     if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
 
     const queryOptions = {
-        where: { IsDeleted: false },
+        where: {
+            IsDeleted: {
+                [Op.or]: [
+                    { [Op.eq]: 0 },
+                    { [Op.eq]: false },
+                    { [Op.is]: null },
+                    { [Op.eq]: '0' },
+                    { [Op.eq]: 'false' }
+                ]
+            }
+        },
         include: [
             {
                 model: Room,
@@ -21,11 +31,14 @@ exports.getAllRequests = async (page = 1, limit = null, search = '') => {
                 include: [{ model: db.Department, as: 'department', attributes: ['DepartmentName'] }]
             }
         ],
-        order: [['StartTime', 'DESC']]
+        order: [['CreatedOn', 'DESC']]
     };
 
     if (search) {
-        queryOptions.where.Title = { [Op.like]: `%${search}%` };
+        queryOptions.where[Op.or] = [
+            { Title: { [Op.like]: `%${search}%` } },
+            { Purpose: { [Op.like]: `%${search}%` } }
+        ];
     }
 
     if (limitNumber) {
