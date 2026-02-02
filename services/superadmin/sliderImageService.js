@@ -11,7 +11,17 @@ exports.getAllSliderImages = async (page = 1, limit = null, search = '') => {
     let limitNumber = parseInt(limit);
     if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
 
-    const whereClause = { IsDeleted: false };
+    const whereClause = {
+        IsDeleted: {
+            [Op.or]: [
+                { [Op.eq]: 0 },
+                { [Op.eq]: false },
+                { [Op.is]: null },
+                { [Op.eq]: '0' },
+                { [Op.eq]: 'false' }
+            ]
+        }
+    };
     if (search) whereClause.Title = { [Op.like]: `%${search}%` };
 
     const queryOptions = {
