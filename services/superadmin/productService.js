@@ -3,16 +3,7 @@ const { Product } = db;
 const fs = require('fs');
 const { Op } = require('sequelize');
 
-const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
 
-exports.transformProduct = (product) => {
-    if (!product) return null;
-    const json = product.toJSON ? product.toJSON() : product;
-    if (json.UserPhoto && !json.UserPhoto.startsWith('http')) {
-        json.UserPhoto = `${baseUrl}${json.UserPhoto}`;
-    }
-    return json;
-};
 
 /**
  * Get all products
@@ -33,7 +24,7 @@ exports.getAllProducts = async (page = 1, limit = null, search = '') => {
 
     if (search) {
         whereClause[Op.and] = whereClause[Op.and] || [];
-        whereClause[Op.and].push({ Title: { [Op.like]: `%${search}%` } });
+        whereClause[Op.and].push({ Name: { [Op.like]: `%${search}%` } });
     }
 
     const queryOptions = {
@@ -47,7 +38,7 @@ exports.getAllProducts = async (page = 1, limit = null, search = '') => {
     }
 
     const { count, rows } = await Product.findAndCountAll(queryOptions);
-    return { count, rows: rows.map(exports.transformProduct) };
+    return { count, rows };
 };
 
 /**
@@ -70,7 +61,7 @@ exports.createProduct = async (data) => {
         CreatedOn: new Date(),
         IsDeleted: false
     });
-    return exports.transformProduct(product);
+    return product;
 };
 
 /**
@@ -89,7 +80,7 @@ exports.updateProduct = async (product, data) => {
         }
     }
     const updatedProduct = await product.update(data);
-    return exports.transformProduct(updatedProduct);
+    return updatedProduct;
 };
 
 /**

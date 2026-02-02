@@ -44,7 +44,17 @@ exports.getAllProducts = async (req, res) => {
             hasNext: limit ? page * limit < result.count : false
         };
 
-        sendResponse(res, true, 'Products retrieved successfully', result.rows, null, pagination);
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const rows = result.rows.map(row => {
+            const data = row.getDataValue ? row.get({ plain: true }) : row;
+            if (data.UserPhoto && !data.UserPhoto.startsWith('http')) {
+                data.UserPhoto = `${baseUrl}${data.UserPhoto}`;
+            }
+            data.Image = data.UserPhoto;
+            return data;
+        });
+
+        sendResponse(res, true, 'Products retrieved successfully', rows, null, pagination);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve products', null, { message: error.message });
     }
@@ -60,8 +70,14 @@ exports.getProductById = async (req, res) => {
             return sendResponse(res, false, 'Product not found');
         }
 
-        const transformedProduct = productService.transformProduct(product);
-        sendResponse(res, true, 'Product retrieved successfully', transformedProduct);
+        const data = product.getDataValue ? product.get({ plain: true }) : product;
+        if (data.UserPhoto && !data.UserPhoto.startsWith('http')) {
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            data.UserPhoto = `${baseUrl}${data.UserPhoto}`;
+        }
+        data.Image = data.UserPhoto;
+
+        sendResponse(res, true, 'Product retrieved successfully', data);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve product', null, { message: error.message });
     }
@@ -93,8 +109,15 @@ exports.createProduct = async (req, res) => {
                     UserPhoto: userPhoto
                 });
 
+                const data = product.getDataValue ? product.get({ plain: true }) : product;
+                if (data.UserPhoto && !data.UserPhoto.startsWith('http')) {
+                    const baseUrl = `${req.protocol}://${req.get('host')}`;
+                    data.UserPhoto = `${baseUrl}${data.UserPhoto}`;
+                }
+                data.Image = data.UserPhoto;
+
                 res.status(201);
-                sendResponse(res, true, 'Product created successfully', product);
+                sendResponse(res, true, 'Product created successfully', data);
             } catch (error) {
                 sendResponse(res, false, 'Failed to create product', null, { message: error.message });
             }
@@ -130,7 +153,14 @@ exports.updateProduct = async (req, res) => {
                 }
 
                 const updatedProduct = await productService.updateProduct(product, updateData);
-                sendResponse(res, true, 'Product updated successfully', updatedProduct);
+                const data = updatedProduct.getDataValue ? updatedProduct.get({ plain: true }) : updatedProduct;
+                if (data.UserPhoto && !data.UserPhoto.startsWith('http')) {
+                    const baseUrl = `${req.protocol}://${req.get('host')}`;
+                    data.UserPhoto = `${baseUrl}${data.UserPhoto}`;
+                }
+                data.Image = data.UserPhoto;
+
+                sendResponse(res, true, 'Product updated successfully', data);
             } catch (error) {
                 sendResponse(res, false, 'Failed to update product', null, { message: error.message });
             }
