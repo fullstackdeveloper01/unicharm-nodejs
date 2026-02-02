@@ -7,83 +7,53 @@ const MeetingRequest = sequelize.define('MeetingRequest', {
         primaryKey: true,
         autoIncrement: true
     },
-    LocationId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        field: 'Location'
-    },
-    FloorId: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        field: 'Floor'
-    },
     RoomId: {
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'Room'
+    },
+    CreatedOn: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        field: 'CreatedOn'
+    },
+    IsDeleted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        field: 'IsDeleted'
     },
     Purpose: {
         type: DataTypes.TEXT,
         allowNull: true,
         field: 'Purpose'
     },
-    Date: {
-        type: DataTypes.STRING, // Schema says 'text', usually YYYY-MM-DD
-        allowNull: true,
-        field: 'Date'
-    },
-    TimeFrom: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: 'TimeFrom'
-    },
-    TimeTo: {
-        type: DataTypes.DOUBLE,
-        allowNull: true,
-        field: 'TimeTo'
-    },
-    Status: {
+    AproveStatus: {
         type: DataTypes.STRING,
         defaultValue: 'Pending',
         field: 'AproveStatus'
-    },
-    ApprovedBy: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        field: 'AprovedBy'
-    },
-    ApproveComment: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: 'AproveComment'
-    },
-    ApproveTime: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        field: 'AproveTime'
     },
     UserId: {
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'UserId'
     },
-    CreatedOn: {
-        type: DataTypes.STRING, // Schema says 'text' like '2020-12-25 08:46:45'
-        defaultValue: DataTypes.NOW, // Sequelize will try to put date object, might need hook or just let it stringify
-        field: 'CreatedOn'
+    Title: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        field: 'Title'
     },
-    IsDeleted: {
-        type: DataTypes.STRING, // Schema says text? 'IsDeleted text'. Wait, usually boolean.
-        // Sample data shows empty strings.
-        // Let's assume 'true'/'false' or '1'/'0' string. Or just boolean if sequelize handles it.
-        // Input schema says "IsDeleted text".
-        // I will match it as STRING but handle it as boolean logic.
-        defaultValue: 'false',
-        field: 'IsDeleted'
+    StartTime: {
+        type: DataTypes.STRING, // Using STRING for safety as data not shown, could be TIME/DATETIME
+        allowNull: true,
+        field: 'StartTime'
+    },
+    EndTime: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        field: 'EndTime'
     }
 }, {
-    tableName: 'meetingdetails', // Lowercase as per schema? Or MeetingDetails? Sample says 'meetingdetails'.
-    // User schema header: "Table: meetingdetails"
+    tableName: 'MeetingDetails',
     timestamps: false
 });
 

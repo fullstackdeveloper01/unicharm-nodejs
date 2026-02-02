@@ -3,25 +3,9 @@ const sequelize = require('../config/database');
 
 const CompanyImage = sequelize.define('CompanyImage', {
   Id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
-  },
-  ImagePath: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  ImageName: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  Type: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  ShowType: {
-    type: DataTypes.STRING,
-    allowNull: true
   },
   CreatedOn: {
     type: DataTypes.DATE,
@@ -30,6 +14,14 @@ const CompanyImage = sequelize.define('CompanyImage', {
   IsDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  ImagePath: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  ImageName: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   tableName: 'CompanyImages',
