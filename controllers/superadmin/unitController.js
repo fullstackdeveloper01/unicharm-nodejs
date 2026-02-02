@@ -1,4 +1,4 @@
-const service = require('../services/unitService');
+const service = require('../../services/superadmin/unitService');
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
     const response = { success, message, data, errors };
     if (pagination) response.pagination = pagination;

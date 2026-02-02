@@ -1,6 +1,6 @@
 const db = require('../models');
 const { Ticket, TicketReply, Employee } = db;
-const storedProcedureService = require('../services/storedProcedureService');
+const storedProcedureService = require('../../services/storedProcedureService');
 
 // Get tickets for assignee using stored procedure
 exports.getTicketsForAssignee = async (req, res) => {

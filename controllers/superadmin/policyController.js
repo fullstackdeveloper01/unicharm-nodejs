@@ -1,4 +1,4 @@
-const policyService = require('../services/policyService');
+const policyService = require('../../services/superadmin/policyService');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

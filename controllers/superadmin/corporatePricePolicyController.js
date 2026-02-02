@@ -1,4 +1,4 @@
-const corporatePricePolicyService = require('../services/corporatePricePolicyService');
+const corporatePricePolicyService = require('../../services/superadmin/corporatePricePolicyService');
 const { validationResult } = require('express-validator');
 const multer = require('multer');
 

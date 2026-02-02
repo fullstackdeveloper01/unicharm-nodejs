@@ -1,4 +1,4 @@
-const quoteService = require('../services/quoteService');
+const quoteService = require('../../services/superadmin/quoteService');
 
 // Helper for standard response
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {

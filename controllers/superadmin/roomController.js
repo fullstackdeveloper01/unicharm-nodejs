@@ -1,4 +1,4 @@
-const roomService = require('../services/roomService');
+const roomService = require('../../services/superadmin/roomService');
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
     const response = { success, message, data, errors };
     if (pagination) response.pagination = pagination;

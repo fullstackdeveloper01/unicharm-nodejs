@@ -1,4 +1,4 @@
-const locationService = require('../services/locationService');
+const locationService = require('../../services/superadmin/locationService');
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
     const response = { success, message, data, errors };
     if (pagination) response.pagination = pagination;

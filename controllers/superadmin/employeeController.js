@@ -1,4 +1,4 @@
-const employeeService = require('../services/employeeService');
+const employeeService = require('../../services/superadmin/employeeService');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

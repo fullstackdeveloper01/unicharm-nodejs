@@ -1,4 +1,4 @@
-const eventService = require('../services/eventService');
+const eventService = require('../../services/superadmin/eventService');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

@@ -1,4 +1,4 @@
-const floorService = require('../services/floorService');
+const floorService = require('../../services/superadmin/floorService');
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
     const response = { success, message, data, errors };
     if (pagination) response.pagination = pagination;

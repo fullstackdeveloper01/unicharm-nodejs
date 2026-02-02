@@ -1,4 +1,4 @@
-const service = require('../services/accountantService');
+const service = require('../../services/superadmin/accountantService');
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
   const response = { success, message, data, errors };
   if (pagination) response.pagination = pagination;

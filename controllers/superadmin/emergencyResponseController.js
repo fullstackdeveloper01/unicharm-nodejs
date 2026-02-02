@@ -1,4 +1,4 @@
-const emergencyResponseService = require('../services/emergencyResponseService');
+const emergencyResponseService = require('../../services/superadmin/emergencyResponseService');
 const { validationResult } = require('express-validator'); // Kept if used elsewhere, but mainly manual validation now
 const multer = require('multer');
 const path = require('path');

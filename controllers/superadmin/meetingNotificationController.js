@@ -1,4 +1,4 @@
-const meetingNotificationService = require('../services/meetingNotificationService');
+const meetingNotificationService = require('../../services/superadmin/meetingNotificationService');
 const sendResponse = (res, success, message, data = null, errors = null) => res.json({ success, message, data, errors });
 
 exports.getAllNotifications = async (req, res) => {

@@ -1,4 +1,4 @@
-const popupImageService = require('../services/popupImageService');
+const popupImageService = require('../../services/superadmin/popupImageService');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

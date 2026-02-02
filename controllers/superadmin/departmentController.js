@@ -1,4 +1,4 @@
-const departmentService = require('../services/departmentService');
+const departmentService = require('../../services/superadmin/departmentService');
 
 // Helper for standard response (could be shared, but copying for now to keep it self-contained as per instructions)
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {

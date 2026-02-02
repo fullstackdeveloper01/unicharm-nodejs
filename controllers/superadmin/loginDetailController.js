@@ -1,4 +1,4 @@
-const loginDetailService = require('../services/loginDetailService');
+const loginDetailService = require('../../services/superadmin/loginDetailService');
 
 // Helper for standard response
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {

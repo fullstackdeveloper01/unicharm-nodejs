@@ -1,4 +1,4 @@
-const holidayService = require('../services/holidayService');
+const holidayService = require('../../services/superadmin/holidayService');
 
 // Helper for standard response
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {

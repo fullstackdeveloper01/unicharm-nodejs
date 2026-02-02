@@ -1,4 +1,4 @@
-const storedProcedureService = require('../services/storedProcedureService');
+const storedProcedureService = require('../../services/storedProcedureService');
 const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {

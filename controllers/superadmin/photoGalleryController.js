@@ -1,4 +1,4 @@
-const photoGalleryService = require('../services/photoGalleryService');
+const photoGalleryService = require('../../services/superadmin/photoGalleryService');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

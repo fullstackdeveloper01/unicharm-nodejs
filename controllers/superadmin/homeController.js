@@ -1,5 +1,5 @@
-const homeService = require('../services/homeService');
-const storedProcedureService = require('../services/storedProcedureService'); // Kept only for non-dashboard items if any remaining
+const homeService = require('../../services/superadmin/homeService');
+const storedProcedureService = require('../../services/storedProcedureService'); // Kept only for non-dashboard items if any remaining
 
 // Helper for standard response
 const sendResponse = (res, success, message, data = null, errors = null) => {

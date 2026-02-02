@@ -1,4 +1,4 @@
-const productService = require('../services/productService');
+const productService = require('../../services/superadmin/productService');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

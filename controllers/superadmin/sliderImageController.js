@@ -1,4 +1,4 @@
-const sliderImageService = require('../services/sliderImageService');
+const sliderImageService = require('../../services/superadmin/sliderImageService');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

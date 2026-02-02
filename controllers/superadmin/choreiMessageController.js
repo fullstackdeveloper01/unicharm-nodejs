@@ -1,4 +1,4 @@
-const choreiMessageService = require('../services/choreiMessageService');
+const choreiMessageService = require('../../services/superadmin/choreiMessageService');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

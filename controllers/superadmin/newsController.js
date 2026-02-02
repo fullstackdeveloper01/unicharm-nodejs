@@ -1,4 +1,4 @@
-const newsService = require('../services/newsService');
+const newsService = require('../../services/superadmin/newsService');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');

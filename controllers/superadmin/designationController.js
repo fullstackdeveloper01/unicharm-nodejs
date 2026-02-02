@@ -1,4 +1,4 @@
-const designationService = require('../services/designationService');
+const designationService = require('../../services/superadmin/designationService');
 
 // Helper for standard response
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
@@ -55,7 +55,7 @@ exports.createDesignation = async (req, res) => {
     }
 
     if (DepartmentId) {
-      const departmentService = require('../services/departmentService');
+      const departmentService = require('../../services/superadmin/departmentService');
       const dept = await departmentService.getDepartmentById(DepartmentId);
       if (!dept) {
         return sendResponse(res, false, 'Department not found');
@@ -82,7 +82,7 @@ exports.updateDesignation = async (req, res) => {
     }
 
     if (DepartmentId) {
-      const departmentService = require('../services/departmentService');
+      const departmentService = require('../../services/superadmin/departmentService');
       const dept = await departmentService.getDepartmentById(DepartmentId);
       if (!dept) {
         return sendResponse(res, false, 'Department not found');

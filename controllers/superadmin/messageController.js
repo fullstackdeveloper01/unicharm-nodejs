@@ -1,4 +1,4 @@
-const messageService = require('../services/messageService');
+const messageService = require('../../services/superadmin/messageService');
 
 // Helper for standard response
 const sendResponse = (res, success, message, data = null, errors = null) => {
