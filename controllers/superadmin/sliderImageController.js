@@ -78,6 +78,7 @@ exports.getSliderImageById = async (req, res) => {
             data.ImagePath = `${baseUrl}${data.ImagePath}`;
         }
 
+
         sendResponse(res, true, 'Slider image retrieved successfully', data);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve slider image', null, { message: error.message });
@@ -96,25 +97,23 @@ exports.createSliderImage = async (req, res) => {
             }
 
             try {
-                const { Title, ShowType } = req.body;
+                const { ImageName, CreatedOn } = req.body;
                 const createdSliderImages = [];
 
                 if (req.files && req.files.length > 0) {
                     for (const file of req.files) {
                         const sliderImage = await sliderImageService.createSliderImage({
-                            ImageName: Title || file.originalname,
-                            Type: Title,
-                            ShowType: ShowType,
+                            ImageName: ImageName || file.originalname,
+                            CreatedOn: CreatedOn,
                             Image: `/uploads/slider-images/${file.filename}`
                         });
                         createdSliderImages.push(sliderImage);
                     }
-                } else if (Title) {
+                } else if (ImageName) {
                     // CustomImage `Image` is allowNull: true.
                     const sliderImage = await sliderImageService.createSliderImage({
-                        ImageName: Title,
-                        Type: Title,
-                        ShowType: ShowType,
+                        ImageName: ImageName,
+                        CreatedOn: CreatedOn,
                         Image: null
                     });
                     createdSliderImages.push(sliderImage);
@@ -150,15 +149,14 @@ exports.updateSliderImage = async (req, res) => {
                     return sendResponse(res, false, 'Slider image not found');
                 }
 
-                const { Title, ShowType } = req.body;
+                const { ImageName, CreatedOn } = req.body;
                 const updateData = {};
 
-                if (Title) {
-                    updateData.ImageName = Title;
-                    updateData.Type = Title;
+                if (ImageName) {
+                    updateData.ImageName = ImageName;
                 }
-                if (ShowType) {
-                    updateData.ShowType = ShowType;
+                if (CreatedOn) {
+                    updateData.CreatedOn = CreatedOn;
                 }
 
                 if (req.files && req.files.length > 0) {
