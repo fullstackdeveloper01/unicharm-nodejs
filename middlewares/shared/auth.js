@@ -1,12 +1,14 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
+    const authHeader = req.headers['authorization'] || req.header('Authorization');
+
     if (!authHeader) {
         return res.status(403).json({ success: false, message: 'No token provided' });
     }
 
-    const token = authHeader.split(' ')[1]; // Bearer <token>
+    const token = authHeader.split(' ')[1] || authHeader.replace('Bearer ', '');
+
     if (!token) {
         return res.status(403).json({ success: false, message: 'No token provided' });
     }
@@ -20,4 +22,16 @@ const verifyToken = (req, res, next) => {
     });
 };
 
-module.exports = verifyToken;
+const verifyAdmin = (req, res, next) => {
+    // 1 = Admin, 2 = User, etc. Adjust based on your UserType logic
+    if (req.user && req.user.isAdmin) {
+        next();
+    } else {
+        res.status(403).json({ success: false, message: 'Access denied. Admin privileges required.' });
+    }
+};
+
+module.exports = {
+    verifyToken,
+    verifyAdmin
+};
