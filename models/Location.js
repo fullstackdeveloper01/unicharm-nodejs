@@ -20,7 +20,7 @@ const Location = sequelize.define('Location', {
     defaultValue: false
   }
 }, {
-  tableName: 'location',
+  tableName: 'Location',
   timestamps: false
 });
 
