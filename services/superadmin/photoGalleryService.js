@@ -56,6 +56,9 @@ exports.getPhotoGalleryById = async (id) => {
 };
 
 exports.createPhotoGallery = async (data) => {
+    if (data.AdditionalImages && typeof data.AdditionalImages !== 'string') {
+        data.AdditionalImages = JSON.stringify(data.AdditionalImages);
+    }
     return await PhotoGallery.create({
         ...data,
         CreatedOn: new Date(),
@@ -65,13 +68,18 @@ exports.createPhotoGallery = async (data) => {
 
 exports.updatePhotoGallery = async (gallery, data) => {
     // Handle Image replacement
-    if (data.Image && gallery.Image && data.Image !== gallery.Image) {
-        if (fs.existsSync(gallery.Image.replace('/', ''))) {
+    if (data.MainImage && gallery.MainImage && data.MainImage !== gallery.MainImage) {
+        if (fs.existsSync(gallery.MainImage.replace('/', ''))) {
             try {
-                fs.unlinkSync(gallery.Image.replace('/', ''));
+                fs.unlinkSync(gallery.MainImage.replace('/', ''));
             } catch (e) { console.error('Error deleting old image', e); }
         }
     }
+
+    if (data.AdditionalImages && typeof data.AdditionalImages !== 'string') {
+        data.AdditionalImages = JSON.stringify(data.AdditionalImages);
+    }
+
     return await gallery.update(data);
 };
 
