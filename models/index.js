@@ -45,7 +45,6 @@ const TicketFeedback = require('./TicketFeedback');
 const TicketFollower = require('./TicketFollower');
 
 const MeetingRequest = require('./MeetingRequest');
-const Category = require('./Category');
 const WallLike = require('./WallLike');
 const WallComment = require('./WallComment');
 const TodaysBirthdateAndAnniversary = require('./TodaysBirthdateAndAnniversary');
@@ -165,7 +164,6 @@ const db = {
   CurrencyMaster,
   ChoreiMessage,
   Dashboard,
-  Category,
   WallLike,
   WallComment,
   TodaysBirthdateAndAnniversary,

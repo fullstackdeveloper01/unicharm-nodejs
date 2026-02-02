@@ -31,6 +31,20 @@ router.use(['/categories', '/category'], require('./categoryRoutes'));
 
 **Location**: Line 86 (removed)
 
+### 2. models/index.js
+**Change**: Removed Category model import and export
+
+**Lines Removed**:
+```javascript
+const Category = require('./Category');  // Line 48
+```
+
+```javascript
+Category,  // Line 168 in db export object
+```
+
+**Location**: Lines 48 and 168 (removed)
+
 ---
 
 ## ✅ Verification
@@ -63,8 +77,9 @@ router.use(['/categories', '/category'], require('./categoryRoutes'));
 - 1 Route
 - 1 Service
 
-**Total Files Modified**: 1
+**Total Files Modified**: 2
 - routes/index.js (removed route registration)
+- models/index.js (removed Category model import and export)
 
 **No Breaking Changes**: The removal of the Category module does not affect:
 - Employee management
