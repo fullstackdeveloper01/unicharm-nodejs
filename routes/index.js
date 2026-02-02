@@ -83,7 +83,6 @@ router.use(['/meeting-requests', '/meeting-request'], require('./meetingRequest.
 router.use('/meeting-booking', require('./meetingBooking.routes'));
 router.use('/meeting-schedule', require('./meetingSchedule.routes'));
 router.use(['/groups', '/group'], require('./groupRoutes'));
-router.use(['/categories', '/category'], require('./categoryRoutes'));
 router.use(['/priorities', '/priority'], require('./priorityRoutes'));
 router.use(['/cities', '/city'], require('./cityRoutes'));
 router.use(['/auditors', '/auditor'], require('./auditorRoutes'));
