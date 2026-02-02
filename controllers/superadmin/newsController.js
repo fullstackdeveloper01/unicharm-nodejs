@@ -118,7 +118,11 @@ exports.updateNews = async (req, res) => {
                     return sendResponse(res, false, 'News not found');
                 }
 
-                const updateData = { ...req.body };
+                const { Title, Description } = req.body;
+                const updateData = {};
+
+                if (Title !== undefined) updateData.Title = Title;
+                if (Description !== undefined) updateData.Description = Description;
 
                 if (req.file) {
                     updateData.Image = `/uploads/news/${req.file.filename}`;
