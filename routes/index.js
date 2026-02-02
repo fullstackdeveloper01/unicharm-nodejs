@@ -11,7 +11,7 @@ const homeRoutes = require('./superadmin/homeRoutes');
 const ticketRoutes = require('./superadmin/ticketRoutes');
 const employeeAppRoutes = require('./employee/index');
 
-const { verifyToken } = require('../middleware/authMiddleware');
+const { verifyToken } = require('../middlewares/shared/auth');
 
 // Public routes (No Token Required)
 router.use('/auth', require('./superadmin/authRoutes'));

@@ -10,7 +10,7 @@ const wishRoutes = require('./wish.routes');
 const policyRoutes = require('./policy.routes');
 const ticketRoutes = require('./ticket.routes');
 
-const verifyToken = require('../../middlewares/auth.middleware');
+const { verifyToken } = require('../../middlewares/shared/auth');
 
 router.use('/auth', authRoutes);
 

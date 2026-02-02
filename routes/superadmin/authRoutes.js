@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../../controllers/superadmin/authController');
-const { verifyToken } = require('../middleware/authMiddleware');
+const { verifyToken } = require('../../middlewares/shared/auth');
 // Admin middleware can be used on protected routes, not on login itself usually.
 
 router.options('/login', (req, res) => {

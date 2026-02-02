@@ -2,7 +2,7 @@ const sliderImageService = require('../../services/superadmin/sliderImageService
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const db = require('../models');
+const db = require('../../models');
 // const { CustomImage } = db; // Removed as we use service abstraction
 
 // Configure multer for file uploads

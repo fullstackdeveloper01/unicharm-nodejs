@@ -136,7 +136,7 @@ exports.updatePhotoGallery = async (req, res) => {
                 }
 
                 // Need instance for update
-                const db = require('../models');
+                const db = require('../../models');
                 const galleryInstance = await db.PhotoGallery.findByPk(id);
 
                 const updateData = { ...req.body };
@@ -206,7 +206,7 @@ exports.deletePhotoGallery = async (req, res) => {
     try {
         const { id } = req.params;
         // We need model instance
-        const db = require('../models');
+        const db = require('../../models');
         const galleryInstance = await db.PhotoGallery.findByPk(id);
 
         if (!galleryInstance) {

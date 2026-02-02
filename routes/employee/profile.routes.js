@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const profileController = require('../../controllers/employee/profile.controller');
-const verifyToken = require('../../middlewares/auth.middleware');
+const { verifyToken } = require('../../middlewares/shared/auth');
 
 // All routes require authentication
 router.use(verifyToken);

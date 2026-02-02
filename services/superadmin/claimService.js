@@ -1,4 +1,4 @@
-const db = require('../models');
+const db = require('../../models');
 const { Claim, Employee } = db;
 
 exports.getAllClaims = async (page = 1, limit = null) => {

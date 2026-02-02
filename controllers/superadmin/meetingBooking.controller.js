@@ -1,4 +1,4 @@
-const { MeetingRequest, Room } = require('../models');
+const { MeetingRequest, Room } = require('../../models');
 const { Op } = require('sequelize');
 
 const sendResponse = (res, statusCode, success, message, data = null) => {

@@ -1,4 +1,4 @@
-const db = require('../models');
+const db = require('../../models');
 const { Ticket, TicketReply, Employee } = db;
 const storedProcedureService = require('../../services/storedProcedureService');
 

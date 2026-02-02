@@ -1,4 +1,4 @@
-const { MeetingRequest, Employee, Department, Room, Location, Floor } = require('../models');
+const { MeetingRequest, Employee, Department, Room, Location, Floor } = require('../../models');
 const { Op } = require('sequelize');
 
 // Helper to format response

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const wallController = require('../../controllers/employee/wall.controller');
-const verifyToken = require('../../middlewares/auth.middleware');
+const { verifyToken } = require('../../middlewares/shared/auth');
 
 // Routes
 router.get('/', verifyToken, wallController.getAllWalls);

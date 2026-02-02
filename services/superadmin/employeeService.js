@@ -1,6 +1,6 @@
-const db = require('../models');
+const db = require('../../models');
 const { Employee, Department, Designation, Role, Unit, Zone, Location } = db;
-const storedProcedureService = require('./storedProcedureService');
+const storedProcedureService = require('../storedProcedureService');
 const fs = require('fs');
 const { Op } = require('sequelize'); // Add this line to import Op
 

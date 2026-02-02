@@ -1,4 +1,4 @@
-const db = require('../models');
+const db = require('../../models');
 const { CurrencyMaster, Sequelize } = db;
 const { Op } = Sequelize;
 

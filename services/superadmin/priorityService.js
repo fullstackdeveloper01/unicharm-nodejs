@@ -1,4 +1,4 @@
-const db = require('../models');
+const db = require('../../models');
 const { PriorityMaster } = db;
 
 const { Op } = require('sequelize');

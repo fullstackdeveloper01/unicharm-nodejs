@@ -1,4 +1,4 @@
-const db = require('../models');
+const db = require('../../models');
 const { Wall, Employee } = db;
 const { Op } = require('sequelize');
 const fs = require('fs');

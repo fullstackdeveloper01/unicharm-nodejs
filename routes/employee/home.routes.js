@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const homeController = require('../../controllers/employee/home.controller');
-const verifyToken = require('../../middlewares/auth.middleware');
+const { verifyToken } = require('../../middlewares/shared/auth');
 
 // Note: Assuming these endpoints might need authentication. 
 // If public, remove key verifyToken. 

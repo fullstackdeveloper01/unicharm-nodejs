@@ -1,4 +1,4 @@
-const db = require('../models');
+const db = require('../../models');
 const { MeetingNotification } = db;
 
 const { Op } = require('sequelize');
