@@ -32,7 +32,17 @@ const Policy = sequelize.define('Policy', {
   },
   Image: {
     type: DataTypes.TEXT,
-    allowNull: true
+    allowNull: true,
+    field: 'Image' // Explicitly map to DB column 'Image'
+  },
+  PdfPath: { // Virtual field or alias for Image if used interchangeably in code
+    type: DataTypes.VIRTUAL,
+    get() {
+      return this.getDataValue('Image');
+    },
+    set(value) {
+      this.setDataValue('Image', value);
+    }
   },
   CreatedOn: {
     type: DataTypes.DATE,
@@ -43,7 +53,7 @@ const Policy = sequelize.define('Policy', {
     defaultValue: false
   }
 }, {
-  tableName: 'Policies',
+  tableName: 'policies',
   timestamps: false
 });
 
