@@ -102,7 +102,15 @@ exports.updateMessage = async (message, data) => {
         updateData.AddedBy = data.AddedBy;
     }
 
-    return await message.update(updateData);
+    await message.update(updateData);
+
+    // Reload with associations to get updated data
+    return await Message.findByPk(message.Id, {
+        include: [
+            { model: db.Role, as: 'role', attributes: ['Id', 'RoleName'] },
+            { model: db.Employee, as: 'addedBy', attributes: ['Id', 'FirstName', 'LastName'] }
+        ]
+    });
 };
 
 /**

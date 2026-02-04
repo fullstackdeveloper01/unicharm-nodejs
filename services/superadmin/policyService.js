@@ -35,7 +35,28 @@ exports.getAllPolicies = async (page = 1, limit = null, search = '') => {
         queryOptions.offset = (pageNumber - 1) * limitNumber;
     }
 
-    return await Policy.findAndCountAll(queryOptions);
+    const result = await Policy.findAndCountAll(queryOptions);
+
+    // Prepend base URL to PDF paths
+    const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
+    const rows = result.rows.map(policy => {
+        const p = policy.toJSON();
+        if (p.PdfPath) {
+            if (!p.PdfPath.startsWith('http')) {
+                const path = p.PdfPath.startsWith('/') ? p.PdfPath : `/${p.PdfPath}`;
+                p.PdfPath = `${baseUrl}${path}`;
+            }
+        }
+        if (p.Image) {
+            if (!p.Image.startsWith('http')) {
+                const path = p.Image.startsWith('/') ? p.Image : `/${p.Image}`;
+                p.Image = `${baseUrl}${path}`;
+            }
+        }
+        return p;
+    });
+
+    return { count: result.count, rows };
 };
 
 /**
@@ -44,7 +65,25 @@ exports.getAllPolicies = async (page = 1, limit = null, search = '') => {
  * @returns {Promise<Object>} Policy
  */
 exports.getPolicyById = async (id) => {
-    return await Policy.findByPk(id);
+    const policy = await Policy.findByPk(id);
+
+    if (policy) {
+        const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
+        const p = policy.toJSON();
+
+        if (p.PdfPath && !p.PdfPath.startsWith('http')) {
+            const path = p.PdfPath.startsWith('/') ? p.PdfPath : `/${p.PdfPath}`;
+            p.PdfPath = `${baseUrl}${path}`;
+        }
+        if (p.Image && !p.Image.startsWith('http')) {
+            const path = p.Image.startsWith('/') ? p.Image : `/${p.Image}`;
+            p.Image = `${baseUrl}${path}`;
+        }
+
+        return p;
+    }
+
+    return policy;
 };
 
 /**

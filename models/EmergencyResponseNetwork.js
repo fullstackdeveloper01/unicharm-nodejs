@@ -76,7 +76,20 @@ EmergencyResponseNetwork.getAllRecords = async function (page = 1, limit = null,
         queryOptions.offset = (pageNumber - 1) * limitNumber;
     }
 
-    return await EmergencyResponseNetwork.findAndCountAll(queryOptions);
+    const result = await EmergencyResponseNetwork.findAndCountAll(queryOptions);
+
+    // Prepend base URL to PDF paths
+    const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
+    const rows = result.rows.map(record => {
+        const r = record.toJSON();
+        if (r.PdfPath && !r.PdfPath.startsWith('http')) {
+            const path = r.PdfPath.startsWith('/') ? r.PdfPath : `/${r.PdfPath}`;
+            r.PdfPath = `${baseUrl}${path}`;
+        }
+        return r;
+    });
+
+    return { count: result.count, rows };
 };
 
 /**
@@ -85,7 +98,21 @@ EmergencyResponseNetwork.getAllRecords = async function (page = 1, limit = null,
  * @returns {Promise<Object>} Record
  */
 EmergencyResponseNetwork.getRecordById = async function (id) {
-    return await EmergencyResponseNetwork.findByPk(id);
+    const record = await EmergencyResponseNetwork.findByPk(id);
+
+    if (record) {
+        const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
+        const r = record.toJSON();
+
+        if (r.PdfPath && !r.PdfPath.startsWith('http')) {
+            const path = r.PdfPath.startsWith('/') ? r.PdfPath : `/${r.PdfPath}`;
+            r.PdfPath = `${baseUrl}${path}`;
+        }
+
+        return r;
+    }
+
+    return record;
 };
 
 /**
