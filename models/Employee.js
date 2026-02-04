@@ -189,8 +189,18 @@ Employee.getUpcomingBirthdays = async function () {
       LIMIT 10;
     `;
 
-  return await sequelize.query(query, {
+  const results = await sequelize.query(query, {
     type: sequelize.QueryTypes.SELECT
+  });
+
+  // Prepend base URL to UserPhoto
+  const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
+  return results.map(emp => {
+    if (emp.UserPhoto && emp.UserPhoto.trim() !== '' && !emp.UserPhoto.startsWith('http')) {
+      const path = emp.UserPhoto.startsWith('/') ? emp.UserPhoto : `/${emp.UserPhoto}`;
+      emp.UserPhoto = `${baseUrl}${path}`;
+    }
+    return emp;
   });
 };
 

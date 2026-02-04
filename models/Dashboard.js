@@ -25,11 +25,14 @@ Dashboard.getRecentNews = async function () {
     if (Array.isArray(rows)) {
         rows = rows.map(r => {
             let imagePath = null;
-            if (r.Image) {
-                if (r.Image.startsWith('http')) {
-                    imagePath = r.Image;
+            // Check various possible image field names
+            const imageField = r.Image || r.image || r.ImagePath || r.imagePath;
+
+            if (imageField && imageField.trim() !== '') {
+                if (imageField.startsWith('http')) {
+                    imagePath = imageField;
                 } else {
-                    const path = r.Image.startsWith('/') ? r.Image : `/${r.Image}`;
+                    const path = imageField.startsWith('/') ? imageField : `/${imageField}`;
                     imagePath = `${baseUrl}${path}`;
                 }
             }
@@ -52,11 +55,14 @@ Dashboard.getRecentEvent = async function () {
     if (Array.isArray(rows)) {
         rows = rows.map(r => {
             let imagePath = null;
-            if (r.Image) {
-                if (r.Image.startsWith('http')) {
-                    imagePath = r.Image;
+            // Check various possible image field names
+            const imageField = r.Image || r.image || r.ImagePath || r.imagePath;
+
+            if (imageField && imageField.trim() !== '') {
+                if (imageField.startsWith('http')) {
+                    imagePath = imageField;
                 } else {
-                    const path = r.Image.startsWith('/') ? r.Image : `/${r.Image}`;
+                    const path = imageField.startsWith('/') ? imageField : `/${imageField}`;
                     imagePath = `${baseUrl}${path}`;
                 }
             }
@@ -85,7 +91,26 @@ Dashboard.getWorkAnniversary = async function () {
     const results = await sequelize.query(query, {
         type: QueryTypes.SELECT
     });
-    return Array.isArray(results) && results.length > 0 ? results[0] : results;
+
+    const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
+    let rows = Array.isArray(results) && results.length > 0 ? results[0] : results;
+
+    if (Array.isArray(rows)) {
+        rows = rows.map(emp => {
+            // Check various possible photo field names
+            const photoField = emp.UserPhoto || emp.userPhoto || emp.Photo || emp.photo;
+
+            if (photoField && photoField.trim() !== '' && !photoField.startsWith('http')) {
+                const path = photoField.startsWith('/') ? photoField : `/${photoField}`;
+                const fullPath = `${baseUrl}${path}`;
+                emp.UserPhoto = fullPath;
+                emp.Photo = fullPath;
+            }
+            return emp;
+        });
+    }
+
+    return rows;
 };
 
 module.exports = Dashboard;
