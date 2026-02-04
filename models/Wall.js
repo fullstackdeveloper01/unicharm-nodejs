@@ -36,7 +36,7 @@ const Wall = sequelize.define('Wall', {
     }
   }
 }, {
-  tableName: 'wall',
+  tableName: 'Wall',
   timestamps: false
 });
 
