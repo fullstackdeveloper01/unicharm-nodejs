@@ -38,10 +38,31 @@ exports.getRoomById = async (id) => {
 };
 
 exports.createRoom = async (data) => {
+    const existing = await Room.findOne({
+        where: {
+            RoomName: data.RoomName,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+    if (existing) {
+        throw new Error('Room with this name already exists');
+    }
     return await Room.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
 };
 
 exports.updateRoom = async (room, data) => {
+    if (data.RoomName && data.RoomName !== room.RoomName) {
+        const existing = await Room.findOne({
+            where: {
+                RoomName: data.RoomName,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: room.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Room with this name already exists');
+        }
+    }
     return await room.update(data);
 };
 

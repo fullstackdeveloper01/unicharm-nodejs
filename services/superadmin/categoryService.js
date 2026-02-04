@@ -41,6 +41,19 @@ exports.getCategoryById = async (id) => {
 };
 
 exports.createCategory = async (data) => {
+    const existing = await Category.findOne({
+        where: {
+            CategoryName: data.CategoryName,
+            IsDeleted: {
+                [Op.or]: [0, false, null]
+            }
+        }
+    });
+
+    if (existing) {
+        throw new Error('Category with this name already exists');
+    }
+
     return await Category.create({
         ...data,
         CreatedOn: new Date(),
@@ -49,6 +62,21 @@ exports.createCategory = async (data) => {
 };
 
 exports.updateCategory = async (category, data) => {
+    if (data.CategoryName && data.CategoryName !== category.CategoryName) {
+        const existing = await Category.findOne({
+            where: {
+                CategoryName: data.CategoryName,
+                IsDeleted: {
+                    [Op.or]: [0, false, null]
+                },
+                Id: { [Op.ne]: category.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('Category with this name already exists');
+        }
+    }
     return await category.update(data);
 };
 

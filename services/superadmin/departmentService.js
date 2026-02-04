@@ -45,6 +45,16 @@ exports.getDepartmentById = async (id) => {
  * @returns {Promise<Object>} Created department
  */
 exports.createDepartment = async (data) => {
+    const existing = await Department.findOne({
+        where: {
+            DepartmentName: data.DepartmentName,
+            IsDeleted: false
+        }
+    });
+    if (existing) {
+        throw new Error('Department with this name already exists');
+    }
+
     return await Department.create({
         ...data,
         CreatedOn: new Date(),
@@ -59,6 +69,18 @@ exports.createDepartment = async (data) => {
  * @returns {Promise<Object>} Updated department
  */
 exports.updateDepartment = async (department, data) => {
+    if (data.DepartmentName && data.DepartmentName !== department.DepartmentName) {
+        const existing = await Department.findOne({
+            where: {
+                DepartmentName: data.DepartmentName,
+                IsDeleted: false,
+                Id: { [Op.ne]: department.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Department with this name already exists');
+        }
+    }
     return await department.update(data);
 };
 

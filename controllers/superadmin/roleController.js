@@ -65,6 +65,11 @@ exports.createRole = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Role name is required' });
     }
 
+    const existing = await Role.findOne({ where: { RoleName, IsDeleted: false } });
+    if (existing) {
+      return res.status(400).json({ success: false, message: 'Role with this name already exists' });
+    }
+
     const role = await Role.create({
       RoleName,
       CreatedOn: new Date(),
@@ -86,6 +91,19 @@ exports.updateRole = async (req, res) => {
     const role = await Role.findByPk(id);
     if (!role) {
       return res.status(404).json({ success: false, message: 'Role not found' });
+    }
+
+    if (RoleName && RoleName !== role.RoleName) {
+      const existing = await Role.findOne({
+        where: {
+          RoleName,
+          IsDeleted: false,
+          Id: { [Op.ne]: id }
+        }
+      });
+      if (existing) {
+        return res.status(400).json({ success: false, message: 'Role with this name already exists' });
+      }
     }
 
     await role.update({ RoleName });

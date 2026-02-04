@@ -99,6 +99,31 @@ exports.getEmployeeById = async (id) => {
  * @returns {Promise<Object>} Created employee
  */
 exports.createEmployee = async (data) => {
+    // Check for duplicate Email
+    if (data.Email) {
+        const existingEmail = await Employee.findOne({
+            where: {
+                Email: data.Email,
+                IsDeleted: false
+            }
+        });
+        if (existingEmail) {
+            throw new Error('Email already exists');
+        }
+    }
+    // Check for duplicate EmpId
+    if (data.EmpId) {
+        const existingEmpId = await Employee.findOne({
+            where: {
+                EmpId: data.EmpId,
+                IsDeleted: false
+            }
+        });
+        if (existingEmpId) {
+            throw new Error('Employee ID already exists');
+        }
+    }
+
     return await Employee.create({
         ...data,
         CreatedOn: new Date(),
@@ -113,8 +138,34 @@ exports.createEmployee = async (data) => {
  * @returns {Promise<Object>} Updated employee
  */
 exports.updateEmployee = async (employee, data) => {
+    // Check for duplicate Email
+    if (data.Email && data.Email !== employee.Email) {
+        const existingEmail = await Employee.findOne({
+            where: {
+                Email: data.Email,
+                IsDeleted: false,
+                Id: { [Op.ne]: employee.Id }
+            }
+        });
+        if (existingEmail) {
+            throw new Error('Email already exists');
+        }
+    }
+    // Check for duplicate EmpId
+    if (data.EmpId && data.EmpId !== employee.EmpId) {
+        const existingEmpId = await Employee.findOne({
+            where: {
+                EmpId: data.EmpId,
+                IsDeleted: false,
+                Id: { [Op.ne]: employee.Id }
+            }
+        });
+        if (existingEmpId) {
+            throw new Error('Employee ID already exists');
+        }
+    }
+
     // Handle photo deletion logic if needed here or keep in controller
-    // Ideally business logic like removing old file should be here
     if (data.UserPhoto && employee.UserPhoto && data.UserPhoto !== employee.UserPhoto) {
         if (fs.existsSync(employee.UserPhoto.replace('/', ''))) {
             try {

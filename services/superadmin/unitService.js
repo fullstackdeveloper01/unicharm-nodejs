@@ -23,6 +23,28 @@ exports.getAllUnits = async (page = 1, limit = null, search = '') => {
     return Unit.findAndCountAll(queryOptions);
 };
 exports.getUnitById = async (id) => Unit.findByPk(id);
-exports.createUnit = async (data) => Unit.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
-exports.updateUnit = async (item, data) => item.update(data);
+exports.createUnit = async (data) => {
+    const existing = await Unit.findOne({
+        where: { Title: data.Title, IsDeleted: false }
+    });
+    if (existing) {
+        throw new Error('Unit with this title already exists');
+    }
+    return Unit.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
+};
+exports.updateUnit = async (item, data) => {
+    if (data.Title && data.Title !== item.Title) {
+        const existing = await Unit.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: false,
+                Id: { [Op.ne]: item.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Unit with this title already exists');
+        }
+    }
+    return item.update(data);
+};
 exports.deleteUnit = async (item) => item.update({ IsDeleted: true });

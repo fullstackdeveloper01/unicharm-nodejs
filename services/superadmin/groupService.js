@@ -39,11 +39,34 @@ exports.getGroupById = async (id) => {
 };
 
 exports.createGroup = async (data) => {
+    const existing = await Group.findOne({
+        where: {
+            Title: data.Title,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+    if (existing) {
+        throw new Error('Group with this title already exists');
+    }
+
     const groupData = { ...data, Members: JSON.stringify(data.Members || []), CreatedOn: new Date(), IsDeleted: false };
     return await Group.create(groupData);
 };
 
 exports.updateGroup = async (item, data) => {
+    if (data.Title && data.Title !== item.Title) {
+        const existing = await Group.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: item.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Group with this title already exists');
+        }
+    }
+
     const updateData = { ...data };
     if (updateData.Members) updateData.Members = JSON.stringify(updateData.Members);
     return await item.update(updateData);

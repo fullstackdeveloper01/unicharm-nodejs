@@ -23,6 +23,33 @@ exports.getAllCurrencies = async (page = 1, limit = null, search = '') => {
     return CurrencyMaster.findAndCountAll(queryOptions);
 };
 exports.getCurrencyById = async (id) => CurrencyMaster.findByPk(id);
-exports.createCurrency = async (data) => CurrencyMaster.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
-exports.updateCurrency = async (item, data) => item.update(data);
+exports.createCurrency = async (data) => {
+    const existing = await CurrencyMaster.findOne({
+        where: {
+            Title: data.Title,
+            IsDeleted: { [Op.or]: [false, 0, null] } // Ensure we don't duplicate existing active currencies
+        }
+    });
+
+    if (existing) {
+        throw new Error('Currency with this title already exists');
+    }
+    return CurrencyMaster.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
+};
+exports.updateCurrency = async (item, data) => {
+    if (data.Title && data.Title !== item.Title) {
+        const existing = await CurrencyMaster.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: item.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('Currency with this title already exists');
+        }
+    }
+    return item.update(data);
+};
 exports.deleteCurrency = async (item) => item.update({ IsDeleted: true });

@@ -34,10 +34,33 @@ exports.getFloorById = async (id) => {
 };
 
 exports.createFloor = async (data) => {
+    const existing = await Floor.findOne({
+        where: {
+            FloorName: data.FloorName,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+
+    if (existing) {
+        throw new Error('Floor with this name already exists');
+    }
     return await Floor.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
 };
 
 exports.updateFloor = async (floor, data) => {
+    if (data.FloorName && data.FloorName !== floor.FloorName) {
+        const existing = await Floor.findOne({
+            where: {
+                FloorName: data.FloorName,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: floor.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('Floor with this name already exists');
+        }
+    }
     return await floor.update(data);
 };
 

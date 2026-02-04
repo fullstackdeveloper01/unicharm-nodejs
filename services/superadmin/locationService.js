@@ -34,10 +34,32 @@ exports.getLocationById = async (id) => {
 };
 
 exports.createLocation = async (data) => {
+    const whereClause = { LocationName: data.LocationName, IsDeleted: false };
+    if (data.ZoneId) whereClause.ZoneId = data.ZoneId;
+
+    const existing = await Location.findOne({ where: whereClause });
+    if (existing) {
+        throw new Error('Location with this name already exists');
+    }
     return await Location.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
 };
 
 exports.updateLocation = async (location, data) => {
+    if (data.LocationName && data.LocationName !== location.LocationName) {
+        const whereClause = {
+            LocationName: data.LocationName,
+            IsDeleted: false,
+            Id: { [Op.ne]: location.Id }
+        };
+        // Check ZoneId if it's changing or use existing
+        const zId = data.ZoneId !== undefined ? data.ZoneId : location.ZoneId;
+        if (zId) whereClause.ZoneId = zId;
+
+        const existing = await Location.findOne({ where: whereClause });
+        if (existing) {
+            throw new Error('Location with this name already exists');
+        }
+    }
     return await location.update(data);
 };
 

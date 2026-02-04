@@ -26,6 +26,33 @@ exports.getAllPriorities = async (page = 1, limit = null) => {
     return PriorityMaster.findAndCountAll(queryOptions);
 };
 exports.getPriorityById = async (id) => PriorityMaster.findByPk(id);
-exports.createPriority = async (data) => PriorityMaster.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
-exports.updatePriority = async (item, data) => item.update(data);
+exports.createPriority = async (data) => {
+    const existing = await PriorityMaster.findOne({
+        where: {
+            Title: data.Title,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+
+    if (existing) {
+        throw new Error('Priority with this title already exists');
+    }
+    return PriorityMaster.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
+};
+exports.updatePriority = async (item, data) => {
+    if (data.Title && data.Title !== item.Title) {
+        const existing = await PriorityMaster.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: item.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('Priority with this title already exists');
+        }
+    }
+    return item.update(data);
+};
 exports.deletePriority = async (item) => item.update({ IsDeleted: true });

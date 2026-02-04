@@ -50,6 +50,17 @@ exports.getDesignationById = async (id) => {
  * @returns {Promise<Object>} Created designation
  */
 exports.createDesignation = async (data) => {
+    const existing = await Designation.findOne({
+        where: {
+            DesignationName: data.DesignationName,
+            DepartmentId: data.DepartmentId || null,
+            IsDeleted: false
+        }
+    });
+    if (existing) {
+        throw new Error('Designation with this name already exists in the selected department');
+    }
+
     return await Designation.create({
         ...data,
         DepartmentId: data.DepartmentId || null,
@@ -65,6 +76,22 @@ exports.createDesignation = async (data) => {
  * @returns {Promise<Object>} Updated designation
  */
 exports.updateDesignation = async (designation, data) => {
+    const newName = data.DesignationName || designation.DesignationName;
+    const newDept = data.DepartmentId !== undefined ? data.DepartmentId : designation.DepartmentId;
+
+    if (newName !== designation.DesignationName || newDept !== designation.DepartmentId) {
+        const existing = await Designation.findOne({
+            where: {
+                DesignationName: newName,
+                DepartmentId: newDept || null,
+                IsDeleted: false,
+                Id: { [Op.ne]: designation.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Designation with this name already exists in the selected department');
+        }
+    }
     return await designation.update(data);
 };
 
