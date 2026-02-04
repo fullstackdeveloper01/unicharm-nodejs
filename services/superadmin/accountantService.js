@@ -24,6 +24,33 @@ exports.getAllAccountants = async (page = 1, limit = null, search = '') => {
     return Accountant.findAndCountAll(queryOptions);
 };
 exports.getAccountantById = async (id) => Accountant.findByPk(id, { include: [{ model: Employee, as: 'employee' }] });
-exports.createAccountant = async (data) => Accountant.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
-exports.updateAccountant = async (item, data) => item.update(data);
+exports.createAccountant = async (data) => {
+    if (data.UserName) {
+        const existing = await Accountant.findOne({
+            where: {
+                UserName: data.UserName,
+                IsDeleted: { [Op.or]: [false, 0, null] }
+            }
+        });
+        if (existing) {
+            throw new Error('Accountant/Admin with this UserName already exists');
+        }
+    }
+    return Accountant.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
+};
+exports.updateAccountant = async (item, data) => {
+    if (data.UserName && data.UserName !== item.UserName) {
+        const existing = await Accountant.findOne({
+            where: {
+                UserName: data.UserName,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: item.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Accountant/Admin with this UserName already exists');
+        }
+    }
+    return item.update(data);
+};
 exports.deleteAccountant = async (item) => item.update({ IsDeleted: true });

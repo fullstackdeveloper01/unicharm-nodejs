@@ -41,6 +41,33 @@ exports.getAuditorById = async (id) => Auditor.findByPk(id, {
         { model: Location, as: 'location' }
     ]
 });
-exports.createAuditor = async (data) => Auditor.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
-exports.updateAuditor = async (item, data) => item.update(data);
+exports.createAuditor = async (data) => {
+    if (data.Email) {
+        const existing = await Auditor.findOne({
+            where: {
+                Email: data.Email,
+                IsDeleted: { [Op.or]: [false, 0, null] }
+            }
+        });
+        if (existing) {
+            throw new Error('Auditor with this email already exists');
+        }
+    }
+    return Auditor.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
+};
+exports.updateAuditor = async (item, data) => {
+    if (data.Email && data.Email !== item.Email) {
+        const existing = await Auditor.findOne({
+            where: {
+                Email: data.Email,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: item.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Auditor with this email already exists');
+        }
+    }
+    return item.update(data);
+};
 exports.deleteAuditor = async (item) => item.update({ IsDeleted: true });

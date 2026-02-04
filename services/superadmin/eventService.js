@@ -46,6 +46,17 @@ exports.getEventById = async (id) => {
  * @returns {Promise<Object>} Created event
  */
 exports.createEvent = async (data) => {
+    const existing = await Event.findOne({
+        where: {
+            Title: data.Title,
+            EventDate: data.EventDate,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+
+    if (existing) {
+        throw new Error('Event with this title already exists on this date');
+    }
     return await Event.create({
         ...data,
         CreatedOn: new Date(),
@@ -60,6 +71,23 @@ exports.createEvent = async (data) => {
  * @returns {Promise<Object>} Updated event
  */
 exports.updateEvent = async (event, data) => {
+    const newTitle = data.Title || event.Title;
+    const newDate = data.EventDate || event.EventDate;
+
+    if (newTitle !== event.Title || newDate !== event.EventDate) {
+        const existing = await Event.findOne({
+            where: {
+                Title: newTitle,
+                EventDate: newDate,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: event.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('Event with this title already exists on this date');
+        }
+    }
     // Handle file replacement
     if (data.Image && event.Image && data.Image !== event.Image) {
         if (fs.existsSync(event.Image.replace('/', ''))) {

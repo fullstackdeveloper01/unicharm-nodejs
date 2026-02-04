@@ -60,6 +60,16 @@ exports.getNoticeById = async (id) => {
  * @returns {Promise<Object>} Created notice
  */
 exports.createNotice = async (data) => {
+    const existing = await Notice.findOne({
+        where: {
+            Title: data.Title,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+
+    if (existing) {
+        throw new Error('Notice with this title already exists');
+    }
     return await Notice.create({
         ...data,
         CreatedOn: new Date(),
@@ -74,6 +84,19 @@ exports.createNotice = async (data) => {
  * @returns {Promise<Object>} Updated notice
  */
 exports.updateNotice = async (notice, data) => {
+    if (data.Title && data.Title !== notice.Title) {
+        const existing = await Notice.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: notice.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('Notice with this title already exists');
+        }
+    }
     // Handle file replacement
     if (data.Image && notice.Image && data.Image !== notice.Image) {
         if (fs.existsSync(notice.Image.replace('/', ''))) {

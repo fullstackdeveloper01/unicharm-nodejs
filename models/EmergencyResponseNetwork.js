@@ -94,6 +94,17 @@ EmergencyResponseNetwork.getRecordById = async function (id) {
  * @returns {Promise<Object>} Created record
  */
 EmergencyResponseNetwork.createRecord = async function (data) {
+    if (data.Title) {
+        const existing = await EmergencyResponseNetwork.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] }
+            }
+        });
+        if (existing) {
+            throw new Error('Record with this title already exists');
+        }
+    }
     return await EmergencyResponseNetwork.create({
         ...data,
         CreatedAt: new Date(),
@@ -111,6 +122,19 @@ EmergencyResponseNetwork.updateRecord = async function (id, data) {
     const record = await EmergencyResponseNetwork.findByPk(id);
     if (!record) {
         throw new Error('Record not found');
+    }
+
+    if (data.Title && data.Title !== record.Title) {
+        const existing = await EmergencyResponseNetwork.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: id }
+            }
+        });
+        if (existing) {
+            throw new Error('Record with this title already exists');
+        }
     }
     return await record.update(data);
 };

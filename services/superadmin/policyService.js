@@ -53,6 +53,16 @@ exports.getPolicyById = async (id) => {
  * @returns {Promise<Object>} Created policy
  */
 exports.createPolicy = async (data) => {
+    const existing = await Policy.findOne({
+        where: {
+            Title: data.Title,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+
+    if (existing) {
+        throw new Error('Policy with this title already exists');
+    }
     return await Policy.create({
         ...data,
         CreatedOn: new Date(),
@@ -68,6 +78,19 @@ exports.createPolicy = async (data) => {
  * @returns {Promise<Object>} Updated policy
  */
 exports.updatePolicy = async (policy, data) => {
+    if (data.Title && data.Title !== policy.Title) {
+        const existing = await Policy.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: policy.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('Policy with this title already exists');
+        }
+    }
     // Handle file replacement
     if (data.PdfPath && policy.PdfPath && data.PdfPath !== policy.PdfPath) {
         if (fs.existsSync(policy.PdfPath.replace('/', ''))) {

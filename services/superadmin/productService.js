@@ -56,6 +56,17 @@ exports.getProductById = async (id) => {
  * @returns {Promise<Object>} Created product
  */
 exports.createProduct = async (data) => {
+    const existing = await Product.findOne({
+        where: {
+            Name: data.Name,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+
+    if (existing) {
+        throw new Error('Product with this name already exists');
+    }
+
     const product = await Product.create({
         ...data,
         CreatedOn: new Date(),
@@ -71,6 +82,19 @@ exports.createProduct = async (data) => {
  * @returns {Promise<Object>} Updated product
  */
 exports.updateProduct = async (product, data) => {
+    if (data.Name && data.Name !== product.Name) {
+        const existing = await Product.findOne({
+            where: {
+                Name: data.Name,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: product.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('Product with this name already exists');
+        }
+    }
     // Handle file replacement
     if (data.UserPhoto && product.UserPhoto && data.UserPhoto !== product.UserPhoto) {
         if (fs.existsSync(product.UserPhoto.replace('/', ''))) {

@@ -52,6 +52,17 @@ exports.getHolidayById = async (id) => {
  * @returns {Promise<Object>} Created holiday
  */
 exports.createHoliday = async (data) => {
+    const existing = await Holiday.findOne({
+        where: {
+            Name: data.Name,
+            HolidayDate: data.HolidayDate,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+
+    if (existing) {
+        throw new Error('Holiday with this name already exists on this date');
+    }
     return await Holiday.create({
         ...data,
         CreatedOn: new Date(),
@@ -66,6 +77,23 @@ exports.createHoliday = async (data) => {
  * @returns {Promise<Object>} Updated holiday
  */
 exports.updateHoliday = async (holiday, data) => {
+    const newName = data.Name || holiday.Name;
+    const newDate = data.HolidayDate || holiday.HolidayDate;
+
+    if (newName !== holiday.Name || newDate !== holiday.HolidayDate) {
+        const existing = await Holiday.findOne({
+            where: {
+                Name: newName,
+                HolidayDate: newDate,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: holiday.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('Holiday with this name already exists on this date');
+        }
+    }
     return await holiday.update(data);
 };
 

@@ -53,6 +53,16 @@ exports.getNewsById = async (id) => {
  * @returns {Promise<Object>} Created news
  */
 exports.createNews = async (data) => {
+    const existing = await News.findOne({
+        where: {
+            Title: data.Title,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+
+    if (existing) {
+        throw new Error('News with this title already exists');
+    }
     return await News.create({
         ...data,
         CreatedOn: new Date(),
@@ -67,6 +77,19 @@ exports.createNews = async (data) => {
  * @returns {Promise<Object>} Updated news
  */
 exports.updateNews = async (news, data) => {
+    if (data.Title && data.Title !== news.Title) {
+        const existing = await News.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: news.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('News with this title already exists');
+        }
+    }
     // Handle file replacement
     if (data.Image && news.Image && data.Image !== news.Image) {
         if (fs.existsSync(news.Image.replace('/', ''))) {

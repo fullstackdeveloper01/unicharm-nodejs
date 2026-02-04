@@ -52,6 +52,17 @@ exports.getSliderImageById = async (id) => {
  * @returns {Promise<Object>} Created slider image
  */
 exports.createSliderImage = async (data) => {
+    if (data.ImageName) {
+        const existing = await CompanyImage.findOne({
+            where: {
+                ImageName: data.ImageName,
+                IsDeleted: { [Op.or]: [false, 0, null, '0', 'false'] }
+            }
+        });
+        if (existing) {
+            throw new Error('Slider Image with this name already exists');
+        }
+    }
     const imageData = {
         ImageName: data.ImageName,
         CreatedOn: data.CreatedOn ? new Date(data.CreatedOn) : new Date(),
@@ -68,6 +79,19 @@ exports.createSliderImage = async (data) => {
  * @returns {Promise<Object>} Updated slider image
  */
 exports.updateSliderImage = async (imageInstance, data) => {
+    if (data.ImageName && data.ImageName !== imageInstance.ImageName) {
+        const existing = await CompanyImage.findOne({
+            where: {
+                ImageName: data.ImageName,
+                IsDeleted: { [Op.or]: [false, 0, null, '0', 'false'] },
+                Id: { [Op.ne]: imageInstance.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Slider Image with this name already exists');
+        }
+    }
+
     const updateData = {};
     if (data.ImageName) updateData.ImageName = data.ImageName;
     if (data.CreatedOn) updateData.CreatedOn = new Date(data.CreatedOn);

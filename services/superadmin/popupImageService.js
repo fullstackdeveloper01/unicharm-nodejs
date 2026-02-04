@@ -48,10 +48,22 @@ exports.getPopupImageById = async (id) => {
  * @returns {Promise<Object>} Created popup image
  */
 exports.createPopupImage = async (data) => {
+    if (data.ImageName) {
+        const existing = await CustomImage.findOne({
+            where: {
+                ImageName: data.ImageName,
+                IsDeleted: { [Op.or]: [false, null] }
+            }
+        });
+        if (existing) {
+            throw new Error('Popup Image with this name already exists');
+        }
+    }
     return await CustomImage.create({
         Type: data.PopupType, // Map PopupType to Type
         ShowType: data.ShowType,
         Image: data.Image,
+        ImageName: data.ImageName,
         CreatedOn: new Date(),
         IsDeleted: false
     });
@@ -73,10 +85,24 @@ exports.updatePopupImage = async (popupImage, data) => {
         }
     }
 
+    if (data.ImageName && data.ImageName !== popupImage.ImageName) {
+        const existing = await CustomImage.findOne({
+            where: {
+                ImageName: data.ImageName,
+                IsDeleted: { [Op.or]: [false, null] },
+                Id: { [Op.ne]: popupImage.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Popup Image with this name already exists');
+        }
+    }
+
     const updateData = {};
     if (data.PopupType) updateData.Type = data.PopupType;
     if (data.ShowType) updateData.ShowType = data.ShowType;
     if (data.Image) updateData.Image = data.Image;
+    if (data.ImageName) updateData.ImageName = data.ImageName;
 
     return await popupImage.update(updateData);
 };

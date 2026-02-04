@@ -38,10 +38,33 @@ exports.getExpenseLocationById = async (id) => {
 };
 
 exports.createExpenseLocation = async (data) => {
+    const existing = await ExpenseLocation.findOne({
+        where: {
+            Title: data.Title,
+            IsDeleted: { [Op.or]: [false, 0, null] }
+        }
+    });
+
+    if (existing) {
+        throw new Error('Expense Location with this title already exists');
+    }
     return await ExpenseLocation.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
 };
 
 exports.updateExpenseLocation = async (location, data) => {
+    if (data.Title && data.Title !== location.Title) {
+        const existing = await ExpenseLocation.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: location.Id }
+            }
+        });
+
+        if (existing) {
+            throw new Error('Expense Location with this title already exists');
+        }
+    }
     return await location.update(data);
 };
 

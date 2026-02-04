@@ -20,10 +20,13 @@ Dashboard.getRecentNews = async function () {
     const results = await sequelize.query(query, {
         type: QueryTypes.SELECT
     });
-    // return Array.isArray(results) && results.length > 0 ? results[0] : results;
+    const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
     let rows = Array.isArray(results) && results.length > 0 ? results[0] : results;
     if (Array.isArray(rows)) {
-        rows = rows.map(r => ({ ...r, image: r.Image, ImagePath: r.Image }));
+        rows = rows.map(r => {
+            const imagePath = r.Image ? (r.Image.startsWith('http') ? r.Image : `${baseUrl}${r.Image}`) : null;
+            return { ...r, image: imagePath, ImagePath: imagePath, Image: imagePath };
+        });
     }
     return rows;
 };
@@ -36,10 +39,13 @@ Dashboard.getRecentEvent = async function () {
     const results = await sequelize.query(query, {
         type: QueryTypes.SELECT
     });
-    // return Array.isArray(results) && results.length > 0 ? results[0] : results;
+    const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
     let rows = Array.isArray(results) && results.length > 0 ? results[0] : results;
     if (Array.isArray(rows)) {
-        rows = rows.map(r => ({ ...r, image: r.Image, ImagePath: r.Image }));
+        rows = rows.map(r => {
+            const imagePath = r.Image ? (r.Image.startsWith('http') ? r.Image : `${baseUrl}${r.Image}`) : null;
+            return { ...r, image: imagePath, ImagePath: imagePath, Image: imagePath };
+        });
     }
     return rows;
 };

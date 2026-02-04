@@ -120,6 +120,18 @@ SalesPricePolicy.getPolicyById = async function (id) {
  * @returns {Promise<Object>} Created policy
  */
 SalesPricePolicy.createPolicy = async function (data) {
+  if (data.DesignationRank) {
+    const existing = await SalesPricePolicy.findOne({
+      where: {
+        DesignationRank: data.DesignationRank,
+        CompetencyRank: data.CompetencyRank,
+        IsDeleted: { [Op.or]: [false, 0, null] }
+      }
+    });
+    if (existing) {
+      throw new Error('Policy for this Designation and Competency Rank already exists');
+    }
+  }
   return await SalesPricePolicy.create({
     ...data,
     CreatedOn: new Date(),
@@ -138,6 +150,26 @@ SalesPricePolicy.updatePolicy = async function (id, data) {
   if (!policy) {
     throw new Error('Policy not found');
   }
+
+  const newDes = data.DesignationRank || policy.DesignationRank;
+  const newComp = data.CompetencyRank || policy.CompetencyRank;
+
+  if ((data.DesignationRank && data.DesignationRank !== policy.DesignationRank) ||
+    (data.CompetencyRank && data.CompetencyRank !== policy.CompetencyRank)) {
+
+    const existing = await SalesPricePolicy.findOne({
+      where: {
+        DesignationRank: newDes,
+        CompetencyRank: newComp,
+        IsDeleted: { [Op.or]: [false, 0, null] },
+        Id: { [Op.ne]: id }
+      }
+    });
+    if (existing) {
+      throw new Error('Policy for this Designation and Competency Rank already exists');
+    }
+  }
+
   return await policy.update(data);
 };
 

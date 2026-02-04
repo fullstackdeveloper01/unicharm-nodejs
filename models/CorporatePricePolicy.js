@@ -136,6 +136,17 @@ CorporatePricePolicy.getPolicyById = async function (id) {
  * @returns {Promise<Object>} Created policy
  */
 CorporatePricePolicy.createPolicy = async function (data) {
+    if (data.designation) {
+        const existing = await CorporatePricePolicy.findOne({
+            where: {
+                designation: data.designation,
+                is_deleted: { [Op.or]: [false, 0, null] }
+            }
+        });
+        if (existing) {
+            throw new Error('Policy for this designation already exists');
+        }
+    }
     return await CorporatePricePolicy.create({
         ...data,
         created_on: new Date(),
@@ -153,6 +164,19 @@ CorporatePricePolicy.updatePolicy = async function (id, data) {
     const policy = await CorporatePricePolicy.findByPk(id);
     if (!policy) {
         throw new Error('Policy not found');
+    }
+
+    if (data.designation && data.designation !== policy.designation) {
+        const existing = await CorporatePricePolicy.findOne({
+            where: {
+                designation: data.designation,
+                is_deleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: id }
+            }
+        });
+        if (existing) {
+            throw new Error('Policy for this designation already exists');
+        }
     }
     return await policy.update(data);
 };

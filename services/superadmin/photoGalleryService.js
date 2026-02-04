@@ -56,6 +56,17 @@ exports.getPhotoGalleryById = async (id) => {
 };
 
 exports.createPhotoGallery = async (data) => {
+    if (data.Title) {
+        const existing = await PhotoGallery.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] }
+            }
+        });
+        if (existing) {
+            throw new Error('Gallery with this title already exists');
+        }
+    }
     if (data.AdditionalImages && typeof data.AdditionalImages !== 'string') {
         data.AdditionalImages = JSON.stringify(data.AdditionalImages);
     }
@@ -67,6 +78,19 @@ exports.createPhotoGallery = async (data) => {
 };
 
 exports.updatePhotoGallery = async (gallery, data) => {
+    if (data.Title && data.Title !== gallery.Title) {
+        const existing = await PhotoGallery.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: gallery.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Gallery with this title already exists');
+        }
+    }
+
     // Handle Image replacement
     if (data.MainImage && gallery.MainImage && data.MainImage !== gallery.MainImage) {
         if (fs.existsSync(gallery.MainImage.replace('/', ''))) {
