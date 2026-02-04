@@ -32,7 +32,7 @@ const TodaysBirthdateAndAnniversary = sequelize.define('TodaysBirthdateAndAnnive
         defaultValue: DataTypes.NOW
     }
 }, {
-    tableName: 'todaysbirthdateandanniversary',
+    tableName: 'TodaysBirthdateAndAnniversary',
     timestamps: false
 });
 

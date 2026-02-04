@@ -53,7 +53,7 @@ const Policy = sequelize.define('Policy', {
     defaultValue: false
   }
 }, {
-  tableName: 'policies',
+  tableName: 'Policies',
   timestamps: false
 });
 
