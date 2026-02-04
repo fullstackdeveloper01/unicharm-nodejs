@@ -126,15 +126,21 @@ exports.createSliderImage = async (req, res) => {
 
                 if (req.files && req.files.length > 0) {
                     for (const file of req.files) {
+                        let dateToUse = new Date(); // Default to NOW (Automatic)
+                        // If user provided a valid date, use it. Otherwise keep automatic.
+                        if (CreatedOn && !isNaN(new Date(CreatedOn).getTime())) {
+                            dateToUse = new Date(CreatedOn);
+                        }
+
                         try {
-                            await watermarkImage(file.path, CreatedOn ? new Date(CreatedOn) : new Date());
+                            await watermarkImage(file.path, dateToUse);
                         } catch (err) {
                             console.error("Failed to watermark image:", err);
                         }
 
                         const sliderImage = await sliderImageService.createSliderImage({
                             ImageName: ImageName || file.originalname,
-                            CreatedOn: CreatedOn,
+                            CreatedOn: dateToUse,
                             Image: `/uploads/slider-images/${file.filename}`
                         });
                         createdSliderImages.push(sliderImage);
@@ -192,7 +198,14 @@ exports.updateSliderImage = async (req, res) => {
                 if (req.files && req.files.length > 0) {
                     const file = req.files[0];
                     try {
-                        const dateToPrint = CreatedOn ? new Date(CreatedOn) : (imageInstance.CreatedOn || new Date());
+                        let dateToPrint = imageInstance.CreatedOn ? new Date(imageInstance.CreatedOn) : new Date();
+
+                        if (CreatedOn && !isNaN(new Date(CreatedOn).getTime())) {
+                            dateToPrint = new Date(CreatedOn);
+                        } else if (!imageInstance.CreatedOn) {
+                            dateToPrint = new Date(); // Fallback to now if nothing exists
+                        }
+
                         await watermarkImage(file.path, dateToPrint);
                     } catch (err) {
                         console.error("Failed to watermark image:", err);
