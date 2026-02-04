@@ -28,7 +28,7 @@ const Wall = sequelize.define('Wall', {
     defaultValue: false
   },
   AddedBy: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BIGINT,
     allowNull: true,
     references: {
       model: 'Employees',
