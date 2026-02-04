@@ -15,6 +15,7 @@ const { verifyToken } = require('../middlewares/shared/auth');
 
 // Public routes (No Token Required)
 router.use('/auth', require('./superadmin/authRoutes'));
+router.use(['/slider-images', '/slider-image'], require('./superadmin/sliderImageRoutes'));
 
 // Root API route
 router.get('/', (req, res) => {
@@ -68,7 +69,7 @@ router.use(['/chorei-messages', '/chorei-message'], require('./superadmin/chorei
 router.use(['/news', '/news-item'], require('./superadmin/newsRoutes'));
 router.use(['/events', '/event'], require('./superadmin/eventRoutes'));
 router.use(['/photo-galleries', '/photo-gallery'], require('./superadmin/photoGalleryRoutes'));
-router.use(['/slider-images', '/slider-image'], require('./superadmin/sliderImageRoutes'));
+// router.use(['/slider-images', '/slider-image'], require('./superadmin/sliderImageRoutes')); // Moved to public
 router.use(['/popup-images', '/popup-image'], require('./superadmin/popupImageRoutes'));
 router.use(['/login-details', '/login-detail'], require('./superadmin/loginDetailRoutes'));
 router.use(['/sales-price-policies', '/sales-price-policy', '/salespricepolicies'], require('./superadmin/salesPricePolicyRoutes'));
