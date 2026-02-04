@@ -28,7 +28,7 @@ const PhotoGallery = sequelize.define('PhotoGallery', {
     allowNull: true
   }
 }, {
-  tableName: 'PhotoGallery',
+  tableName: 'photogallery',
   timestamps: false
 });
 

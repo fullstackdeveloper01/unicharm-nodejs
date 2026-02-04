@@ -20,7 +20,12 @@ Dashboard.getRecentNews = async function () {
     const results = await sequelize.query(query, {
         type: QueryTypes.SELECT
     });
-    return Array.isArray(results) && results.length > 0 ? results[0] : results;
+    // return Array.isArray(results) && results.length > 0 ? results[0] : results;
+    let rows = Array.isArray(results) && results.length > 0 ? results[0] : results;
+    if (Array.isArray(rows)) {
+        rows = rows.map(r => ({ ...r, image: r.Image, ImagePath: r.Image }));
+    }
+    return rows;
 };
 
 /**
@@ -31,7 +36,12 @@ Dashboard.getRecentEvent = async function () {
     const results = await sequelize.query(query, {
         type: QueryTypes.SELECT
     });
-    return Array.isArray(results) && results.length > 0 ? results[0] : results;
+    // return Array.isArray(results) && results.length > 0 ? results[0] : results;
+    let rows = Array.isArray(results) && results.length > 0 ? results[0] : results;
+    if (Array.isArray(rows)) {
+        rows = rows.map(r => ({ ...r, image: r.Image, ImagePath: r.Image }));
+    }
+    return rows;
 };
 
 /**
