@@ -60,6 +60,17 @@ exports.getQuoteById = async (id) => {
  * @returns {Promise<Object>} Created quote
  */
 exports.createQuote = async (data) => {
+    if (data.Quote) {
+        const existing = await QuoteOfTheDay.findOne({
+            where: {
+                Quote: data.Quote,
+                IsDeleted: { [Op.or]: [false, 0, null] }
+            }
+        });
+        if (existing) {
+            throw new Error('Quote already exists');
+        }
+    }
     return await QuoteOfTheDay.create({
         ...data,
         CreatedOn: new Date(),
@@ -74,6 +85,18 @@ exports.createQuote = async (data) => {
  * @returns {Promise<Object>} Updated quote
  */
 exports.updateQuote = async (quote, data) => {
+    if (data.Quote && data.Quote !== quote.Quote) {
+        const existing = await QuoteOfTheDay.findOne({
+            where: {
+                Quote: data.Quote,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: quote.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Quote already exists');
+        }
+    }
     return await quote.update(data);
 };
 

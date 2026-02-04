@@ -95,7 +95,14 @@ exports.createMessage = async (data) => {
  * @returns {Promise<Object>} Updated message
  */
 exports.updateMessage = async (message, data) => {
-    return await message.update(data);
+    const updateData = { ...data };
+
+    // Ensure AddedBy is updated if provided
+    if (data.AddedBy !== undefined) {
+        updateData.AddedBy = data.AddedBy;
+    }
+
+    return await message.update(updateData);
 };
 
 /**

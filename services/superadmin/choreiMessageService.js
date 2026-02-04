@@ -53,6 +53,17 @@ exports.getChoreiMessageById = async (id) => {
  * @returns {Promise<Object>} Created chorei message
  */
 exports.createChoreiMessage = async (data) => {
+    if (data.Title) {
+        const existing = await ChoreiMessage.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] }
+            }
+        });
+        if (existing) {
+            throw new Error('Chorei message with this title already exists');
+        }
+    }
     return await ChoreiMessage.create({
         ...data,
         CreatedOn: new Date(),
@@ -67,6 +78,19 @@ exports.createChoreiMessage = async (data) => {
  * @returns {Promise<Object>} Updated chorei message
  */
 exports.updateChoreiMessage = async (choreiMessage, data) => {
+    if (data.Title && data.Title !== choreiMessage.Title) {
+        const existing = await ChoreiMessage.findOne({
+            where: {
+                Title: data.Title,
+                IsDeleted: { [Op.or]: [false, 0, null] },
+                Id: { [Op.ne]: choreiMessage.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Chorei message with this title already exists');
+        }
+    }
+
     // Handle file replacement
     if (data.PdfPath && choreiMessage.PdfPath && data.PdfPath !== choreiMessage.PdfPath) {
         if (fs.existsSync(choreiMessage.PdfPath.replace('/', ''))) {

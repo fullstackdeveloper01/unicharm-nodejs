@@ -24,7 +24,15 @@ Dashboard.getRecentNews = async function () {
     let rows = Array.isArray(results) && results.length > 0 ? results[0] : results;
     if (Array.isArray(rows)) {
         rows = rows.map(r => {
-            const imagePath = r.Image ? (r.Image.startsWith('http') ? r.Image : `${baseUrl}${r.Image}`) : null;
+            let imagePath = null;
+            if (r.Image) {
+                if (r.Image.startsWith('http')) {
+                    imagePath = r.Image;
+                } else {
+                    const path = r.Image.startsWith('/') ? r.Image : `/${r.Image}`;
+                    imagePath = `${baseUrl}${path}`;
+                }
+            }
             return { ...r, image: imagePath, ImagePath: imagePath, Image: imagePath };
         });
     }
@@ -43,7 +51,15 @@ Dashboard.getRecentEvent = async function () {
     let rows = Array.isArray(results) && results.length > 0 ? results[0] : results;
     if (Array.isArray(rows)) {
         rows = rows.map(r => {
-            const imagePath = r.Image ? (r.Image.startsWith('http') ? r.Image : `${baseUrl}${r.Image}`) : null;
+            let imagePath = null;
+            if (r.Image) {
+                if (r.Image.startsWith('http')) {
+                    imagePath = r.Image;
+                } else {
+                    const path = r.Image.startsWith('/') ? r.Image : `/${r.Image}`;
+                    imagePath = `${baseUrl}${path}`;
+                }
+            }
             return { ...r, image: imagePath, ImagePath: imagePath, Image: imagePath };
         });
     }
