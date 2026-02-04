@@ -90,9 +90,11 @@ router.use(['/auditors', '/auditor'], require('./superadmin/auditorRoutes'));
 router.use(['/units', '/unit'], require('./superadmin/unitRoutes'));
 router.use(['/zones', '/zone'], require('./superadmin/zoneRoutes'));
 router.use(['/currencies', '/currency'], require('./superadmin/currencyMasterRoutes'));
+// Claim Route
 router.use(['/claims', '/claim'], require('./superadmin/claimRoutes'));
 router.use(['/messages', '/message'], require('./superadmin/messageRoutes'));
 router.use(['/categories', '/category'], require('./superadmin/category.routes'));
+router.use('/profile', require('./superadmin/profileRoutes')); // Added Profile Route
 
 
 module.exports = router;

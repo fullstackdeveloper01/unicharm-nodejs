@@ -3,7 +3,25 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const db = require('../../models');
+const Jimp = require('jimp');
 // const { CustomImage } = db; // Removed as we use service abstraction
+
+// Helper to add watermark
+const watermarkImage = async (filePath, date) => {
+    try {
+        const image = await Jimp.read(filePath);
+        const font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE); // visible white font
+        const dateStr = date.toLocaleString(); // Use local string format
+
+        const x = image.bitmap.width - Jimp.measureText(font, dateStr) - 20;
+        const y = image.bitmap.height - 50;
+
+        image.print(font, x, y, dateStr);
+        await image.writeAsync(filePath);
+    } catch (err) {
+        console.error('Watermark error:', err);
+    }
+};
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -102,6 +120,12 @@ exports.createSliderImage = async (req, res) => {
 
                 if (req.files && req.files.length > 0) {
                     for (const file of req.files) {
+                        try {
+                            await watermarkImage(file.path, CreatedOn ? new Date(CreatedOn) : new Date());
+                        } catch (err) {
+                            console.error("Failed to watermark image:", err);
+                        }
+
                         const sliderImage = await sliderImageService.createSliderImage({
                             ImageName: ImageName || file.originalname,
                             CreatedOn: CreatedOn,
@@ -161,6 +185,12 @@ exports.updateSliderImage = async (req, res) => {
 
                 if (req.files && req.files.length > 0) {
                     const file = req.files[0];
+                    try {
+                        const dateToPrint = CreatedOn ? new Date(CreatedOn) : (imageInstance.CreatedOn || new Date());
+                        await watermarkImage(file.path, dateToPrint);
+                    } catch (err) {
+                        console.error("Failed to watermark image:", err);
+                    }
                     updateData.Image = `/uploads/slider-images/${file.filename}`;
                 }
 
