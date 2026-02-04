@@ -3,11 +3,17 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const db = require('../../models');
-const Jimp = require('jimp');
+let Jimp;
+try {
+    Jimp = require('jimp');
+} catch (err) {
+    console.warn('Jimp module not found. Watermarking is disabled.');
+}
 // const { CustomImage } = db; // Removed as we use service abstraction
 
 // Helper to add watermark
 const watermarkImage = async (filePath, date) => {
+    if (!Jimp) return;
     try {
         const image = await Jimp.read(filePath);
         const font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE); // visible white font
