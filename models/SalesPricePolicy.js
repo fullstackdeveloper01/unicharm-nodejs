@@ -31,6 +31,15 @@ const SalesPricePolicy = sequelize.define('SalesPricePolicy', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  // New Ex HQ DA fields per latest policy
+  ExHqDaTtMt: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  ExHqDaInstitution: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   UpcountryMetro: {
     type: DataTypes.STRING,
     allowNull: true
@@ -39,6 +48,81 @@ const SalesPricePolicy = sequelize.define('SalesPricePolicy', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  // Food Expenses
+  FoodHqDa: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  FoodMetroOutstation: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  // Phone
+  PhoneCalls: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  PhoneInternet: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  Courier: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  Stationary: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  // Lodging Expanded
+  LodgingMetro: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  LodgingNonMetro: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  LodgingWithoutBill: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  // Petrol Allowance
+  PetrolMetro: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  PetrolNonMetro: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  TollParking: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  // Monthly Meetings
+  MeetingDescription: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  MeetingEligibility: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  // Max Days Limit
+  MaxDaysHqDa: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  MaxDaysExHqDa: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  MaxDaysOutstation: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  // Legacy field kept for backward compatibility if needed, or mapped to LodgingMetro
   LodgingAndBoarding: {
     type: DataTypes.STRING,
     allowNull: true

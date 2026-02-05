@@ -96,6 +96,7 @@ router.use(['/claims', '/claim'], require('./superadmin/claimRoutes'));
 router.use(['/messages', '/message'], require('./superadmin/messageRoutes'));
 router.use(['/categories', '/category'], require('./superadmin/category.routes'));
 router.use('/profile', require('./superadmin/profileRoutes')); // Added Profile Route
+router.use('/profile/update', require('./superadmin/profileRoutes')); // Explicit support for /profile/update path
 
 
 module.exports = router;

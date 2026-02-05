@@ -91,17 +91,37 @@ exports.createCorporatePricePolicy = async (req, res) => {
                 lodging_metro: req.body.lodging_metro || req.body.LodgingMetro || req.body.lodgingMetro,
                 lodging_non_metro: req.body.lodging_non_metro || req.body.LodgingNonMetro || req.body.lodgingNonMetro,
                 travel_mode: req.body.travel_mode || req.body.TravelMode || req.body.travelMode,
-                travel_own: req.body.travel_own || req.body.TravelOwn || req.body.travelOwn,
+                // Map 'ent' or 'TravelEntitlement' to 'travel_own'
+                travel_own: req.body.travel_own || req.body.TravelOwn || req.body.travelOwn || req.body.ent || req.body.Ent || req.body.TravelEntitlement,
                 other: req.body.other || req.body.Other,
-                business_promo: req.body.business_promo || req.body.BusinessPromo || req.body.businessPromo,
-                rnd: req.body.rnd || req.body.RND || req.body.RnD || req.body.RED, // Handling RED typo if implies RND
+                business_promo: req.body.business_promo || req.body.BusinessPromo || req.body.businessPromo || req.body.businessPromotion || req.body.BusinessPromotion,
+                rnd: req.body.rnd || req.body.RND || req.body.RnD || req.body.RED,
                 csr: req.body.csr || req.body.CSR,
-                actions: req.body.actions || req.body.Actions || req.body.Status || req.body.status || 'Active' // Map Status to actions
+                actions: req.body.actions || req.body.Actions || req.body.Status || req.body.status || 'Active'
             };
 
             // Basic validation
             if (!policyData.designation) {
                 return sendResponse(res, 400, false, 'Validation failed', null, { message: 'Designation is required' });
+            }
+
+            // Helper validator for money fields (Numbers, 'Actual', 'NIL', 'NA' allowed)
+            const isValidMoneyField = (val) => {
+                if (!val) return true;
+                if (['actual', 'nil', 'na', 'on actual', 'on actuals', 'at actual', 'at actuals'].includes(val.toString().toLowerCase())) return true;
+                const cleanVal = val.toString().replace(/[^0-9.]/g, '');
+                return !isNaN(parseFloat(cleanVal)) && isFinite(cleanVal);
+            };
+
+            // Validate financial fields
+            const financialFields = [
+                'mobile', 'entertainment', 'lodging_metro', 'lodging_non_metro'
+            ];
+
+            for (const field of financialFields) {
+                if (policyData[field] && !isValidMoneyField(policyData[field])) {
+                    return sendResponse(res, 400, false, `Validation failed for ${field}`, null, { message: `${field} must be a number or 'On Actuals'` });
+                }
             }
 
             const policy = await corporatePricePolicyService.createCorporatePricePolicy(policyData);
@@ -133,32 +153,55 @@ exports.updateCorporatePricePolicy = async (req, res) => {
             }
 
             // Flexible field extraction for updates
+            const updateInput = {
+                ...req.body,
+                designation: req.body.designation || req.body.Designation,
+                mobile: req.body.mobile || req.body.Mobile,
+                entertainment: req.body.entertainment || req.body.Entertainment,
+                vehicle: req.body.vehicle || req.body.Vehicle,
+                lodging_metro: req.body.lodging_metro || req.body.LodgingMetro || req.body.lodgingMetro,
+                lodging_non_metro: req.body.lodging_non_metro || req.body.LodgingNonMetro || req.body.lodgingNonMetro,
+                travel_mode: req.body.travel_mode || req.body.TravelMode || req.body.travelMode,
+                travel_own: req.body.travel_own || req.body.TravelOwn || req.body.travelOwn || req.body.ent || req.body.Ent || req.body.TravelEntitlement,
+                other: req.body.other || req.body.Other,
+                business_promo: req.body.business_promo || req.body.BusinessPromo || req.body.businessPromo || req.body.businessPromotion || req.body.BusinessPromotion,
+                rnd: req.body.rnd || req.body.RND || req.body.RnD || req.body.RED,
+                csr: req.body.csr || req.body.CSR,
+                actions: req.body.actions || req.body.Actions || req.body.Status || req.body.status
+            };
+
             const updateData = {};
             // Map frontend keys to DB snake_case keys
-            const fields = [
-                { key: 'designation', variants: ['designation', 'Designation'] },
-                { key: 'mobile', variants: ['mobile', 'Mobile'] },
-                { key: 'entertainment', variants: ['entertainment', 'Entertainment'] },
-                { key: 'vehicle', variants: ['vehicle', 'Vehicle'] },
-                { key: 'lodging_metro', variants: ['lodging_metro', 'LodgingMetro', 'lodgingMetro'] },
-                { key: 'lodging_non_metro', variants: ['lodging_non_metro', 'LodgingNonMetro', 'lodgingNonMetro'] },
-                { key: 'travel_mode', variants: ['travel_mode', 'TravelMode', 'travelMode'] },
-                { key: 'travel_own', variants: ['travel_own', 'TravelOwn', 'travelOwn'] },
-                { key: 'other', variants: ['other', 'Other'] },
-                { key: 'business_promo', variants: ['business_promo', 'BusinessPromo', 'businessPromo'] },
-                { key: 'rnd', variants: ['rnd', 'RND', 'RnD', 'RED'] },
-                { key: 'csr', variants: ['csr', 'CSR'] },
-                { key: 'actions', variants: ['actions', 'Actions', 'Status', 'status'] }
+            const allowedFields = [
+                'designation', 'mobile', 'entertainment', 'vehicle',
+                'lodging_metro', 'lodging_non_metro', 'travel_mode', 'travel_own',
+                'other', 'business_promo', 'rnd', 'csr', 'actions'
             ];
 
-            fields.forEach(field => {
-                for (const variant of field.variants) {
-                    if (req.body[variant] !== undefined) {
-                        updateData[field.key] = req.body[variant];
-                        break;
-                    }
+            allowedFields.forEach(key => {
+                if (updateInput[key] !== undefined) {
+                    updateData[key] = updateInput[key];
                 }
             });
+
+            // Helper validator (Same as create)
+            const isValidMoneyField = (val) => {
+                if (!val) return true;
+                if (['actual', 'nil', 'na', 'on actual', 'on actuals', 'at actual', 'at actuals'].includes(val.toString().toLowerCase())) return true;
+                const cleanVal = val.toString().replace(/[^0-9.]/g, '');
+                return !isNaN(parseFloat(cleanVal)) && isFinite(cleanVal);
+            };
+
+            // Validate financial fields
+            const financialFields = [
+                'mobile', 'entertainment', 'lodging_metro', 'lodging_non_metro'
+            ];
+
+            for (const field of financialFields) {
+                if (updateData[field] && !isValidMoneyField(updateData[field])) {
+                    return sendResponse(res, 400, false, `Validation failed for ${field}`, null, { message: `${field} must be a number or 'On Actuals'` });
+                }
+            }
 
             const updatedPolicy = await corporatePricePolicyService.updateCorporatePricePolicy(id, updateData);
             sendResponse(res, 200, true, 'Corporate price policy updated successfully', updatedPolicy);
