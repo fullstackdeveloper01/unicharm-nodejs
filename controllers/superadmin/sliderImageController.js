@@ -9,7 +9,6 @@ try {
 } catch (err) {
     console.warn('Jimp module not found. Watermarking is disabled.');
 }
-// const { CustomImage } = db; // Removed as we use service abstraction
 
 // Helper to add watermark
 const watermarkImage = async (filePath, date) => {
@@ -44,7 +43,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage }); // Use as base, individual routes will use .any()
+const upload = multer({ storage: storage });
 
 // Helper for standard response
 const sendResponse = (res, success, message, data = null, errors = null, pagination = null) => {
@@ -102,7 +101,6 @@ exports.getSliderImageById = async (req, res) => {
             data.ImagePath = `${baseUrl}${data.ImagePath}`;
         }
 
-
         sendResponse(res, true, 'Slider image retrieved successfully', data);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve slider image', null, { message: error.message });
@@ -110,135 +108,124 @@ exports.getSliderImageById = async (req, res) => {
 };
 
 // Create slider image
-// Create slider image
 exports.createSliderImage = async (req, res) => {
     try {
-        try {
-            const uploadMiddleware = upload.any(); // Accept any file field name
+        const uploadMiddleware = upload.any(); // Accept any file field name
 
-            uploadMiddleware(req, res, async (err) => {
-                if (err) {
-                    return sendResponse(res, false, 'File upload failed', null, { message: err.message });
-                }
+        uploadMiddleware(req, res, async (err) => {
+            if (err) {
+                return sendResponse(res, false, 'File upload failed', null, { message: err.message });
+            }
 
-                try {
-                    const { ImageName } = req.body; // CreatedOn is ignored here as we force new Date()
-                    const createdSliderImages = [];
+            try {
+                const { ImageName } = req.body;
+                const createdSliderImages = [];
 
-                    if (req.files && req.files.length > 0) {
-                        for (const file of req.files) {
-                            let dateToUse = new Date(); // Always use current date/time
+                if (req.files && req.files.length > 0) {
+                    for (const file of req.files) {
+                        let dateToUse = new Date();
 
-                            try {
-                                await watermarkImage(file.path, dateToUse);
-                            } catch (err) {
-                                console.error("Failed to watermark image:", err);
-                            }
-
-                            const sliderImage = await sliderImageService.createSliderImage({
-                                ImageName: ImageName || file.originalname,
-                                CreatedOn: dateToUse,
-                                Image: `/uploads/slider-images/${file.filename}` // Normalized path
-                            });
-                            createdSliderImages.push(sliderImage);
+                        try {
+                            await watermarkImage(file.path, dateToUse);
+                        } catch (err) {
+                            console.error("Failed to watermark image:", err);
                         }
-                    } else if (ImageName) {
-                        // CustomImage `Image` is allowNull: true.
+
                         const sliderImage = await sliderImageService.createSliderImage({
-                            ImageName: ImageName,
-                            CreatedOn: new Date(), // Always use current date/time
-                            Image: null
+                            ImageName: ImageName || file.originalname,
+                            CreatedOn: dateToUse,
+                            Image: `/uploads/slider-images/${file.filename}`
                         });
                         createdSliderImages.push(sliderImage);
                     }
-
-                    res.status(201);
-                    sendResponse(res, true, 'Slider images created successfully', createdSliderImages);
-                } catch (error) {
-                    sendResponse(res, false, 'Failed to create slider images', null, { message: error.message });
+                } else if (ImageName) {
+                    const sliderImage = await sliderImageService.createSliderImage({
+                        ImageName: ImageName,
+                        CreatedOn: new Date(),
+                        Image: null
+                    });
+                    createdSliderImages.push(sliderImage);
                 }
-            });
-        } catch (error) {
-            sendResponse(res, false, 'Failed to process request', null, { message: error.message });
-        }
-    };
 
-    // Update slider image
-    exports.updateSliderImage = async (req, res) => {
-        try {
-            try {
-                const { id } = req.params;
-                const uploadMiddleware = upload.any(); // Accept any file
-
-                uploadMiddleware(req, res, async (err) => {
-                    if (err) {
-                        return sendResponse(res, false, 'File upload failed', null, { message: err.message });
-                    }
-
-                    try {
-                        // Fetch instance to update
-                        const imageInstance = await sliderImageService.getSliderImageById(id);
-
-                        if (!imageInstance) {
-                            return sendResponse(res, false, 'Slider image not found');
-                        }
-
-                        const { ImageName, CreatedOn } = req.body;
-                        const updateData = {};
-
-                        if (ImageName !== undefined) {
-                            updateData.ImageName = ImageName;
-                        }
-
-                        // If user sends CreatedOn during update, we respect it, or we could also force update it?
-                        // The request says "created on field to automatically set the current data and time also fix the add and update"
-                        // This implies "fix update" might mean "refresh timestamp".
-                        // I will allow manual update if sent, otherwise leave as is. 
-                        // Wait, if I want to "automatically set" on UPDATE? Usually CreatedOn is not changed.
-                        // I'll stick to respecting input for update, but ensure it works.
-                        if (CreatedOn !== undefined) {
-                            updateData.CreatedOn = CreatedOn;
-                        }
-
-                        if (req.files && req.files.length > 0) {
-                            const file = req.files[0]; // Take first file
-                            try {
-                                // Use existing date or new date for watermark
-                                let dateToPrint = new Date();
-                                if (updateData.CreatedOn) dateToPrint = new Date(updateData.CreatedOn);
-                                else if (imageInstance.CreatedOn) dateToPrint = new Date(imageInstance.CreatedOn);
-
-                                await watermarkImage(file.path, dateToPrint);
-                            } catch (err) {
-                                console.error("Failed to watermark image:", err);
-                            }
-                            updateData.Image = `/uploads/slider-images/${file.filename}`;
-                        }
-
-                        const updatedSliderImage = await sliderImageService.updateSliderImage(imageInstance, updateData);
-                        sendResponse(res, true, 'Slider image updated successfully', updatedSliderImage);
-                    } catch (error) {
-                        sendResponse(res, false, 'Failed to update slider image', null, { message: error.message });
-                    }
-                });
+                res.status(201);
+                sendResponse(res, true, 'Slider images created successfully', createdSliderImages);
             } catch (error) {
-                sendResponse(res, false, 'Failed to process request', null, { message: error.message });
+                sendResponse(res, false, 'Failed to create slider images', null, { message: error.message });
             }
-        };
+        });
+    } catch (error) {
+        sendResponse(res, false, 'Failed to process request', null, { message: error.message });
+    }
+};
 
-        // Delete slider image (soft delete)
-        exports.deleteSliderImage = async (req, res) => {
+// Update slider image
+exports.updateSliderImage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const uploadMiddleware = upload.any(); // Accept any file
+
+        uploadMiddleware(req, res, async (err) => {
+            if (err) {
+                return sendResponse(res, false, 'File upload failed', null, { message: err.message });
+            }
+
             try {
-                const { id } = req.params;
+                // Fetch instance to update
                 const imageInstance = await sliderImageService.getSliderImageById(id);
 
                 if (!imageInstance) {
                     return sendResponse(res, false, 'Slider image not found');
                 }
 
-                await sliderImageService.deleteSliderImage(imageInstance);
-                sendResponse(res, true, 'Slider image deleted successfully');
+                const { ImageName, CreatedOn } = req.body;
+                const updateData = {};
+
+                if (ImageName !== undefined) {
+                    updateData.ImageName = ImageName;
+                }
+
+                if (CreatedOn !== undefined) {
+                    updateData.CreatedOn = CreatedOn;
+                }
+
+                if (req.files && req.files.length > 0) {
+                    const file = req.files[0]; // Take first file
+                    try {
+                        let dateToPrint = new Date();
+                        if (updateData.CreatedOn) dateToPrint = new Date(updateData.CreatedOn);
+                        else if (imageInstance.CreatedOn) dateToPrint = new Date(imageInstance.CreatedOn);
+
+                        await watermarkImage(file.path, dateToPrint);
+                    } catch (err) {
+                        console.error("Failed to watermark image:", err);
+                    }
+                    updateData.Image = `/uploads/slider-images/${file.filename}`;
+                }
+
+                const updatedSliderImage = await sliderImageService.updateSliderImage(imageInstance, updateData);
+                sendResponse(res, true, 'Slider image updated successfully', updatedSliderImage);
             } catch (error) {
-                sendResponse(res, false, 'Failed to delete slider image', null, { message: error.message });
+                sendResponse(res, false, 'Failed to update slider image', null, { message: error.message });
             }
-        };
+        });
+    } catch (error) {
+        sendResponse(res, false, 'Failed to process request', null, { message: error.message });
+    }
+};
+
+// Delete slider image (soft delete)
+exports.deleteSliderImage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const imageInstance = await sliderImageService.getSliderImageById(id);
+
+        if (!imageInstance) {
+            return sendResponse(res, false, 'Slider image not found');
+        }
+
+        await sliderImageService.deleteSliderImage(imageInstance);
+        sendResponse(res, true, 'Slider image deleted successfully');
+    } catch (error) {
+        sendResponse(res, false, 'Failed to delete slider image', null, { message: error.message });
+    }
+};
