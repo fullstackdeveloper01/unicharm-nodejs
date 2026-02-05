@@ -41,7 +41,23 @@ exports.getAllWalls = async (req, res) => {
         const rows = result.rows.map(wall => {
             const w = wall.toJSON();
             if (w.Image && !w.Image.startsWith('http')) {
-                w.Image = `${baseUrl}${w.Image}`;
+                // Ensure leading slash
+                const imagePath = w.Image.startsWith('/') ? w.Image : `/${w.Image}`;
+                w.Image = `${baseUrl}${imagePath}`;
+            }
+            // Process user photos in addedBy, likes, and comments
+            if (w.addedBy && w.addedBy.UserPhoto && !w.addedBy.UserPhoto.startsWith('http')) {
+                const photoPath = w.addedBy.UserPhoto.startsWith('/') ? w.addedBy.UserPhoto : `/${w.addedBy.UserPhoto}`;
+                w.addedBy.UserPhoto = `${baseUrl}${photoPath}`;
+            }
+            if (w.comments) {
+                w.comments = w.comments.map(comment => {
+                    if (comment.employee && comment.employee.UserPhoto && !comment.employee.UserPhoto.startsWith('http')) {
+                        const photoPath = comment.employee.UserPhoto.startsWith('/') ? comment.employee.UserPhoto : `/${comment.employee.UserPhoto}`;
+                        comment.employee.UserPhoto = `${baseUrl}${photoPath}`;
+                    }
+                    return comment;
+                });
             }
             return w;
         });
@@ -71,9 +87,27 @@ exports.getWallById = async (req, res) => {
         }
 
         const data = wall.toJSON();
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+
         if (data.Image && !data.Image.startsWith('http')) {
-            const baseUrl = `${req.protocol}://${req.get('host')}`;
-            data.Image = `${baseUrl}${data.Image}`;
+            const imagePath = data.Image.startsWith('/') ? data.Image : `/${data.Image}`;
+            data.Image = `${baseUrl}${imagePath}`;
+        }
+
+        // Process user photos
+        if (data.addedBy && data.addedBy.UserPhoto && !data.addedBy.UserPhoto.startsWith('http')) {
+            const photoPath = data.addedBy.UserPhoto.startsWith('/') ? data.addedBy.UserPhoto : `/${data.addedBy.UserPhoto}`;
+            data.addedBy.UserPhoto = `${baseUrl}${photoPath}`;
+        }
+
+        if (data.comments) {
+            data.comments = data.comments.map(comment => {
+                if (comment.employee && comment.employee.UserPhoto && !comment.employee.UserPhoto.startsWith('http')) {
+                    const photoPath = comment.employee.UserPhoto.startsWith('/') ? comment.employee.UserPhoto : `/${comment.employee.UserPhoto}`;
+                    comment.employee.UserPhoto = `${baseUrl}${photoPath}`;
+                }
+                return comment;
+            });
         }
 
         sendResponse(res, true, 'Wall retrieved successfully', data);

@@ -118,13 +118,20 @@ exports.createSliderImage = async (req, res) => {
             }
 
             try {
-                const { ImageName } = req.body;
+                const { ImageName, CreatedOn } = req.body;
                 const createdSliderImages = [];
+
+                // Parse CreatedOn if provided, otherwise use current date
+                let dateToUse = new Date();
+                if (CreatedOn) {
+                    const parsedDate = new Date(CreatedOn);
+                    if (!isNaN(parsedDate.getTime())) {
+                        dateToUse = parsedDate;
+                    }
+                }
 
                 if (req.files && req.files.length > 0) {
                     for (const file of req.files) {
-                        let dateToUse = new Date();
-
                         try {
                             await watermarkImage(file.path, dateToUse);
                         } catch (err) {
@@ -141,7 +148,7 @@ exports.createSliderImage = async (req, res) => {
                 } else if (ImageName) {
                     const sliderImage = await sliderImageService.createSliderImage({
                         ImageName: ImageName,
-                        CreatedOn: new Date(),
+                        CreatedOn: dateToUse,
                         Image: null
                     });
                     createdSliderImages.push(sliderImage);
@@ -184,16 +191,26 @@ exports.updateSliderImage = async (req, res) => {
                     updateData.ImageName = ImageName;
                 }
 
-                if (CreatedOn !== undefined) {
-                    updateData.CreatedOn = CreatedOn;
+                // Parse and validate CreatedOn if provided
+                if (CreatedOn !== undefined && CreatedOn !== null && CreatedOn !== '') {
+                    const parsedDate = new Date(CreatedOn);
+                    if (!isNaN(parsedDate.getTime())) {
+                        updateData.CreatedOn = parsedDate;
+                    } else {
+                        console.warn('Invalid CreatedOn date provided:', CreatedOn);
+                    }
                 }
 
                 if (req.files && req.files.length > 0) {
                     const file = req.files[0]; // Take first file
                     try {
+                        // Determine date for watermark
                         let dateToPrint = new Date();
-                        if (updateData.CreatedOn) dateToPrint = new Date(updateData.CreatedOn);
-                        else if (imageInstance.CreatedOn) dateToPrint = new Date(imageInstance.CreatedOn);
+                        if (updateData.CreatedOn) {
+                            dateToPrint = updateData.CreatedOn;
+                        } else if (imageInstance.CreatedOn) {
+                            dateToPrint = new Date(imageInstance.CreatedOn);
+                        }
 
                         await watermarkImage(file.path, dateToPrint);
                     } catch (err) {
