@@ -197,6 +197,15 @@ Employee.getUpcomingBirthdays = async function () {
   const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
   return results.map(emp => {
     if (emp.UserPhoto && emp.UserPhoto.trim() !== '' && !emp.UserPhoto.startsWith('http')) {
+      // Handle bare filenames
+      if (!emp.UserPhoto.startsWith('/') && !emp.UserPhoto.includes('/')) {
+        if (emp.UserPhoto.startsWith('profile-')) {
+          emp.UserPhoto = `/uploads/profile/${emp.UserPhoto}`;
+        } else {
+          emp.UserPhoto = `/Images/Profile/${emp.UserPhoto}`;
+        }
+      }
+
       const path = emp.UserPhoto.startsWith('/') ? emp.UserPhoto : `/${emp.UserPhoto}`;
       emp.UserPhoto = `${baseUrl}${path}`;
     }

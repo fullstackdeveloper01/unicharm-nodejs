@@ -101,6 +101,15 @@ Dashboard.getWorkAnniversary = async function () {
             const photoField = emp.UserPhoto || emp.userPhoto || emp.Photo || emp.photo;
 
             if (photoField && photoField.trim() !== '' && !photoField.startsWith('http')) {
+                // Handle bare filenames
+                if (!photoField.startsWith('/') && !photoField.includes('/')) {
+                    if (photoField.startsWith('profile-')) {
+                        photoField = `/uploads/profile/${photoField}`;
+                    } else {
+                        photoField = `/Images/Profile/${photoField}`;
+                    }
+                }
+
                 const path = photoField.startsWith('/') ? photoField : `/${photoField}`;
                 const fullPath = `${baseUrl}${path}`;
                 emp.UserPhoto = fullPath;
