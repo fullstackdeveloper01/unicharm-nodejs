@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
+    // Bypass token check for OPTIONS requests (Preflight)
+    if (req.method === 'OPTIONS') {
+        return next();
+    }
+
     const authHeader = req.headers['authorization'] || req.header('Authorization');
 
     if (!authHeader) {
