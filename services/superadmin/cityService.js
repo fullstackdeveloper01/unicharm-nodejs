@@ -3,19 +3,31 @@ const { City } = db;
 
 const { Op } = require('sequelize');
 
-exports.getAllCities = async (page = 1, limit = null) => {
+exports.getAllCities = async (page = 1, limit = null, search = '') => {
     const pageNumber = parseInt(page) || 1;
     let limitNumber = parseInt(limit);
     if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
 
+    const whereClause = {
+        [Op.or]: [
+            { IsDeleted: false },
+            { IsDeleted: null },
+            { IsDeleted: 0 }
+        ]
+    };
+
+    // Add search functionality
+    if (search) {
+        whereClause[Op.and] = [
+            {
+                Name: { [Op.like]: `%${search}%` }
+            }
+        ];
+    }
+
     const queryOptions = {
-        where: {
-            [Op.or]: [
-                { IsDeleted: false },
-                { IsDeleted: null },
-                { IsDeleted: 0 }
-            ]
-        }
+        where: whereClause,
+        order: [['Name', 'ASC']]
     };
 
     if (limitNumber) {
