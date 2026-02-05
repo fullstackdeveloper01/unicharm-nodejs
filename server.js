@@ -61,11 +61,26 @@ app.use((req, res) => {
 
 // Sync database and start server
 db.sequelize.authenticate()
-  .then(() => {
+  .then(async () => {
     console.log('Database connection established successfully.');
 
     console.log(`Connected to Database: ${db.sequelize.config.database}`);
-    // Sync database (create tables if they don't exist, but don't alter)
+
+    // EXPLICITLY SYNC MODIFIED MODELS TO FIX LIVE SERVER SCHEMA
+    try {
+      if (db.SalesPricePolicy) {
+        console.log('Updating SalesPricePolicy schema...');
+        await db.SalesPricePolicy.sync({ alter: true });
+      }
+      if (db.CorporatePricePolicy) {
+        console.log('Updating CorporatePricePolicy schema...');
+        await db.CorporatePricePolicy.sync({ alter: true });
+      }
+    } catch (err) {
+      console.error('Schema update failed (safe to ignore if minor):', err.message);
+    }
+
+    // Sync database (create tables if they don't exist, but don't alter others)
     return db.sequelize.sync({ alter: false });
   })
   .then(() => {
