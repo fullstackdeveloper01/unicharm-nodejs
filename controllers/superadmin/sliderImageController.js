@@ -188,10 +188,10 @@ exports.updateSliderImage = async (req, res) => {
                 const { ImageName, CreatedOn } = req.body;
                 const updateData = {};
 
-                if (ImageName) {
+                if (ImageName !== undefined) {
                     updateData.ImageName = ImageName;
                 }
-                if (CreatedOn) {
+                if (CreatedOn !== undefined) {
                     updateData.CreatedOn = CreatedOn;
                 }
 

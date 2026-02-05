@@ -36,6 +36,16 @@ exports.getAllWalls = async (req, res) => {
 
         const result = await wallService.getAllWalls(page, limit, search);
 
+        // Prepend base URL to Image paths
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const rows = result.rows.map(wall => {
+            const w = wall.toJSON();
+            if (w.Image && !w.Image.startsWith('http')) {
+                w.Image = `${baseUrl}${w.Image}`;
+            }
+            return w;
+        });
+
         const pagination = {
             total: result.count,
             page: page,
@@ -44,7 +54,7 @@ exports.getAllWalls = async (req, res) => {
             hasNext: limit ? page * limit < result.count : false
         };
 
-        sendResponse(res, true, 'Walls retrieved successfully', result.rows, null, pagination);
+        sendResponse(res, true, 'Walls retrieved successfully', rows, null, pagination);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve walls', null, { message: error.message });
     }
@@ -60,7 +70,13 @@ exports.getWallById = async (req, res) => {
             return sendResponse(res, false, 'Wall not found');
         }
 
-        sendResponse(res, true, 'Wall retrieved successfully', wall);
+        const data = wall.toJSON();
+        if (data.Image && !data.Image.startsWith('http')) {
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            data.Image = `${baseUrl}${data.Image}`;
+        }
+
+        sendResponse(res, true, 'Wall retrieved successfully', data);
     } catch (error) {
         sendResponse(res, false, 'Failed to retrieve wall', null, { message: error.message });
     }

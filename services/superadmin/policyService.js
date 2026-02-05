@@ -100,7 +100,7 @@ exports.createPolicy = async (data) => {
     });
 
     if (existing) {
-        throw new Error('Policy with this title already exists');
+        throw new Error('same entires notallowed');
     }
     return await Policy.create({
         ...data,
@@ -127,7 +127,7 @@ exports.updatePolicy = async (policy, data) => {
         });
 
         if (existing) {
-            throw new Error('Policy with this title already exists');
+            throw new Error('same entires notallowed');
         }
     }
     // Handle file replacement

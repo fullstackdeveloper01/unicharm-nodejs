@@ -43,6 +43,17 @@ exports.getAllRecords = async (req, res) => {
 
         const result = await emergencyResponseService.getAllRecords(page, limit, search);
 
+        // Prepend base URL
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const rows = result.rows.map(record => {
+            const r = record.toJSON ? record.toJSON() : record;
+            if (r.PdfPath && !r.PdfPath.startsWith('http')) {
+                const path = r.PdfPath.startsWith('/') ? r.PdfPath : `/${r.PdfPath}`;
+                r.PdfPath = `${baseUrl}${path}`;
+            }
+            return r;
+        });
+
         const pagination = {
             total: result.count,
             page: page,
@@ -52,7 +63,7 @@ exports.getAllRecords = async (req, res) => {
             hasPrev: page > 1
         };
 
-        sendResponse(res, 200, true, 'Emergency response records retrieved successfully', result.rows, null, pagination);
+        sendResponse(res, 200, true, 'Emergency response records retrieved successfully', rows, null, pagination);
     } catch (error) {
         console.error('Error in getAllRecords:', error);
         sendResponse(res, 500, false, 'Failed to retrieve emergency response records', null, { message: error.message });
@@ -77,7 +88,14 @@ exports.getRecordById = async (req, res) => {
             return sendResponse(res, 404, false, 'Emergency response record not found');
         }
 
-        sendResponse(res, 200, true, 'Emergency response record retrieved successfully', record);
+        const data = record; // record is already plain JSON from service
+        if (data.PdfPath && !data.PdfPath.startsWith('http')) {
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            const path = data.PdfPath.startsWith('/') ? data.PdfPath : `/${data.PdfPath}`;
+            data.PdfPath = `${baseUrl}${path}`;
+        }
+
+        sendResponse(res, 200, true, 'Emergency response record retrieved successfully', data);
     } catch (error) {
         console.error('Error in getRecordById:', error);
         sendResponse(res, 500, false, 'Failed to retrieve emergency response record', null, { message: error.message });

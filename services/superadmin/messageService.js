@@ -48,7 +48,7 @@ exports.getAllMessages = async (page = 1, limit = null, search = '') => {
         return {
             ...m,
             // Overwrite AddedBy with Name for display
-            AddedBy: addedByName || m.AddedBy,
+            AddedBy: m.AddedBy,
             AddedByName: addedByName,
             AddedById: m.AddedBy, // Preserve ID
 

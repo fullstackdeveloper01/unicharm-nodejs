@@ -78,16 +78,9 @@ EmergencyResponseNetwork.getAllRecords = async function (page = 1, limit = null,
 
     const result = await EmergencyResponseNetwork.findAndCountAll(queryOptions);
 
-    // Prepend base URL to PDF paths
-    const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
-    const rows = result.rows.map(record => {
-        const r = record.toJSON();
-        if (r.PdfPath && !r.PdfPath.startsWith('http')) {
-            const path = r.PdfPath.startsWith('/') ? r.PdfPath : `/${r.PdfPath}`;
-            r.PdfPath = `${baseUrl}${path}`;
-        }
-        return r;
-    });
+    // Prepend base URL logic moved to controller
+    // const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
+    const rows = result.rows;
 
     return { count: result.count, rows };
 };
@@ -101,15 +94,7 @@ EmergencyResponseNetwork.getRecordById = async function (id) {
     const record = await EmergencyResponseNetwork.findByPk(id);
 
     if (record) {
-        const baseUrl = process.env.BASE_URL || 'https://uciaportal-node.manageprojects.in';
-        const r = record.toJSON();
-
-        if (r.PdfPath && !r.PdfPath.startsWith('http')) {
-            const path = r.PdfPath.startsWith('/') ? r.PdfPath : `/${r.PdfPath}`;
-            r.PdfPath = `${baseUrl}${path}`;
-        }
-
-        return r;
+        return record.toJSON();
     }
 
     return record;
