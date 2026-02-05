@@ -8,6 +8,8 @@ router.use(verifyToken);
 
 router.get('/', profileController.getProfile);
 router.post('/update', profileController.uploadMiddleware, profileController.updateProfile);
+router.put('/update', profileController.uploadMiddleware, profileController.updateProfile); // Alias for PUT
+router.put('/', profileController.uploadMiddleware, profileController.updateProfile); // Alias for RESTful update
 router.post('/change-password', profileController.changePassword);
 
 module.exports = router;
