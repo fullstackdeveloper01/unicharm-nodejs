@@ -38,31 +38,39 @@ exports.getExpenseLocationById = async (id) => {
 };
 
 exports.createExpenseLocation = async (data) => {
-    const existing = await ExpenseLocation.findOne({
-        where: {
-            Title: data.Title,
-            IsDeleted: { [Op.or]: [false, 0, null] }
-        }
-    });
+    const whereClause = {
+        Title: data.Title,
+        ZoneId: data.ZoneId || null,
+        UnitId: data.UnitId || null,
+        IsDeleted: { [Op.or]: [false, 0, null] }
+    };
+
+    const existing = await ExpenseLocation.findOne({ where: whereClause });
 
     if (existing) {
-        throw new Error('Expense Location with this title already exists');
+        throw new Error('Expense Location with this title, zone, and unit already exists');
     }
     return await ExpenseLocation.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
 };
 
 exports.updateExpenseLocation = async (location, data) => {
-    if (data.Title && data.Title !== location.Title) {
-        const existing = await ExpenseLocation.findOne({
-            where: {
-                Title: data.Title,
-                IsDeleted: { [Op.or]: [false, 0, null] },
-                Id: { [Op.ne]: location.Id }
-            }
-        });
+    const newTitle = data.Title || location.Title;
+    const newZoneId = data.ZoneId !== undefined ? data.ZoneId : location.ZoneId;
+    const newUnitId = data.UnitId !== undefined ? data.UnitId : location.UnitId;
+
+    if (newTitle !== location.Title || newZoneId !== location.ZoneId || newUnitId !== location.UnitId) {
+        const whereClause = {
+            Title: newTitle,
+            ZoneId: newZoneId || null,
+            UnitId: newUnitId || null,
+            IsDeleted: { [Op.or]: [false, 0, null] },
+            Id: { [Op.ne]: location.Id }
+        };
+
+        const existing = await ExpenseLocation.findOne({ where: whereClause });
 
         if (existing) {
-            throw new Error('Expense Location with this title already exists');
+            throw new Error('Expense Location with this title, zone, and unit already exists');
         }
     }
     return await location.update(data);
