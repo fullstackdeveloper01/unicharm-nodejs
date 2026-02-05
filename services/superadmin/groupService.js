@@ -27,7 +27,7 @@ exports.getAllGroups = async (page = 1, limit = null) => {
 
     const mappedRows = rows.map(g => {
         const plain = g.get({ plain: true });
-        try { plain.Members = JSON.parse(plain.Members || '[]'); } catch (e) { plain.Members = []; }
+        plain.Members = [];
         return plain;
     });
 
@@ -49,7 +49,7 @@ exports.createGroup = async (data) => {
         throw new Error('Group with this title already exists');
     }
 
-    const groupData = { ...data, Members: JSON.stringify(data.Members || []), CreatedOn: new Date(), IsDeleted: false };
+    const groupData = { ...data, CreatedOn: new Date(), IsDeleted: false };
     return await Group.create(groupData);
 };
 
@@ -68,7 +68,7 @@ exports.updateGroup = async (item, data) => {
     }
 
     const updateData = { ...data };
-    if (updateData.Members) updateData.Members = JSON.stringify(updateData.Members);
+
     return await item.update(updateData);
 };
 

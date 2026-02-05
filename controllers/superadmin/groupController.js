@@ -30,7 +30,8 @@ exports.getGroupById = async (req, res) => {
         if (!item) return sendResponse(res, false, 'Not found');
 
         const data = item.get({ plain: true });
-        try { data.Members = JSON.parse(data.Members || '[]'); } catch (e) { data.Members = []; }
+        data.Members = [];
+
 
         sendResponse(res, true, 'Group retrieved', data);
     } catch (e) { sendResponse(res, false, 'Failed', null, { message: e.message }); }

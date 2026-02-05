@@ -93,9 +93,9 @@ exports.updateSliderImage = async (imageInstance, data) => {
     }
 
     const updateData = {};
-    if (data.ImageName) updateData.ImageName = data.ImageName;
-    if (data.CreatedOn) updateData.CreatedOn = new Date(data.CreatedOn);
-    if (data.Image) updateData.ImagePath = data.Image; // Map 'Image' input to 'ImagePath'
+    if (data.ImageName !== undefined) updateData.ImageName = data.ImageName;
+    if (data.CreatedOn !== undefined) updateData.CreatedOn = new Date(data.CreatedOn);
+    if (data.Image !== undefined) updateData.ImagePath = data.Image; // Map 'Image' input to 'ImagePath'
 
     return await imageInstance.update(updateData);
 };
