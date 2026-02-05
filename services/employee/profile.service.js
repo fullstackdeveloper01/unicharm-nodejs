@@ -13,7 +13,8 @@ exports.getProfile = async (userId) => {
         ],
         attributes: [
             'Id', 'FirstName', 'LastName', 'Email',
-            'MobileNo1', 'EmpId', 'UserPhoto', 'Birthdate'
+            'MobileNo1', 'EmpId', 'UserPhoto', 'Birthdate',
+            'DepartmentId', 'DesignationId'
         ]
     });
 
@@ -52,6 +53,8 @@ exports.getProfile = async (userId) => {
         phone: employee.MobileNo1,
         designation: employee.designation ? employee.designation.DesignationName : '',
         department: employee.department ? employee.department.DepartmentName : '',
+        designationId: employee.DesignationId,
+        departmentId: employee.DepartmentId,
         employeeId: employee.EmpId,
         profileImage: profileImage,
         initials: initials,
@@ -69,14 +72,27 @@ exports.updateProfile = async (userId, data) => {
     if (!employee) throw new Error('Employee not found');
 
     // Only allow updating specific fields
+    // Map incoming data to database columns
     const updateData = {};
-    if (data.firstName) updateData.FirstName = data.firstName;
-    if (data.lastName) updateData.LastName = data.lastName;
+
+    if (data.firstName || data.FirstName) updateData.FirstName = data.firstName || data.FirstName;
+    if (data.lastName || data.LastName) updateData.LastName = data.lastName || data.LastName;
+
+    // Handle phone number variations
     if (data.phone) updateData.MobileNo1 = data.phone;
+    else if (data.mobileNo1) updateData.MobileNo1 = data.mobileNo1;
+    else if (data.contactNumber) updateData.MobileNo1 = data.contactNumber;
+    else if (data.MobileNo1) updateData.MobileNo1 = data.MobileNo1;
+
+    // Handle Email update if provided
+    if (data.email || data.Email) updateData.Email = data.email || data.Email;
+
+    // Handle Profile Image
     if (data.profileImage) updateData.UserPhoto = data.profileImage;
 
-    // If other fields need to be updated, add them here.
-    // Email/EmpId usually not editable by employee.
+    // Handle Department and Designation if provided (likely IDs)
+    if (data.departmentId || data.DepartmentId) updateData.DepartmentId = data.departmentId || data.DepartmentId;
+    if (data.designationId || data.DesignationId) updateData.DesignationId = data.designationId || data.DesignationId;
 
     await employee.update(updateData);
 
