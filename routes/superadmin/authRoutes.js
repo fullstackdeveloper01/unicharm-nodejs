@@ -15,4 +15,10 @@ router.get('/me', verifyToken, (req, res) => {
     res.json({ success: true, message: 'You are authenticated', user: req.user });
 });
 
+// Profile update route under /auth
+const profileController = require('../../controllers/superadmin/profileController');
+router.post('/update-profile', verifyToken, profileController.uploadMiddleware, profileController.updateProfile);
+router.put('/update-profile', verifyToken, profileController.uploadMiddleware, profileController.updateProfile);
+router.patch('/update-profile', verifyToken, profileController.uploadMiddleware, profileController.updateProfile);
+
 module.exports = router;

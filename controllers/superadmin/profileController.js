@@ -20,41 +20,64 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-exports.uploadMiddleware = upload.single('profileImage');
+// Wrapped middleware to catch Multer errors
+exports.uploadMiddleware = (req, res, next) => {
+    upload.single('profileImage')(req, res, (err) => {
+        if (err) {
+            console.error('Multer Upload Error:', err);
+            return res.status(500).json({ success: false, message: 'File upload failed: ' + err.message });
+        }
+        next();
+    });
+};
 
-const sendResponse = (res, success, message, data = null) => {
+const sendResponse = (res, success, message, data = null, statusCode = 200) => {
     if (success) {
-        res.status(200).json({ success: true, message, data });
+        res.status(statusCode).json({ success: true, message, data });
     } else {
-        res.status(400).json({ success: false, message: message || 'An error occurred', data: null });
+        res.status(statusCode === 200 ? 400 : statusCode).json({ success: false, message: message || 'An error occurred', data: null });
     }
 };
 
 exports.getProfile = async (req, res) => {
     try {
+        if (!req.user || !req.user.id) {
+            return sendResponse(res, false, 'User not authenticated', null, 401);
+        }
         const userId = req.user.id;
         const data = await profileService.getProfile(userId);
         sendResponse(res, true, 'Profile fetched successfully', data);
     } catch (error) {
-        sendResponse(res, false, error.message);
+        console.error('GetProfile Error:', error);
+        sendResponse(res, false, error.message, null, 500);
     }
 };
 
 exports.updateProfile = async (req, res) => {
     try {
+        if (!req.user || !req.user.id) {
+            return sendResponse(res, false, 'User not authenticated', null, 401);
+        }
         const userId = req.user.id;
+
+        console.log('Updating profile for user:', userId);
+        console.log('Body:', req.body);
 
         // Prepare data from body and file
         const updateData = { ...req.body };
         if (req.file) {
+            console.log('File uploaded:', req.file.filename);
             updateData.profileImage = `/uploads/profile/${req.file.filename}`;
         }
 
         const result = await profileService.updateProfile(userId, updateData);
+        // Fetch updated profile to return
         const data = await profileService.getProfile(userId);
+
         sendResponse(res, true, result.message, data);
     } catch (error) {
-        sendResponse(res, false, error.message);
+        console.error('UpdateProfile Error:', error);
+        sendResponse(res, false, 'Update failed: ' + error.message, null, 500);
     }
 };
 
