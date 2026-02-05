@@ -200,6 +200,14 @@ Employee.getUpcomingBirthdays = async function () {
       const path = emp.UserPhoto.startsWith('/') ? emp.UserPhoto : `/${emp.UserPhoto}`;
       emp.UserPhoto = `${baseUrl}${path}`;
     }
+
+    // Generate Initials
+    const firstName = emp.FirstName || '';
+    const lastName = emp.LastName || '';
+    const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
+    const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
+    emp.initials = `${firstInitial}${lastInitial}`;
+
     return emp;
   });
 };

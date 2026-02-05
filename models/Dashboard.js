@@ -106,6 +106,14 @@ Dashboard.getWorkAnniversary = async function () {
                 emp.UserPhoto = fullPath;
                 emp.Photo = fullPath;
             }
+
+            // Generate Initials
+            const firstName = emp.FirstName || emp.firstName || '';
+            const lastName = emp.LastName || emp.lastName || '';
+            const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
+            const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
+            emp.initials = `${firstInitial}${lastInitial}`;
+
             return emp;
         });
     }
