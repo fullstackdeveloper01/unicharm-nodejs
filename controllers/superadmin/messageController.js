@@ -57,6 +57,9 @@ exports.getMessageById = async (req, res) => {
 // Create message
 exports.createMessage = async (req, res) => {
     try {
+        if (req.user && req.user.id) {
+            req.body.AddedBy = req.user.id;
+        }
         const message = await messageService.createMessage(req.body);
         res.status(201);
         sendResponse(res, true, 'Message created successfully', message);
@@ -73,6 +76,12 @@ exports.updateMessage = async (req, res) => {
 
         if (!message) {
             return sendResponse(res, false, 'Message not found');
+        }
+
+
+
+        if (req.user && req.user.id) {
+            req.body.AddedBy = req.user.id;
         }
 
         const updatedMessage = await messageService.updateMessage(message, req.body);

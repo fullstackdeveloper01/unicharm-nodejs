@@ -56,7 +56,7 @@ exports.createSliderImage = async (data) => {
         const existing = await CompanyImage.findOne({
             where: {
                 ImageName: data.ImageName,
-                IsDeleted: { [Op.or]: [false, 0, null, '0', 'false'] }
+                IsDeleted: false // Only check active records
             }
         });
         if (existing) {
@@ -83,7 +83,7 @@ exports.updateSliderImage = async (imageInstance, data) => {
         const existing = await CompanyImage.findOne({
             where: {
                 ImageName: data.ImageName,
-                IsDeleted: { [Op.or]: [false, 0, null, '0', 'false'] },
+                IsDeleted: false, // Only check active records
                 Id: { [Op.ne]: imageInstance.Id }
             }
         });

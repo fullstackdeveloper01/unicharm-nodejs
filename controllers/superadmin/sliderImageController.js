@@ -126,11 +126,14 @@ exports.createSliderImage = async (req, res) => {
 
                 if (req.files && req.files.length > 0) {
                     for (const file of req.files) {
-                        let dateToUse = new Date(); // Default to NOW (Automatic)
-                        // If user provided a valid date, use it. Otherwise keep automatic.
+                        let dateToUse = new Date(); // Always use current date/time
+
+                        /* 
+                        // Ignored user input as requested to automatically set current date and time
                         if (CreatedOn && !isNaN(new Date(CreatedOn).getTime())) {
                             dateToUse = new Date(CreatedOn);
                         }
+                        */
 
                         try {
                             await watermarkImage(file.path, dateToUse);
@@ -149,7 +152,7 @@ exports.createSliderImage = async (req, res) => {
                     // CustomImage `Image` is allowNull: true.
                     const sliderImage = await sliderImageService.createSliderImage({
                         ImageName: ImageName,
-                        CreatedOn: CreatedOn,
+                        CreatedOn: new Date(), // Always use current date/time
                         Image: null
                     });
                     createdSliderImages.push(sliderImage);
