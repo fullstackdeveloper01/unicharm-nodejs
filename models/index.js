@@ -116,6 +116,7 @@ Message.belongsTo(Employee, { foreignKey: 'AddedBy', as: 'addedBy', constraints:
 Auditor.belongsTo(Unit, { foreignKey: 'Unit', as: 'unit', constraints: false });
 Auditor.belongsTo(Zone, { foreignKey: 'Zone', as: 'zone', constraints: false });
 Auditor.belongsTo(Location, { foreignKey: 'Location', as: 'location', constraints: false });
+Auditor.belongsTo(ExpenseLocation, { foreignKey: 'Location', as: 'expenseLocation', constraints: false });
 
 Accountant.belongsTo(Employee, { foreignKey: 'EmployeeId', as: 'employee', constraints: false });
 

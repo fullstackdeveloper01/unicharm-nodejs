@@ -110,58 +110,49 @@ exports.getSliderImageById = async (req, res) => {
 // Create slider image
 exports.createSliderImage = async (req, res) => {
     try {
-        const uploadMiddleware = upload.any(); // Accept any file field name
+        const { ImageName, CreatedOn } = req.body;
+        const createdSliderImages = [];
 
-        uploadMiddleware(req, res, async (err) => {
-            if (err) {
-                return sendResponse(res, false, 'File upload failed', null, { message: err.message });
+        // Parse CreatedOn if provided, otherwise use current date
+        let dateToUse = new Date();
+        if (CreatedOn) {
+            const parsedDate = new Date(CreatedOn);
+            if (!isNaN(parsedDate.getTime())) {
+                dateToUse = parsedDate;
             }
+        }
 
-            try {
-                const { ImageName, CreatedOn } = req.body;
-                const createdSliderImages = [];
-
-                // Parse CreatedOn if provided, otherwise use current date
-                let dateToUse = new Date();
-                if (CreatedOn) {
-                    const parsedDate = new Date(CreatedOn);
-                    if (!isNaN(parsedDate.getTime())) {
-                        dateToUse = parsedDate;
-                    }
+        if (req.files && req.files.length > 0) {
+            for (const file of req.files) {
+                try {
+                    await watermarkImage(file.path, dateToUse);
+                } catch (err) {
+                    console.error("Failed to watermark image:", err);
                 }
 
-                if (req.files && req.files.length > 0) {
-                    for (const file of req.files) {
-                        try {
-                            await watermarkImage(file.path, dateToUse);
-                        } catch (err) {
-                            console.error("Failed to watermark image:", err);
-                        }
-
-                        const sliderImage = await sliderImageService.createSliderImage({
-                            ImageName: ImageName || file.originalname,
-                            CreatedOn: dateToUse,
-                            Image: `/uploads/slider-images/${file.filename}`
-                        });
-                        createdSliderImages.push(sliderImage);
-                    }
-                } else if (ImageName) {
-                    const sliderImage = await sliderImageService.createSliderImage({
-                        ImageName: ImageName,
-                        CreatedOn: dateToUse,
-                        Image: null
-                    });
-                    createdSliderImages.push(sliderImage);
-                }
-
-                res.status(201);
-                sendResponse(res, true, 'Slider images created successfully', createdSliderImages);
-            } catch (error) {
-                sendResponse(res, false, 'Failed to create slider images', null, { message: error.message });
+                const sliderImage = await sliderImageService.createSliderImage({
+                    ImageName: ImageName || file.originalname,
+                    CreatedOn: dateToUse,
+                    Image: `/uploads/slider-images/${file.filename}`
+                });
+                createdSliderImages.push(sliderImage);
             }
-        });
+        } else if (ImageName) {
+            const sliderImage = await sliderImageService.createSliderImage({
+                ImageName: ImageName,
+                CreatedOn: dateToUse,
+                Image: null
+            });
+            createdSliderImages.push(sliderImage);
+        } else {
+            return sendResponse(res, false, 'No image file or image name provided');
+        }
+
+        res.status(201);
+        sendResponse(res, true, 'Slider images created successfully', createdSliderImages);
     } catch (error) {
-        sendResponse(res, false, 'Failed to process request', null, { message: error.message });
+        console.error('Create slider image error:', error);
+        sendResponse(res, false, 'Failed to create slider images', null, { message: error.message });
     }
 };
 
@@ -169,64 +160,54 @@ exports.createSliderImage = async (req, res) => {
 exports.updateSliderImage = async (req, res) => {
     try {
         const { id } = req.params;
-        const uploadMiddleware = upload.any(); // Accept any file
 
-        uploadMiddleware(req, res, async (err) => {
-            if (err) {
-                return sendResponse(res, false, 'File upload failed', null, { message: err.message });
+        // Fetch instance to update
+        const imageInstance = await sliderImageService.getSliderImageById(id);
+
+        if (!imageInstance) {
+            return sendResponse(res, false, 'Slider image not found');
+        }
+
+        const { ImageName, CreatedOn } = req.body;
+        const updateData = {};
+
+        if (ImageName !== undefined) {
+            updateData.ImageName = ImageName;
+        }
+
+        // Parse and validate CreatedOn if provided
+        if (CreatedOn !== undefined && CreatedOn !== null && CreatedOn !== '') {
+            const parsedDate = new Date(CreatedOn);
+            if (!isNaN(parsedDate.getTime())) {
+                updateData.CreatedOn = parsedDate;
+            } else {
+                console.warn('Invalid CreatedOn date provided:', CreatedOn);
             }
+        }
 
+        if (req.files && req.files.length > 0) {
+            const file = req.files[0]; // Take first file
             try {
-                // Fetch instance to update
-                const imageInstance = await sliderImageService.getSliderImageById(id);
-
-                if (!imageInstance) {
-                    return sendResponse(res, false, 'Slider image not found');
+                // Determine date for watermark
+                let dateToPrint = new Date();
+                if (updateData.CreatedOn) {
+                    dateToPrint = updateData.CreatedOn;
+                } else if (imageInstance.CreatedOn) {
+                    dateToPrint = new Date(imageInstance.CreatedOn);
                 }
 
-                const { ImageName, CreatedOn } = req.body;
-                const updateData = {};
-
-                if (ImageName !== undefined) {
-                    updateData.ImageName = ImageName;
-                }
-
-                // Parse and validate CreatedOn if provided
-                if (CreatedOn !== undefined && CreatedOn !== null && CreatedOn !== '') {
-                    const parsedDate = new Date(CreatedOn);
-                    if (!isNaN(parsedDate.getTime())) {
-                        updateData.CreatedOn = parsedDate;
-                    } else {
-                        console.warn('Invalid CreatedOn date provided:', CreatedOn);
-                    }
-                }
-
-                if (req.files && req.files.length > 0) {
-                    const file = req.files[0]; // Take first file
-                    try {
-                        // Determine date for watermark
-                        let dateToPrint = new Date();
-                        if (updateData.CreatedOn) {
-                            dateToPrint = updateData.CreatedOn;
-                        } else if (imageInstance.CreatedOn) {
-                            dateToPrint = new Date(imageInstance.CreatedOn);
-                        }
-
-                        await watermarkImage(file.path, dateToPrint);
-                    } catch (err) {
-                        console.error("Failed to watermark image:", err);
-                    }
-                    updateData.Image = `/uploads/slider-images/${file.filename}`;
-                }
-
-                const updatedSliderImage = await sliderImageService.updateSliderImage(imageInstance, updateData);
-                sendResponse(res, true, 'Slider image updated successfully', updatedSliderImage);
-            } catch (error) {
-                sendResponse(res, false, 'Failed to update slider image', null, { message: error.message });
+                await watermarkImage(file.path, dateToPrint);
+            } catch (err) {
+                console.error("Failed to watermark image:", err);
             }
-        });
+            updateData.Image = `/uploads/slider-images/${file.filename}`;
+        }
+
+        const updatedSliderImage = await sliderImageService.updateSliderImage(imageInstance, updateData);
+        sendResponse(res, true, 'Slider image updated successfully', updatedSliderImage);
     } catch (error) {
-        sendResponse(res, false, 'Failed to process request', null, { message: error.message });
+        console.error('Update slider image error:', error);
+        sendResponse(res, false, 'Failed to update slider image', null, { message: error.message });
     }
 };
 

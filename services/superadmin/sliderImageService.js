@@ -69,7 +69,11 @@ exports.createSliderImage = async (data) => {
         ImagePath: data.Image, // Map 'Image' input to 'ImagePath' column
         IsDeleted: false
     };
-    return await CompanyImage.create(imageData);
+    const created = await CompanyImage.create(imageData);
+
+    // Reload to ensure all fields are returned
+    await created.reload();
+    return created;
 };
 
 /**
@@ -97,7 +101,11 @@ exports.updateSliderImage = async (imageInstance, data) => {
     if (data.CreatedOn !== undefined) updateData.CreatedOn = new Date(data.CreatedOn);
     if (data.Image !== undefined) updateData.ImagePath = data.Image; // Map 'Image' input to 'ImagePath'
 
-    return await imageInstance.update(updateData);
+    await imageInstance.update(updateData);
+
+    // Reload to get the updated values including CreatedOn
+    await imageInstance.reload();
+    return imageInstance;
 };
 
 /**

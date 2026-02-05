@@ -1,5 +1,5 @@
 const db = require('../../models');
-const { Auditor, Unit, Zone, Location } = db;
+const { Auditor, Unit, Zone, ExpenseLocation } = db;
 const { Op } = require('sequelize');
 
 exports.getAllAuditors = async (page = 1, limit = null, filters = {}) => {
@@ -9,22 +9,27 @@ exports.getAllAuditors = async (page = 1, limit = null, filters = {}) => {
 
     const whereClause = { IsDeleted: false };
 
-    if (filters.unitId) whereClause.UnitId = filters.unitId;
-    if (filters.zoneId) whereClause.ZoneId = filters.zoneId;
-    if (filters.locationId) whereClause.LocationId = filters.locationId;
+    if (filters.unitId) whereClause.Unit = filters.unitId;
+    if (filters.zoneId) whereClause.Zone = filters.zoneId;
+    if (filters.locationId) whereClause.Location = filters.locationId;
 
     // Add search functionality
     if (filters.search) {
-        whereClause.Name = { [Op.like]: `%${filters.search}%` };
+        whereClause[Op.or] = [
+            { FirstName: { [Op.like]: `%${filters.search}%` } },
+            { LastName: { [Op.like]: `%${filters.search}%` } },
+            { Email: { [Op.like]: `%${filters.search}%` } }
+        ];
     }
 
     const queryOptions = {
         where: whereClause,
         include: [
-            { model: Unit, as: 'unit' },
-            { model: Zone, as: 'zone' },
-            { model: Location, as: 'location' }
-        ]
+            { model: Unit, as: 'unit', attributes: ['Id', 'Title'] },
+            { model: Zone, as: 'zone', attributes: ['Id', 'Title'] },
+            { model: ExpenseLocation, as: 'expenseLocation', attributes: ['Id', 'Title'] }
+        ],
+        order: [['CreatedOn', 'DESC']]
     };
 
     if (limitNumber) {
@@ -36,9 +41,9 @@ exports.getAllAuditors = async (page = 1, limit = null, filters = {}) => {
 };
 exports.getAuditorById = async (id) => Auditor.findByPk(id, {
     include: [
-        { model: Unit, as: 'unit' },
-        { model: Zone, as: 'zone' },
-        { model: Location, as: 'location' }
+        { model: Unit, as: 'unit', attributes: ['Id', 'Title'] },
+        { model: Zone, as: 'zone', attributes: ['Id', 'Title'] },
+        { model: ExpenseLocation, as: 'expenseLocation', attributes: ['Id', 'Title'] }
     ]
 });
 exports.createAuditor = async (data) => {
