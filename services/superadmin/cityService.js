@@ -27,7 +27,7 @@ exports.getAllCities = async (page = 1, limit = null, search = '') => {
 
     const queryOptions = {
         where: whereClause,
-        order: [['Name', 'ASC']]
+        order: [['Id', 'DESC']] // Show newest first
     };
 
     if (limitNumber) {
@@ -39,29 +39,59 @@ exports.getAllCities = async (page = 1, limit = null, search = '') => {
 };
 exports.getCityById = async (id) => City.findByPk(id);
 exports.createCity = async (data) => {
+    // Validate required fields
+    if (!data.Name) {
+        throw new Error('City Name is required');
+    }
+
+    const name = data.Name.trim();
+    const stateId = data.StateId || null;
+
     const existing = await City.findOne({
         where: {
-            Name: data.Name,
-            StateId: data.StateId,
-            IsDeleted: { [Op.or]: [false, 0, null] }
+            Name: name,
+            StateId: stateId,
+            [Op.or]: [
+                { IsDeleted: false },
+                { IsDeleted: 0 }
+            ]
         }
     });
 
     if (existing) {
         throw new Error('City with this name already exists in the selected state');
     }
-    return City.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
+
+    // Workaround: Generate next ID manually because DB table seems to lack AUTO_INCREMENT
+    const lastCity = await City.findOne({
+        order: [['Id', 'DESC']],
+        paranoid: false
+    });
+    const nextId = (lastCity && lastCity.Id) ? parseInt(lastCity.Id) + 1 : 1;
+
+    // Use clean data object to avoid passing unexpected fields
+    return City.create({
+        Id: nextId,
+        Name: name,
+        StateId: stateId,
+        IsDeleted: false
+    });
 };
 exports.updateCity = async (item, data) => {
-    const newName = data.Name || item.Name;
-    const newStateId = data.StateId || item.StateId;
+    let newName = item.Name;
+    if (data.Name) {
+        newName = data.Name.trim();
+    }
+
+    // Only use new StateId if provided, else keep existing
+    const newStateId = (data.StateId !== undefined) ? data.StateId : item.StateId;
 
     if (newName !== item.Name || newStateId !== item.StateId) {
         const existing = await City.findOne({
             where: {
                 Name: newName,
                 StateId: newStateId,
-                IsDeleted: { [Op.or]: [false, 0, null] },
+                [Op.or]: [{ IsDeleted: false }, { IsDeleted: 0 }],
                 Id: { [Op.ne]: item.Id }
             }
         });
@@ -70,6 +100,10 @@ exports.updateCity = async (item, data) => {
             throw new Error('City with this name already exists in the selected state');
         }
     }
-    return item.update(data);
+
+    const updateData = { ...data };
+    if (data.Name) updateData.Name = newName;
+
+    return item.update(updateData);
 };
 exports.deleteCity = async (item) => item.update({ IsDeleted: true });

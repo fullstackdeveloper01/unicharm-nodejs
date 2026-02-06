@@ -35,6 +35,9 @@ exports.getCityById = async (req, res) => {
 
 exports.createCity = async (req, res) => {
     try {
+        if (!req.body.Name || !req.body.Name.trim()) {
+            return sendResponse(res, false, 'City Name is required');
+        }
         const data = await service.createCity(req.body);
         res.status(201);
         sendResponse(res, true, 'City created', data);

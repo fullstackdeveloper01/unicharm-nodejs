@@ -35,18 +35,38 @@ exports.getNotificationById = async (req, res) => {
 
 exports.createNotification = async (req, res) => {
     try {
-        const data = await meetingNotificationService.createNotification(req.body);
+        const data = { ...req.body };
+
+        // Map userId -> UserId
+        if (req.body.userId || req.body.UserId) {
+            data.UserId = req.body.userId || req.body.UserId;
+        }
+
+        if (!data.UserId) {
+            return sendResponse(res, false, 'User selection is required');
+        }
+
+        const notification = await meetingNotificationService.createNotification(data);
         res.status(201);
-        sendResponse(res, true, 'Notification created', data);
-    } catch (e) { sendResponse(res, false, 'Failed', null, { message: e.message }); }
+        sendResponse(res, true, 'Notification created', notification);
+    } catch (e) {
+        sendResponse(res, false, 'Failed', null, { message: e.message });
+    }
 };
 
 exports.updateNotification = async (req, res) => {
     try {
         const item = await meetingNotificationService.getNotificationById(req.params.id);
         if (!item) return sendResponse(res, false, 'Not found');
-        const data = await meetingNotificationService.updateNotification(item, req.body);
-        sendResponse(res, true, 'Notification updated', data);
+
+        const data = { ...req.body };
+        // Map userId -> UserId
+        if (req.body.userId || req.body.UserId) {
+            data.UserId = req.body.userId || req.body.UserId;
+        }
+
+        const updated = await meetingNotificationService.updateNotification(item, data);
+        sendResponse(res, true, 'Notification updated', updated);
     } catch (e) { sendResponse(res, false, 'Failed', null, { message: e.message }); }
 };
 

@@ -37,10 +37,33 @@ exports.getNotificationById = async (id) => {
 };
 
 exports.createNotification = async (data) => {
+    if (data.UserId) {
+        const existing = await MeetingNotification.findOne({
+            where: {
+                UserId: data.UserId,
+                [Op.or]: [{ IsDeleted: false }, { IsDeleted: 0 }]
+            }
+        });
+        if (existing) {
+            throw new Error('Notification configuration for this user already exists');
+        }
+    }
     return await MeetingNotification.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
 };
 
 exports.updateNotification = async (notification, data) => {
+    if (data.UserId && data.UserId != notification.UserId) {
+        const existing = await MeetingNotification.findOne({
+            where: {
+                UserId: data.UserId,
+                [Op.or]: [{ IsDeleted: false }, { IsDeleted: 0 }],
+                Id: { [Op.ne]: notification.Id }
+            }
+        });
+        if (existing) {
+            throw new Error('Notification configuration for this user already exists');
+        }
+    }
     return await notification.update(data);
 };
 

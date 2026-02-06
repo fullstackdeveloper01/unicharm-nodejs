@@ -35,6 +35,9 @@ exports.getPriorityById = async (req, res) => {
 
 exports.createPriority = async (req, res) => {
     try {
+        if (!req.body.Title || !req.body.Title.trim()) {
+            return sendResponse(res, false, 'Title is required');
+        }
         const data = await service.createPriority(req.body);
         res.status(201);
         sendResponse(res, true, 'Priority created', data);

@@ -31,7 +31,6 @@ exports.getGroupById = async (req, res) => {
         if (!item) return sendResponse(res, false, 'Not found');
 
         const data = item.get({ plain: true });
-        data.Members = [];
 
 
         sendResponse(res, true, 'Group retrieved', data);

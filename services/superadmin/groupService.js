@@ -42,7 +42,6 @@ exports.getAllGroups = async (page = 1, limit = null, search = '') => {
 
     const mappedRows = rows.map(g => {
         const plain = g.get({ plain: true });
-        plain.Members = [];
         return plain;
     });
 

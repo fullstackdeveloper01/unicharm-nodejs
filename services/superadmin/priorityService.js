@@ -42,24 +42,34 @@ exports.getAllPriorities = async (page = 1, limit = null, search = '') => {
 };
 exports.getPriorityById = async (id) => PriorityMaster.findByPk(id);
 exports.createPriority = async (data) => {
+    const title = (data.Title || '').trim();
+
     const existing = await PriorityMaster.findOne({
         where: {
-            Title: data.Title,
-            IsDeleted: { [Op.or]: [false, 0, null] }
+            Title: title,
+            [Op.or]: [
+                { IsDeleted: false },
+                { IsDeleted: 0 }
+            ]
         }
     });
 
     if (existing) {
         throw new Error('Priority with this title already exists');
     }
-    return PriorityMaster.create({ ...data, CreatedOn: new Date(), IsDeleted: false });
+    return PriorityMaster.create({ ...data, Title: title, CreatedOn: new Date(), IsDeleted: false });
 };
 exports.updatePriority = async (item, data) => {
-    if (data.Title && data.Title !== item.Title) {
+    let updateTitle = item.Title;
+    if (data.Title) {
+        updateTitle = data.Title.trim();
+    }
+
+    if (updateTitle !== item.Title) {
         const existing = await PriorityMaster.findOne({
             where: {
-                Title: data.Title,
-                IsDeleted: { [Op.or]: [false, 0, null] },
+                Title: updateTitle,
+                [Op.or]: [{ IsDeleted: false }, { IsDeleted: 0 }],
                 Id: { [Op.ne]: item.Id }
             }
         });
@@ -68,6 +78,11 @@ exports.updatePriority = async (item, data) => {
             throw new Error('Priority with this title already exists');
         }
     }
-    return item.update(data);
+
+    // Update data with trimmed title if present
+    const updateData = { ...data };
+    if (data.Title) updateData.Title = updateTitle;
+
+    return item.update(updateData);
 };
 exports.deletePriority = async (item) => item.update({ IsDeleted: true });

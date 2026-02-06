@@ -15,6 +15,10 @@ const Group = sequelize.define('Group', {
     type: DataTypes.TEXT,
     allowNull: true
   },
+  Members: {
+    type: DataTypes.JSON,
+    allowNull: true
+  },
 
 
   CreatedOn: {
