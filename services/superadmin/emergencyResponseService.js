@@ -9,7 +9,41 @@ const { EmergencyResponseNetwork } = db;
  * @returns {Promise<Object>} List of records
  */
 exports.getAllRecords = async (page = 1, limit = null, search = '') => {
-    return await EmergencyResponseNetwork.getAllRecords(page, limit, search);
+    const pageNumber = parseInt(page) || 1;
+    let limitNumber = parseInt(limit);
+    if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const { Op } = require('sequelize');
+
+    const whereClause = {
+        [Op.or]: [
+            { IsDeleted: false },
+            { IsDeleted: null },
+            { IsDeleted: 0 }
+        ]
+    };
+
+    if (search) {
+        whereClause[Op.and] = whereClause[Op.and] || [];
+        whereClause[Op.and].push({
+            [Op.or]: [
+                { Title: { [Op.like]: `%${search}%` } },
+                { FileName: { [Op.like]: `%${search}%` } }
+            ]
+        });
+    }
+
+    const queryOptions = {
+        where: whereClause,
+        order: [['CreatedAt', 'DESC']]
+    };
+
+    if (limitNumber) {
+        queryOptions.limit = limitNumber;
+        queryOptions.offset = (pageNumber - 1) * limitNumber;
+    }
+
+    return await EmergencyResponseNetwork.findAndCountAll(queryOptions);
 };
 
 /**

@@ -22,7 +22,12 @@ exports.getAllQuotes = async (page = 1, limit = null, search = '') => {
 
     if (search) {
         whereClause[Op.and] = whereClause[Op.and] || [];
-        whereClause[Op.and].push({ Quote: { [Op.like]: `%${search}%` } });
+        whereClause[Op.and].push({
+            [Op.or]: [
+                { Quote: { [Op.like]: `%${search}%` } },
+                { Title: { [Op.like]: `%${search}%` } }
+            ]
+        });
     }
 
     const queryOptions = {

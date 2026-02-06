@@ -21,7 +21,7 @@ exports.getAllHolidays = async (page = 1, limit = null, search = '') => {
 
     if (search) {
         whereClause[Op.and] = whereClause[Op.and] || [];
-        whereClause[Op.and].push({ Title: { [Op.like]: `%${search}%` } });
+        whereClause[Op.and].push({ Name: { [Op.like]: `%${search}%` } });
     }
 
     const queryOptions = {

@@ -6,10 +6,18 @@ const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        if (file.mimetype.includes('spreadsheet') || file.mimetype.includes('excel') || file.originalname.endsWith('.xlsx')) {
+        const allowedTypes = [
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+            'application/vnd.ms-excel', // .xls
+            'text/csv', // .csv
+            'application/csv', // .csv
+            'text/excel'
+        ];
+
+        if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(xlsx|xls|csv)$/i)) {
             cb(null, true);
         } else {
-            cb(new Error('Please upload only Excel files (.xlsx)'), false);
+            cb(new Error('Please upload only Excel (.xlsx, .xls) or CSV files'), false);
         }
     }
 });
