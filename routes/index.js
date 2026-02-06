@@ -44,7 +44,7 @@ router.all('/signin', (req, res) => {
   res.redirect(307, '/api/auth/login');
 });
 
-// Bulk Update Route (Specific alias to handle singular 'employee' path from frontend)
+// Bulk Update Route (Specific alias to handle singular 'employee' path from frontend) - Route Active
 const bulkImportController = require('../controllers/superadmin/bulkImportController');
 router.post('/employee/bulk-update', verifyToken, bulkImportController.uploadMiddleware, bulkImportController.bulkUpdateEmployees);
 
