@@ -3,19 +3,26 @@ const { Floor, Location } = db;
 
 const { Op } = require('sequelize');
 
-exports.getAllFloors = async (page = 1, limit = null) => {
+exports.getAllFloors = async (page = 1, limit = null, search = '') => {
     const pageNumber = parseInt(page) || 1;
     let limitNumber = parseInt(limit);
     if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
 
+    const whereClause = {
+        [Op.or]: [
+            { IsDeleted: false },
+            { IsDeleted: null },
+            { IsDeleted: 0 }
+        ]
+    };
+
+    // Add search filter
+    if (search) {
+        whereClause.FloorName = { [Op.like]: `%${search}%` };
+    }
+
     const queryOptions = {
-        where: {
-            [Op.or]: [
-                { IsDeleted: false },
-                { IsDeleted: null },
-                { IsDeleted: 0 }
-            ]
-        },
+        where: whereClause,
         include: [{ model: Location, as: 'location' }]
     };
 

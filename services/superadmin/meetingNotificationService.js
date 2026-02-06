@@ -3,24 +3,36 @@ const { MeetingNotification } = db;
 
 const { Op } = require('sequelize');
 
-exports.getAllNotifications = async (page = 1, limit = null) => {
+exports.getAllNotifications = async (page = 1, limit = null, search = '') => {
     const pageNumber = parseInt(page) || 1;
     let limitNumber = parseInt(limit);
     if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
+
+    const whereClause = {
+        [Op.or]: [
+            { IsDeleted: false },
+            { IsDeleted: null },
+            { IsDeleted: 0 }
+        ]
+    };
 
     const queryOptions = {
         include: [{
             model: db.Employee,
             as: 'employee',
-            attributes: ['Id', 'FirstName', 'LastName', 'EmpId']
+            attributes: ['Id', 'FirstName', 'LastName', 'EmpId'],
+            // Add search on employee name
+            ...(search ? {
+                where: {
+                    [Op.or]: [
+                        { FirstName: { [Op.like]: `%${search}%` } },
+                        { LastName: { [Op.like]: `%${search}%` } },
+                        { EmpId: { [Op.like]: `%${search}%` } }
+                    ]
+                }
+            } : {})
         }],
-        where: {
-            [Op.or]: [
-                { IsDeleted: false },
-                { IsDeleted: null },
-                { IsDeleted: 0 }
-            ]
-        },
+        where: whereClause,
         order: [['CreatedOn', 'DESC']]
     };
 

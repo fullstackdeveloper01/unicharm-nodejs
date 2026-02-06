@@ -10,12 +10,8 @@ exports.getProfile = async (userId) => {
         include: [
             { model: Department, as: 'department', attributes: ['DepartmentName'] },
             { model: Designation, as: 'designation', attributes: ['DesignationName'] }
-        ],
-        attributes: [
-            'Id', 'FirstName', 'LastName', 'Email',
-            'MobileNo1', 'EmpId', 'UserPhoto', 'Birthdate',
-            'DepartmentId', 'DesignationId'
         ]
+        // No attributes filter - fetch all columns
     });
 
     if (!employee) throw new Error('Employee not found');
@@ -46,19 +42,42 @@ exports.getProfile = async (userId) => {
     const lastInitial = employee.LastName ? employee.LastName.charAt(0).toUpperCase() : '';
     const initials = `${firstInitial}${lastInitial}`;
 
+    // Return all employee data with friendly names
     return {
+        id: employee.Id,
         firstName: employee.FirstName,
         lastName: employee.LastName || '',
         email: employee.Email,
         phone: employee.MobileNo1,
+        mobileNo: employee.MobileNo1,
+        mobileNo2: employee.MobileNo2,
         designation: employee.designation ? employee.designation.DesignationName : '',
         department: employee.department ? employee.department.DepartmentName : '',
         designationId: employee.DesignationId,
         departmentId: employee.DepartmentId,
+        roleId: employee.RoleId,
         employeeId: employee.EmpId,
         profileImage: profileImage,
         initials: initials,
-        dob: employee.Birthdate
+        dob: employee.Birthdate,
+        joiningDate: employee.Joiningdate,
+        userName: employee.UserName,
+        category: employee.Category,
+        unit: employee.Unit,
+        zone: employee.Zone,
+        location: employee.Location,
+        state: employee.State,
+        city: employee.City,
+        supervisor: employee.Supervisor,
+        supervisorEmpId: employee.SupervisorEmpId,
+        bankAccountNo: employee.BankAccountNo,
+        bankName: employee.BankName,
+        ifscCode: employee.IfscCode,
+        expenseDepartment: employee.ExpenseDepartment,
+        userType: employee.UserType,
+        ttmt: employee.TTMT,
+        secretaryId: employee.SecretaryId,
+        createdOn: employee.CreatedOn
     };
 };
 
@@ -71,12 +90,19 @@ exports.updateProfile = async (userId, data) => {
     const employee = await Employee.findByPk(userId);
     if (!employee) throw new Error('Employee not found');
 
+    console.log('updateProfile received data:', JSON.stringify(data));
+
     // Only allow updating specific fields
     // Map incoming data to database columns
     const updateData = {};
 
-    if (data.firstName || data.FirstName) updateData.FirstName = data.firstName || data.FirstName;
-    if (data.lastName || data.LastName) updateData.LastName = data.lastName || data.LastName;
+    // Handle FirstName variations
+    const firstName = data.firstName || data.FirstName || data.first_name || data.name;
+    if (firstName) updateData.FirstName = firstName;
+
+    // Handle LastName variations
+    const lastName = data.lastName || data.LastName || data.last_name;
+    if (lastName !== undefined) updateData.LastName = lastName;
 
     // Handle phone number variations
     if (data.phone) updateData.MobileNo1 = data.phone;
@@ -90,9 +116,16 @@ exports.updateProfile = async (userId, data) => {
     // Handle Profile Image
     if (data.profileImage) updateData.UserPhoto = data.profileImage;
 
-    // Handle Department and Designation if provided (likely IDs)
-    if (data.departmentId || data.DepartmentId) updateData.DepartmentId = data.departmentId || data.DepartmentId;
-    if (data.designationId || data.DesignationId) updateData.DesignationId = data.designationId || data.DesignationId;
+    // Handle Department and Designation if provided (must be numeric IDs)
+    const deptId = data.departmentId || data.DepartmentId;
+    if (deptId && !isNaN(parseInt(deptId))) {
+        updateData.DepartmentId = parseInt(deptId);
+    }
+
+    const desigId = data.designationId || data.DesignationId;
+    if (desigId && !isNaN(parseInt(desigId))) {
+        updateData.DesignationId = parseInt(desigId);
+    }
 
     await employee.update(updateData);
 

@@ -17,7 +17,10 @@ exports.getAllPopupImages = async (page = 1, limit = null, search = '') => {
     };
 
     if (search) {
-        whereClause.Title = { [Op.like]: `%${search}%` };
+        whereClause[Op.or] = [
+            { ImageName: { [Op.like]: `%${search}%` } },
+            { Type: { [Op.like]: `%${search}%` } }
+        ];
     }
 
     const queryOptions = {

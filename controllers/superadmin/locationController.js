@@ -10,8 +10,9 @@ exports.getAllLocations = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = req.query.limit ? parseInt(req.query.limit) : null;
         const zoneId = req.query.zoneId ? parseInt(req.query.zoneId) : null;
+        const search = req.query.search || '';
 
-        const result = await locationService.getAllLocations(page, limit, zoneId);
+        const result = await locationService.getAllLocations(page, limit, zoneId, search);
 
         const pagination = {
             total: result.count,

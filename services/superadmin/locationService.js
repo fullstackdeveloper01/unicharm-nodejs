@@ -3,7 +3,7 @@ const { Location } = db;
 
 const { Op } = require('sequelize');
 
-exports.getAllLocations = async (page = 1, limit = null, zoneId = null) => {
+exports.getAllLocations = async (page = 1, limit = null, zoneId = null, search = '') => {
     const pageNumber = parseInt(page) || 1;
     let limitNumber = parseInt(limit);
     if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
@@ -16,6 +16,11 @@ exports.getAllLocations = async (page = 1, limit = null, zoneId = null) => {
         ]
     };
     if (zoneId) whereClause.ZoneId = zoneId;
+
+    // Add search filter
+    if (search) {
+        whereClause.LocationName = { [Op.like]: `%${search}%` };
+    }
 
     const queryOptions = {
         where: whereClause

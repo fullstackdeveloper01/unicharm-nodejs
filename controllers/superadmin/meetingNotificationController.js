@@ -5,8 +5,9 @@ exports.getAllNotifications = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = req.query.limit ? parseInt(req.query.limit) : null;
+        const search = req.query.search || '';
 
-        const { count, rows } = await meetingNotificationService.getAllNotifications(page, limit);
+        const { count, rows } = await meetingNotificationService.getAllNotifications(page, limit, search);
 
         const pagination = {
             total: count,

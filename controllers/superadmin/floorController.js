@@ -9,8 +9,9 @@ exports.getAllFloors = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = req.query.limit ? parseInt(req.query.limit) : null;
+        const search = req.query.search || '';
 
-        const result = await floorService.getAllFloors(page, limit);
+        const result = await floorService.getAllFloors(page, limit, search);
 
         const pagination = {
             total: result.count,
