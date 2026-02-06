@@ -39,7 +39,13 @@ exports.getGroupById = async (req, res) => {
 
 exports.createGroup = async (req, res) => {
     try {
-        const data = await service.createGroup(req.body);
+        const payload = { ...req.body };
+        // Map members -> Members
+        if (payload.members && !payload.Members) {
+            payload.Members = payload.members;
+        }
+
+        const data = await service.createGroup(payload);
         res.status(201);
         sendResponse(res, true, 'Group created', data);
     } catch (e) { sendResponse(res, false, 'Failed', null, { message: e.message }); }
@@ -49,7 +55,14 @@ exports.updateGroup = async (req, res) => {
     try {
         const item = await service.getGroupById(req.params.id);
         if (!item) return sendResponse(res, false, 'Not found');
-        const data = await service.updateGroup(item, req.body);
+
+        const payload = { ...req.body };
+        // Map members -> Members
+        if (payload.members && !payload.Members) {
+            payload.Members = payload.members;
+        }
+
+        const data = await service.updateGroup(item, payload);
         sendResponse(res, true, 'Group updated', data);
     } catch (e) { sendResponse(res, false, 'Failed', null, { message: e.message }); }
 };
