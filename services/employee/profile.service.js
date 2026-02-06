@@ -18,26 +18,17 @@ exports.getProfile = async (userId) => {
 
     let profileImage = employee.UserPhoto;
     if (profileImage && !profileImage.startsWith('http')) {
-        const localBaseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 4000}`;
         const liveBaseUrl = process.env.LIVE_BASE_URL || 'http://103.39.133.42';
 
-        // Check if it's a legacy path (Images/...) or new upload (uploads/...)
-        // If it's just a filename, assume standard uploads/profile/ if it starts with profile-, else legacy
+        // Always use live base URL for profile images
         if (!profileImage.startsWith('/') && !profileImage.includes('/')) {
             if (profileImage.startsWith('profile-')) {
-                // New uploads - use local/current server
-                profileImage = `${localBaseUrl}/uploads/profile/${profileImage}`;
+                profileImage = `${liveBaseUrl}/uploads/profile/${profileImage}`;
             } else {
-                // Legacy images - use live database server
                 profileImage = `${liveBaseUrl}/Images/Profile/${profileImage}`;
             }
         } else {
-            // Has path already - determine which base URL to use
-            if (profileImage.includes('/Images/')) {
-                profileImage = `${liveBaseUrl}${profileImage.startsWith('/') ? '' : '/'}${profileImage}`;
-            } else {
-                profileImage = `${localBaseUrl}${profileImage.startsWith('/') ? '' : '/'}${profileImage}`;
-            }
+            profileImage = `${liveBaseUrl}${profileImage.startsWith('/') ? '' : '/'}${profileImage}`;
         }
     }
 

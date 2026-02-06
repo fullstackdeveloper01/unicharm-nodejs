@@ -53,27 +53,19 @@ exports.login = async (req, res) => {
         const lastInitial = user.LastName ? user.LastName.charAt(0).toUpperCase() : '';
         const initials = `${firstInitial}${lastInitial}` || 'U';
 
-        // Process profile image
+        // Process profile image - always use live base URL
         let profileImage = user.UserPhoto;
         if (profileImage && !profileImage.startsWith('http')) {
-            const localBaseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
             const liveBaseUrl = process.env.LIVE_BASE_URL || 'http://103.39.133.42';
 
             if (!profileImage.startsWith('/') && !profileImage.includes('/')) {
                 if (profileImage.startsWith('profile-')) {
-                    // New uploads - use local/current server
-                    profileImage = `${localBaseUrl}/uploads/profile/${profileImage}`;
+                    profileImage = `${liveBaseUrl}/uploads/profile/${profileImage}`;
                 } else {
-                    // Legacy images - use live database server
                     profileImage = `${liveBaseUrl}/Images/Profile/${profileImage}`;
                 }
             } else {
-                // Has path already - determine which base URL to use
-                if (profileImage.includes('/Images/')) {
-                    profileImage = `${liveBaseUrl}${profileImage.startsWith('/') ? '' : '/'}${profileImage}`;
-                } else {
-                    profileImage = `${localBaseUrl}${profileImage.startsWith('/') ? '' : '/'}${profileImage}`;
-                }
+                profileImage = `${liveBaseUrl}${profileImage.startsWith('/') ? '' : '/'}${profileImage}`;
             }
         }
 
