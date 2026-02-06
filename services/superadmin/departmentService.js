@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
  * Get all departments
  * @returns {Promise<Array>} List of departments
  */
-exports.getAllDepartments = async (page = 1, limit = null) => {
+exports.getAllDepartments = async (page = 1, limit = null, search = '') => {
     const pageNumber = parseInt(page) || 1;
     let limitNumber = parseInt(limit);
     if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
@@ -21,6 +21,11 @@ exports.getAllDepartments = async (page = 1, limit = null) => {
         },
         order: [['CreatedOn', 'DESC']]
     };
+
+    if (search) {
+        queryOptions.where.DepartmentName = { [Op.like]: `%${search}%` };
+    }
+
 
     if (limitNumber) {
         queryOptions.limit = limitNumber;

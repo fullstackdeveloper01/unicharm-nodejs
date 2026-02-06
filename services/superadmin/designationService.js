@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
  * Get all designations
  * @returns {Promise<Array>} List of designations
  */
-exports.getAllDesignations = async (page = 1, limit = null) => {
+exports.getAllDesignations = async (page = 1, limit = null, search = '') => {
     const pageNumber = parseInt(page) || 1;
     let limitNumber = parseInt(limit);
     if (isNaN(limitNumber) || limitNumber < 1) limitNumber = null;
@@ -24,6 +24,11 @@ exports.getAllDesignations = async (page = 1, limit = null) => {
         ],
         order: [['CreatedOn', 'DESC']]
     };
+
+    if (search) {
+        queryOptions.where.DesignationName = { [Op.like]: `%${search}%` };
+    }
+
 
     if (limitNumber) {
         queryOptions.limit = limitNumber;

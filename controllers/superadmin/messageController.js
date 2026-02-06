@@ -57,10 +57,31 @@ exports.getMessageById = async (req, res) => {
 // Create message
 exports.createMessage = async (req, res) => {
     try {
-        if (req.user && req.user.id) {
-            req.body.AddedBy = req.user.id;
+        const { Title } = req.body;
+
+        if (!Title || !Title.trim()) {
+            return sendResponse(res, false, 'Title is required');
         }
-        const message = await messageService.createMessage(req.body);
+
+        // Prepare data with correct casing for Model
+        const messageData = { ...req.body };
+
+        // Map Role/role/roleId -> RoleId
+        if (req.body.role || req.body.roleId) {
+            messageData.RoleId = req.body.role || req.body.roleId;
+        }
+
+        // Map addedBy -> AddedBy
+        // Use AddedBy from body if present (prioritize body for admin override), else fallback to user token
+        const bodyAddedBy = req.body.AddedBy || req.body.addedBy;
+
+        if (bodyAddedBy) {
+            messageData.AddedBy = bodyAddedBy;
+        } else if (req.user && req.user.id) {
+            messageData.AddedBy = req.user.id;
+        }
+
+        const message = await messageService.createMessage(messageData);
         res.status(201);
         sendResponse(res, true, 'Message created successfully', message);
     } catch (error) {
@@ -78,13 +99,33 @@ exports.updateMessage = async (req, res) => {
             return sendResponse(res, false, 'Message not found');
         }
 
+        // Prepare data with correct casing
+        const messageData = { ...req.body };
 
-
-        if (req.user && req.user.id) {
-            req.body.AddedBy = req.user.id;
+        // Map Role/role/roleId -> RoleId
+        if (req.body.role || req.body.roleId) {
+            messageData.RoleId = req.body.role || req.body.roleId;
         }
 
-        const updatedMessage = await messageService.updateMessage(message, req.body);
+        // Map addedBy -> AddedBy
+        const bodyAddedBy = req.body.AddedBy || req.body.addedBy;
+        if (bodyAddedBy) {
+            messageData.AddedBy = bodyAddedBy;
+        } else if (req.user && req.user.id && !message.AddedBy) {
+            // Only set default if not provided AND existing is empty (optional logic, but stick to pattern)
+            // Actually user pattern was "if missing, default to user".
+            if (!req.body.AddedBy && !req.body.addedBy) {
+                messageData.AddedBy = req.user.id;
+            }
+        }
+
+        // Simpler logic matching create: override if body has it, else default if logic requires (usually updates might just keep existing)
+        // But the requirement said "added by is not updating". So if body has it, we MUST update it.
+        if (bodyAddedBy) {
+            messageData.AddedBy = bodyAddedBy;
+        }
+
+        const updatedMessage = await messageService.updateMessage(message, messageData);
         sendResponse(res, true, 'Message updated successfully', updatedMessage);
     } catch (error) {
         sendResponse(res, false, 'Failed to update message', null, { message: error.message });

@@ -36,24 +36,57 @@ exports.getAllWalls = async (req, res) => {
 
         const result = await wallService.getAllWalls(page, limit, search);
 
-        // Prepend base URL to Image paths
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        // Robust Base URL logic
+        const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
+
         const rows = result.rows.map(wall => {
             const w = wall.toJSON();
+
+            // Process Wall Image
             if (w.Image && !w.Image.startsWith('http')) {
+                let imagePath = w.Image.replace(/\\/g, '/'); // Normalize backslashes
+
+                // If it's just a filename (no slashes), assume it's in uploads/walls/
+                if (!imagePath.includes('/')) {
+                    imagePath = `/uploads/walls/${imagePath}`;
+                }
+
                 // Ensure leading slash
-                const imagePath = w.Image.startsWith('/') ? w.Image : `/${w.Image}`;
+                if (!imagePath.startsWith('/')) {
+                    imagePath = `/${imagePath}`;
+                }
+
                 w.Image = `${baseUrl}${imagePath}`;
             }
-            // Process user photos in addedBy, likes, and comments
+
+            // Process user photos in addedBy
             if (w.addedBy && w.addedBy.UserPhoto && !w.addedBy.UserPhoto.startsWith('http')) {
-                const photoPath = w.addedBy.UserPhoto.startsWith('/') ? w.addedBy.UserPhoto : `/${w.addedBy.UserPhoto}`;
+                let photoPath = w.addedBy.UserPhoto.replace(/\\/g, '/');
+                // Handle bare filenames for profile images (legacy vs new)
+                if (!photoPath.includes('/')) {
+                    if (photoPath.startsWith('profile-')) {
+                        photoPath = `/uploads/profile/${photoPath}`;
+                    } else {
+                        photoPath = `/Images/Profile/${photoPath}`;
+                    }
+                }
+                if (!photoPath.startsWith('/')) photoPath = `/${photoPath}`;
                 w.addedBy.UserPhoto = `${baseUrl}${photoPath}`;
             }
+
+            // Process comments user photos
             if (w.comments) {
                 w.comments = w.comments.map(comment => {
                     if (comment.employee && comment.employee.UserPhoto && !comment.employee.UserPhoto.startsWith('http')) {
-                        const photoPath = comment.employee.UserPhoto.startsWith('/') ? comment.employee.UserPhoto : `/${comment.employee.UserPhoto}`;
+                        let photoPath = comment.employee.UserPhoto.replace(/\\/g, '/');
+                        if (!photoPath.includes('/')) {
+                            if (photoPath.startsWith('profile-')) {
+                                photoPath = `/uploads/profile/${photoPath}`;
+                            } else {
+                                photoPath = `/Images/Profile/${photoPath}`;
+                            }
+                        }
+                        if (!photoPath.startsWith('/')) photoPath = `/${photoPath}`;
                         comment.employee.UserPhoto = `${baseUrl}${photoPath}`;
                     }
                     return comment;
@@ -87,23 +120,45 @@ exports.getWallById = async (req, res) => {
         }
 
         const data = wall.toJSON();
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
 
         if (data.Image && !data.Image.startsWith('http')) {
-            const imagePath = data.Image.startsWith('/') ? data.Image : `/${data.Image}`;
+            let imagePath = data.Image.replace(/\\/g, '/');
+            if (!imagePath.includes('/')) {
+                imagePath = `/uploads/walls/${imagePath}`;
+            }
+            if (!imagePath.startsWith('/')) {
+                imagePath = `/${imagePath}`;
+            }
             data.Image = `${baseUrl}${imagePath}`;
         }
 
         // Process user photos
         if (data.addedBy && data.addedBy.UserPhoto && !data.addedBy.UserPhoto.startsWith('http')) {
-            const photoPath = data.addedBy.UserPhoto.startsWith('/') ? data.addedBy.UserPhoto : `/${data.addedBy.UserPhoto}`;
+            let photoPath = data.addedBy.UserPhoto.replace(/\\/g, '/');
+            if (!photoPath.includes('/')) {
+                if (photoPath.startsWith('profile-')) {
+                    photoPath = `/uploads/profile/${photoPath}`;
+                } else {
+                    photoPath = `/Images/Profile/${photoPath}`;
+                }
+            }
+            if (!photoPath.startsWith('/')) photoPath = `/${photoPath}`;
             data.addedBy.UserPhoto = `${baseUrl}${photoPath}`;
         }
 
         if (data.comments) {
             data.comments = data.comments.map(comment => {
                 if (comment.employee && comment.employee.UserPhoto && !comment.employee.UserPhoto.startsWith('http')) {
-                    const photoPath = comment.employee.UserPhoto.startsWith('/') ? comment.employee.UserPhoto : `/${comment.employee.UserPhoto}`;
+                    let photoPath = comment.employee.UserPhoto.replace(/\\/g, '/');
+                    if (!photoPath.includes('/')) {
+                        if (photoPath.startsWith('profile-')) {
+                            photoPath = `/uploads/profile/${photoPath}`;
+                        } else {
+                            photoPath = `/Images/Profile/${photoPath}`;
+                        }
+                    }
+                    if (!photoPath.startsWith('/')) photoPath = `/${photoPath}`;
                     comment.employee.UserPhoto = `${baseUrl}${photoPath}`;
                 }
                 return comment;
@@ -128,8 +183,8 @@ exports.createWall = async (req, res) => {
 
             try {
                 const { Title, Description } = req.body;
-                // AddedBy should be taken from the authenticated user token
-                const AddedBy = req.user ? req.user.id : req.body.AddedBy;
+                // AddedBy should be prioritised from body if provided (e.g. admin posting as someone else), else fallback to token user
+                const AddedBy = req.body.AddedBy || (req.user ? req.user.id : null);
 
                 let imagePath = null;
 

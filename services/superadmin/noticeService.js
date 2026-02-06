@@ -60,9 +60,12 @@ exports.getNoticeById = async (id) => {
  * @returns {Promise<Object>} Created notice
  */
 exports.createNotice = async (data) => {
+    const title = data.Title.trim();
+
+    // Check for similar title (exact match after trim, case-insensitivity handled by DB collation usually, but we can be explicit if needed)
     const existing = await Notice.findOne({
         where: {
-            Title: data.Title,
+            Title: title,
             IsDeleted: { [Op.or]: [false, 0, null] }
         }
     });
@@ -72,6 +75,7 @@ exports.createNotice = async (data) => {
     }
     return await Notice.create({
         ...data,
+        Title: title,
         CreatedOn: new Date(),
         IsDeleted: false
     });
@@ -84,6 +88,10 @@ exports.createNotice = async (data) => {
  * @returns {Promise<Object>} Updated notice
  */
 exports.updateNotice = async (notice, data) => {
+    if (data.Title) {
+        data.Title = data.Title.trim();
+    }
+
     if (data.Title && data.Title !== notice.Title) {
         const existing = await Notice.findOne({
             where: {

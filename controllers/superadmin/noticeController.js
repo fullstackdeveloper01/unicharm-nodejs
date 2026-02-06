@@ -78,6 +78,11 @@ exports.createNotice = async (req, res) => {
 
             try {
                 const { Title, description, Role, Date } = req.body;
+
+                if (!Title || !Title.trim()) {
+                    return sendResponse(res, false, 'Title is required');
+                }
+
                 let imagePath = null;
 
                 if (req.file) {

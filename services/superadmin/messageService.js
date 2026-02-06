@@ -81,8 +81,27 @@ exports.getMessageById = async (id) => {
  * @returns {Promise<Object>} Created message
  */
 exports.createMessage = async (data) => {
+    const title = (data.Title || '').trim();
+
+    // Check for similar title (Active records only)
+    // We use a simpler check: IsDeleted is falsy (false or 0)
+    const existing = await Message.findOne({
+        where: {
+            Title: title,
+            [Op.or]: [
+                { IsDeleted: false },
+                { IsDeleted: 0 }
+            ]
+        }
+    });
+
+    if (existing) {
+        throw new Error('Message with this title already exists');
+    }
+
     return await Message.create({
         ...data,
+        Title: title, // Save trimmed title
         CreatedOn: new Date(),
         IsDeleted: false
     });
@@ -97,9 +116,32 @@ exports.createMessage = async (data) => {
 exports.updateMessage = async (message, data) => {
     const updateData = { ...data };
 
+    if (updateData.Title) {
+        updateData.Title = updateData.Title.trim();
+
+        if (updateData.Title !== message.Title) {
+            const existing = await Message.findOne({
+                where: {
+                    Title: updateData.Title,
+                    IsDeleted: { [Op.or]: [false, 0, null] },
+                    Id: { [Op.ne]: message.Id }
+                }
+            });
+
+            if (existing) {
+                throw new Error('Message with this title already exists');
+            }
+        }
+    }
+
     // Ensure AddedBy is updated if provided
     if (data.AddedBy !== undefined) {
         updateData.AddedBy = data.AddedBy;
+    }
+
+    // Ensure RoleId is updated if provided
+    if (data.RoleId !== undefined) {
+        updateData.RoleId = data.RoleId;
     }
 
     await message.update(updateData);
