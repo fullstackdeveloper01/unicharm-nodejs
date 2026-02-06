@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const employeeController = require('../../controllers/superadmin/employeeController');
+const bulkImportController = require('../../controllers/superadmin/bulkImportController');
+
+// Bulk Update Route
+router.post('/bulk-update', bulkImportController.uploadMiddleware, bulkImportController.bulkUpdateEmployees);
+
 
 // Employee CRUD routes
 router.get('/', employeeController.getAllEmployees);
