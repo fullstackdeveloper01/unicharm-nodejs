@@ -32,6 +32,7 @@ router.get('/:id', sliderImageController.getSliderImageById);
 // Protected routes (Mutations) - with file upload middleware
 router.post('/', verifyToken, upload.any(), sliderImageController.createSliderImage);
 router.put('/:id', verifyToken, upload.any(), sliderImageController.updateSliderImage);
+router.patch('/:id', verifyToken, upload.any(), sliderImageController.updateSliderImage);
 router.delete('/:id', verifyToken, sliderImageController.deleteSliderImage);
 
 module.exports = router;

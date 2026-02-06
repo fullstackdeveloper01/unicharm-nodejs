@@ -161,6 +161,13 @@ exports.updateSliderImage = async (req, res) => {
     try {
         const { id } = req.params;
 
+        console.log('Update slider image request:', {
+            id,
+            body: req.body,
+            files: req.files,
+            file: req.file
+        });
+
         // Fetch instance to update
         const imageInstance = await sliderImageService.getSliderImageById(id);
 
@@ -185,8 +192,16 @@ exports.updateSliderImage = async (req, res) => {
             }
         }
 
+        // Handle file upload - check both req.files (from upload.any()) and req.file (from upload.single())
+        let uploadedFile = null;
         if (req.files && req.files.length > 0) {
-            const file = req.files[0]; // Take first file
+            uploadedFile = req.files[0];
+        } else if (req.file) {
+            uploadedFile = req.file;
+        }
+
+        if (uploadedFile) {
+            console.log('Uploaded file:', uploadedFile);
             try {
                 // Determine date for watermark
                 let dateToPrint = new Date();
@@ -196,12 +211,14 @@ exports.updateSliderImage = async (req, res) => {
                     dateToPrint = new Date(imageInstance.CreatedOn);
                 }
 
-                await watermarkImage(file.path, dateToPrint);
+                await watermarkImage(uploadedFile.path, dateToPrint);
             } catch (err) {
                 console.error("Failed to watermark image:", err);
             }
-            updateData.Image = `/uploads/slider-images/${file.filename}`;
+            updateData.Image = `/uploads/slider-images/${uploadedFile.filename}`;
         }
+
+        console.log('Update data:', updateData);
 
         const updatedSliderImage = await sliderImageService.updateSliderImage(imageInstance, updateData);
         sendResponse(res, true, 'Slider image updated successfully', updatedSliderImage);

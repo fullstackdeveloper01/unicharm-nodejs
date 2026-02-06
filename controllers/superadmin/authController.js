@@ -48,6 +48,28 @@ exports.login = async (req, res) => {
             displayName = user.UserName;
         }
 
+        // Generate initials
+        const firstInitial = user.FirstName ? user.FirstName.charAt(0).toUpperCase() : '';
+        const lastInitial = user.LastName ? user.LastName.charAt(0).toUpperCase() : '';
+        const initials = `${firstInitial}${lastInitial}` || 'U';
+
+        // Process profile image
+        let profileImage = user.UserPhoto;
+        if (profileImage && !profileImage.startsWith('http')) {
+            const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+            if (!profileImage.startsWith('/') && !profileImage.includes('/')) {
+                if (profileImage.startsWith('profile-')) {
+                    profileImage = `/uploads/profile/${profileImage}`;
+                } else {
+                    profileImage = `/Images/Profile/${profileImage}`;
+                }
+            }
+            if (!profileImage.startsWith('/')) {
+                profileImage = `/${profileImage}`;
+            }
+            profileImage = `${baseUrl}${profileImage}`;
+        }
+
         const userId = user.Id;
         const userEmail = user.Email || user.UserName;
         const isAdmin = false;
@@ -71,8 +93,14 @@ exports.login = async (req, res) => {
                 user: {
                     id: userId,
                     name: displayName,
+                    firstName: user.FirstName || '',
+                    lastName: user.LastName || '',
                     email: userEmail,
-                    isAdmin: isAdmin
+                    isAdmin: isAdmin,
+                    profileImage: profileImage || null,
+                    initials: initials,
+                    designation: user.DesignationId,
+                    department: user.DepartmentId
                 }
             }
         });
