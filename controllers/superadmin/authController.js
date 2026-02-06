@@ -56,18 +56,25 @@ exports.login = async (req, res) => {
         // Process profile image
         let profileImage = user.UserPhoto;
         if (profileImage && !profileImage.startsWith('http')) {
-            const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+            const localBaseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+            const liveBaseUrl = process.env.LIVE_BASE_URL || 'http://103.39.133.42';
+
             if (!profileImage.startsWith('/') && !profileImage.includes('/')) {
                 if (profileImage.startsWith('profile-')) {
-                    profileImage = `/uploads/profile/${profileImage}`;
+                    // New uploads - use local/current server
+                    profileImage = `${localBaseUrl}/uploads/profile/${profileImage}`;
                 } else {
-                    profileImage = `/Images/Profile/${profileImage}`;
+                    // Legacy images - use live database server
+                    profileImage = `${liveBaseUrl}/Images/Profile/${profileImage}`;
+                }
+            } else {
+                // Has path already - determine which base URL to use
+                if (profileImage.includes('/Images/')) {
+                    profileImage = `${liveBaseUrl}${profileImage.startsWith('/') ? '' : '/'}${profileImage}`;
+                } else {
+                    profileImage = `${localBaseUrl}${profileImage.startsWith('/') ? '' : '/'}${profileImage}`;
                 }
             }
-            if (!profileImage.startsWith('/')) {
-                profileImage = `/${profileImage}`;
-            }
-            profileImage = `${baseUrl}${profileImage}`;
         }
 
         const userId = user.Id;
