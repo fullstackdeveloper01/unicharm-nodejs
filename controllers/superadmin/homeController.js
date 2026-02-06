@@ -19,13 +19,15 @@ exports.getDashboard = async (req, res) => {
       recentNews,
       recentEvent,
       recentPolicies,
-      workAnniversary
+      workAnniversary,
+      employeeStats // New stats
     ] = await Promise.all([
       homeService.getUpcomingBirthdays(),
       homeService.getRecentNews(),
       homeService.getUpcomingEvents(),
       homeService.getCompanyPolicies(),
-      homeService.getWorkAnniversaries()
+      homeService.getWorkAnniversaries(),
+      homeService.getEmployeeStats() // Fetch stats
     ]);
 
     const dashboardData = {
@@ -33,7 +35,8 @@ exports.getDashboard = async (req, res) => {
       RecentNews: recentNews || [],
       RecentEvent: recentEvent || [],
       RecentPolicies: recentPolicies || [],
-      WorkAnniversary: workAnniversary || []
+      WorkAnniversary: workAnniversary || [],
+      EmployeeStats: employeeStats || { totalEmployees: 0, totalSales: 0, totalCorporate: 0 }
     };
 
     sendResponse(res, true, 'Dashboard data retrieved successfully', dashboardData);

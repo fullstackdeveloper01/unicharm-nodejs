@@ -44,6 +44,10 @@ router.all('/signin', (req, res) => {
   res.redirect(307, '/api/auth/login');
 });
 
+// Bulk Update Route (Specific alias to handle singular 'employee' path from frontend)
+const bulkImportController = require('../controllers/superadmin/bulkImportController');
+router.post('/employee/bulk-update', verifyToken, bulkImportController.uploadMiddleware, bulkImportController.bulkUpdateEmployees);
+
 // Employee App Routes (Partial public access handled inside)
 router.use('/employee', employeeAppRoutes);
 
